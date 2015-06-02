@@ -22,7 +22,17 @@
 		function registrar_espera(socket) {
 
 			socket.on('listo', function(arr) {
-				console.log(arr);
+
+				document.getElementById("amigo").style.visibility = "hidden";
+				document.getElementById("btn_elegir").style.visibility = "hidden";
+				
+				document.getElementById('titulo').innerHTML = 'Arranca el juego';
+				document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+			});
+
+			socket.on('retiro', function(msg) {
+				document.getElementById('titulo').innerHTML = msg + ' Se retiro';
+				document.getElementById('nombres').innerHTML = "";
 			});
 
 		}
@@ -30,8 +40,10 @@
 
   </head>
   <body onload="init()">
-	<h1>Amigos</h1>
+	<h1 id="titulo">Amigos</h1>
 	<input type="text" id="amigo">
-	<input type="submit" value="Elegir" onclick="elegir_amigo()">
+	<input type="submit" value="Elegir" id="btn_elegir" onclick="elegir_amigo()">
+
+	<p id="nombres"></p>
   </body>
 </html>

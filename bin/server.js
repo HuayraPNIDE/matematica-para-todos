@@ -47,6 +47,7 @@ function iniciar_servidor(puerto)
 			var index = jugadores.indexOf(jugador_ip);
 			jugadores.splice(index, 1);
 			console.log('Hay conectados '+jugadores.length+' jugadores');
+			io.emit('retiro', jugador_ip);
 			desconectado(socket);
   		});
 
