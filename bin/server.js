@@ -5,14 +5,8 @@ var local_ip = require('my-local-ip')()
 
 function conectado(socket)
 {
-
 	var jugador_ip = socket.handshake.address;
-
-
-    	io.emit('chat message', 'Hola desde el server');
 	console.log("Se unio un jugador en "+jugador_ip);
-
-
 }
 
 function desconectado(socket)
@@ -23,22 +17,30 @@ function desconectado(socket)
 
 function iniciar_servidor(puerto)
 {
-	var jugadores = 0;
+	var jugadores = [];
 	var MAX_JUGADORES = 2;
 
 	io.on('connection', function(socket) {
-		if(jugadores >= MAX_JUGADORES) {
+		if(jugadores.length >= MAX_JUGADORES) {
 			console.log('Se conecto el maximo de jugadores: '+jugadores);
 			return;
 		}
 
-		jugadores++;
-		console.log('Hay conectados '+jugadores+' jugadores');
+		var jugador_ip = socket.handshake.address;
+		jugadores.push(jugador_ip);
+
+		//jugadores++;
+		console.log('Hay conectados '+jugadores.length+' jugadores');
 		conectado(socket);
 
+		//if(jugadores == MAX_JUGADORES) {
+		//	io.emit('listos', 'Estamos listos
+		//}
+
 		socket.on('disconnect', function(){
-			jugadores--;
-			console.log('Hay conectados '+jugadores+' jugadores');
+			var index = jugadores.indexOf(jugador_ip);
+			jugadores.splice(index, 1);
+			console.log('Hay conectados '+jugadores.length+' jugadores');
 			desconectado(socket);
   		});
 
