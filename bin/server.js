@@ -1,21 +1,24 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var local_ip = require('my-local-ip')()
 
 function conectado(socket)
 {
 
-	console.log("Se unio un jugador");
-  	socket.on('chat message', function(msg){
-    		io.emit('chat message', msg);
-  	});
+	var jugador_ip = socket.handshake.address;
+
+
+    	io.emit('chat message', 'Hola desde el server');
+	console.log("Se unio un jugador en "+jugador_ip);
 
 
 }
 
 function desconectado(socket)
 {
-	console.log('Usuario desconectado');
+	var jugador_ip = socket.handshake.address;
+	console.log("Se fue un jugador en "+jugador_ip);
 }
 
 function iniciar_servidor(puerto)

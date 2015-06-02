@@ -4,16 +4,17 @@
   <script src="./js/socket.io/socket.io-1.2.0.js"></script>
     <title>Matematica para todos - MXT</title>
 	<script>
-		/*
 		function init()
 		{
-			var local_ip = 
+
+			var local_ip = require('my-local-ip')()
 			var socket = io("http://"+local_ip+":3000");
 
+			socket.on('chat message', function(msg) {
+				console.log("Me llega: "+msg);
+			});
 
 		}
-		*/
-		
 
 		function elegir_amigo() {
 			var amigo = document.getElementById('amigo').value;
@@ -22,8 +23,7 @@
 	</script>
 
   </head>
-  <!-- <body onload="init()">-->
-  <body>
+  <body onload="init()">
 	<h1>Amigos</h1>
 	<input type="text" id="amigo">
 	<input type="submit" value="Elegir" onclick="elegir_amigo()">
