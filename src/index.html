@@ -6,19 +6,21 @@
 	<script>
 		function init()
 		{
-
 			var local_ip = require('my-local-ip')()
 			var socket = io("http://"+local_ip+":3000");
 
 			socket.on('listo', function(arr) {
 				console.log(arr);
 			});
-
 		}
 
 		function elegir_amigo() {
 			var amigo = document.getElementById('amigo').value;
 			var socket = io("http://"+amigo+":3000");
+
+			socket.on('listo', function(arr) {
+				console.log(arr);
+			});
 		}
 	</script>
 
