@@ -1,21 +1,31 @@
+<!doctype html>
 <html>
   <head>
+  <script src="./js/socket.io/socket.io-1.2.0.js"></script>
     <title>Matematica para todos - MXT</title>
-    <script>
-	function preparar_datos()
-	{
-		var nombre_usuario = document.getElementById("nombre").value;
-		iniciar_servidor(nombre_usuario);
+	<script>
+		/*
+		function init()
+		{
+			var local_ip = 
+			var socket = io("http://"+local_ip+":3000");
 
-		window.location.href = "./html/cliente.html";
-	}
-    </script>
+
+		}
+		*/
+		
+
+		function elegir_amigo() {
+			var amigo = document.getElementById('amigo').value;
+			var socket = io("http://"+amigo+":3000");
+		}
+	</script>
+
   </head>
+  <!-- <body onload="init()">-->
   <body>
-		Nombre:<br>
-		<input type="text" name="nombre" id="nombre">
-		<input type="submit" value="Arrancar" onclick="preparar_datos()">
-
+	<h1>Amigos</h1>
+	<input type="text" id="amigo">
+	<input type="submit" value="Elegir" onclick="elegir_amigo()">
   </body>
-    <script src="js/main.js"></script>
 </html>

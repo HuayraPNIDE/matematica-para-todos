@@ -1,7 +1,7 @@
 {
     "name": "MXT",
     "version": 0.1,
-    "main": "src/index.html",
+    "main": "index.html",
     "window": {
         "toolbar": true,
         "position": "center"
