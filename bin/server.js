@@ -33,9 +33,14 @@ function iniciar_servidor(puerto)
 		console.log('Hay conectados '+jugadores.length+' jugadores');
 		conectado(socket);
 
-		//if(jugadores == MAX_JUGADORES) {
-		//	io.emit('listos', 'Estamos listos
-		//}
+		if(jugadores.length == MAX_JUGADORES) {
+			console.log("Ya tenemos a todos los jugadores");
+			io.emit('listo', jugadores);
+
+			jugadores.forEach(function(jugador) {
+				console.log(jugador);
+			});
+		}
 
 		socket.on('disconnect', function(){
 			var index = jugadores.indexOf(jugador_ip);
