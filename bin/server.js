@@ -35,11 +35,12 @@ function iniciar_servidor(puerto)
 
 		if(jugadores.length == MAX_JUGADORES) {
 			console.log("Ya tenemos a todos los jugadores");
-			io.emit('listo', jugadores);
 
 			jugadores.forEach(function(jugador) {
 				console.log(jugador);
 			});
+
+			io.emit('listo', jugadores);
 		}
 
 		socket.on('disconnect', function(){
