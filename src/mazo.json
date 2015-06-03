@@ -1,0 +1,28 @@
+{
+    "mazo": [
+        {"id": 0, "lados": 4, "concavidad": "convexo" },
+        {"id": 1, "lados": 6, "concavidad": "convexo" },
+        {"id": 2, "lados": 5, "concavidad": "cóncavo" },
+        {"id": 3, "lados": 4, "concavidad": "convexo" },
+        {"id": 4, "lados": 3, "concavidad": "convexo" },
+        {"id": 5, "lados": 6, "concavidad": "cóncavo" },
+        {"id": 6, "lados": 4, "concavidad": "convexo" },
+        {"id": 7, "lados": 4, "concavidad": "convexo" },
+        {"id": 8, "lados": 4, "concavidad": "convexo" },
+        {"id": 9, "lados": 3, "concavidad": "convexo" },
+        {"id": 10, "lados": 3, "concavidad": "convexo" },
+        {"id": 11, "lados": 4, "concavidad": "convexo" },
+        {"id": 12, "lados": 4, "concavidad": "cóncavo" },
+        {"id": 13, "lados": 3, "concavidad": "convexo" },
+        {"id": 14, "lados": 3, "concavidad": "convexo" },
+        {"id": 15, "lados": 4, "concavidad": "cóncavo" },
+        {"id": 16, "lados": 3, "concavidad": "convexo" },
+        {"id": 17, "lados": 3, "concavidad": "convexo" },
+        {"id": 18, "lados": 4, "concavidad": "convexo" },
+        {"id": 19, "lados": 4, "concavidad": "convexo" },
+        {"id": 20, "lados": 5, "concavidad": "convexo" },
+        {"id": 21, "lados": 5, "concavidad": "convexo" },
+        {"id": 22, "lados": 4, "concavidad": "convexo" },
+        {"id": 23, "lados": 4, "concavidad": "convexo" }
+    ]
+}
