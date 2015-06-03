@@ -40,6 +40,29 @@ function iniciar_servidor(puerto)
 				console.log(jugador);
 			});
 
+			var mazo = require('../src/mazo.json');
+			var mazo_completo = mazo.mazo;
+			mazo_completo = mazo_completo.concat(mazo.mazo);
+
+			var mazo_jugador1 = [];
+			var mazo_jugador2 = [];
+
+			for(var k = 0; k < 24; k++) {
+				var id_carta_jugador1 = Math.floor(Math.random() * mazo_completo.length);
+				var carta_jugador1 = mazo_completo[id_carta_jugador1];
+				mazo_jugador1.push(carta_jugador1);
+				mazo_completo.splice(id_carta_jugador1, 1);
+
+				var id_carta_jugador2 = Math.floor(Math.random() * mazo_completo.length);
+				var carta_jugador2 = mazo_completo[id_carta_jugador2];
+				mazo_jugador2.push(carta_jugador2);
+				mazo_completo.splice(id_carta_jugador2, 1);
+			}
+
+console.log("Jugador 1");
+console.log(mazo_jugador1);
+console.log("Jugador 2");
+console.log(mazo_jugador2);
 			io.emit('listo', jugadores);
 		}
 
