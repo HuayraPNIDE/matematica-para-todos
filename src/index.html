@@ -39,11 +39,18 @@
 					document.getElementById('nombres').innerHTML = "";
 				});
 
+				var btn_mano = document.getElementById('btn_mano');
 				socket.on('mano', function(o) {
+					console.log('Desde el server me llegan cartas:');
 					console.log(JSON.stringify(o, null, 2));
+					btn_mano.disabled = false;
+				});
+
+				btn_mano.onclick = function() {
 					console.log('Respondo'); 
 					socket.emit('respuesta');
-				});
+					btn_mano.disabled = true;
+				};
 
 			});
 
@@ -56,8 +63,9 @@
   <body onload="init()">
 	<h1 id="titulo">Amigos</h1>
 	<input type="text" id="amigo">
-	<input type="submit" value="Elegir" id="btn_elegir" onclick="elegir_amigo()">
+	<input type="button" value="Elegir" id="btn_elegir" onclick="elegir_amigo()">
 
 	<p id="nombres"></p>
+	<input type="button" value="Otra mano" id="btn_mano">
   </body>
 </html>

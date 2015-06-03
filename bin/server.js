@@ -23,25 +23,22 @@ function iniciar_servidor(puerto)
 	var mazo_jugador1 = [];
 	var mazo_jugador2 = [];
 
+	var respuestas = [];
+
 	io.on('connection', function(socket) {
 
 		var i = 1;
-		var cant_respuestas = 0;
 		socket.on('respuesta', function(msg) {
-			console.log('Reparti '+i+' cartas');
-			if(i == 24) {
-				console.log("Fin de la partida, chau "+jugador_ip);
-				socket.disconnect();
-			}
+			respuestas.push(jugador_ip);
 
-			if(cant_respuestas != 2) {
-				console.log(jugador_ip+" respondio");
-				cant_respuestas++;
-			}
+			console.log('Tengo '+respuestas.length+' respuestas');
+			if(respuestas.length == 2) {
+				respuestas.forEach(function(ip) {
+					console.log(ip+' respondio');
+				});
 
-			io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
-			i++;
-			cant_respuestas = 0;
+				respuestas = [];
+			}
 		});
 
 		if(jugadores.length >= MAX_JUGADORES) {
@@ -57,7 +54,8 @@ function iniciar_servidor(puerto)
 		conectado(socket);
 
 		if(jugadores.length == MAX_JUGADORES) {
-			console.log("Ya tenemos a todos los jugadores");
+			console.log("\nYa tenemos a todos los jugadores");
+			console.log("Arrancamos el juego");
 			/*
 			jugadores.forEach(function(jugador) {
 				console.log(jugador);
@@ -89,9 +87,9 @@ function iniciar_servidor(puerto)
 		socket.on('disconnect', function(){
 			var index = jugadores.indexOf(jugador_ip);
 			jugadores.splice(index, 1);
-			console.log('Hay conectados '+jugadores.length+' jugadores');
 			io.emit('retiro', jugador_ip);
 			desconectado(socket);
+			console.log('Hay conectados '+jugadores.length+' jugadores');
   		});
 
 	});
