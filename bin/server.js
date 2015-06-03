@@ -41,6 +41,7 @@ function iniciar_servidor(puerto)
 				if(i == 24) {
 					console.log('Ya se repartieron todas las cartas');
 					io.emit('fin');
+					i = 0;
 				}
 
 				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});

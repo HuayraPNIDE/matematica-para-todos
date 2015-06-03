@@ -35,8 +35,9 @@
 				});
 
 				socket.on('retiro', function(msg) {
-					document.getElementById('titulo').innerHTML = msg + ' Se retiro';
+					document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
 					document.getElementById('nombres').innerHTML = "";
+					socket.disconnect();
 				});
 
 				socket.on('fin', function() {
