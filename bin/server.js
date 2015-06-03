@@ -24,10 +24,10 @@ function iniciar_servidor(puerto)
 	var mazo_jugador2 = [];
 
 	var respuestas = [];
+	var i = 1;
 
 	io.on('connection', function(socket) {
 
-		var i = 1;
 		socket.on('respuesta', function(msg) {
 			respuestas.push(jugador_ip);
 
@@ -37,6 +37,14 @@ function iniciar_servidor(puerto)
 					console.log(ip+' respondio');
 				});
 
+				console.log('Se repartieron '+i+' cartas');
+				if(i == 24) {
+					console.log('Ya se repartieron todas las cartas');
+					io.emit('fin');
+				}
+
+				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
+				i++;
 				respuestas = [];
 			}
 		});

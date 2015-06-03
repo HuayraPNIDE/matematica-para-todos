@@ -39,6 +39,11 @@
 					document.getElementById('nombres').innerHTML = "";
 				});
 
+				socket.on('fin', function() {
+					document.getElementById('titulo').innerHTML = 'Es el fin del juego';
+					socket.disconnect();
+				});
+
 				var btn_mano = document.getElementById('btn_mano');
 				socket.on('mano', function(o) {
 					console.log('Desde el server me llegan cartas:');
