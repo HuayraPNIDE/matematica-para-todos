@@ -22,7 +22,7 @@ function iniciar_servidor(puerto)
 
 	io.on('connection', function(socket) {
 
-		io.on('respuesta', function(msg) {
+		socket.on('respuesta', function(msg) {
 			console.log('El cliente responde '+msg);
 		});
 
