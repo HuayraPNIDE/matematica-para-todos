@@ -21,6 +21,11 @@ function iniciar_servidor(puerto)
 	var MAX_JUGADORES = 2;
 
 	io.on('connection', function(socket) {
+
+		io.on('respuesta', function(msg) {
+			console.log('El cliente responde '+msg);
+		});
+
 		if(jugadores.length >= MAX_JUGADORES) {
 			console.log('Se conecto el maximo de jugadores: '+jugadores);
 			return;
