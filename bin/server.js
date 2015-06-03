@@ -59,11 +59,7 @@ function iniciar_servidor(puerto)
 				mazo_completo.splice(id_carta_jugador2, 1);
 			}
 
-console.log("Jugador 1");
-console.log(mazo_jugador1);
-console.log("Jugador 2");
-console.log(mazo_jugador2);
-			io.emit('listo', jugadores);
+			io.emit('mano', {"carta1": mazo_jugador1[0], "carta2": mazo_jugador2[0]});
 		}
 
 		socket.on('disconnect', function(){
