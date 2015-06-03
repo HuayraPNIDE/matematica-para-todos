@@ -23,7 +23,7 @@ function iniciar_servidor(puerto)
 	io.on('connection', function(socket) {
 
 		socket.on('respuesta', function(msg) {
-			console.log('El cliente responde '+msg);
+			console.log(jugador_ip+' responde '+msg);
 		});
 
 		if(jugadores.length >= MAX_JUGADORES) {
@@ -40,10 +40,11 @@ function iniciar_servidor(puerto)
 
 		if(jugadores.length == MAX_JUGADORES) {
 			console.log("Ya tenemos a todos los jugadores");
-
+			/*
 			jugadores.forEach(function(jugador) {
 				console.log(jugador);
 			});
+			*/
 
 			var mazo = require('../src/mazo.json');
 			var mazo_completo = mazo.mazo;
@@ -64,7 +65,8 @@ function iniciar_servidor(puerto)
 				mazo_completo.splice(id_carta_jugador2, 1);
 			}
 
-			io.emit('mano', {"carta1": mazo_jugador1[0], "carta2": mazo_jugador2[0]});
+			//io.emit('mano', {"carta1": mazo_jugador1[0], "carta2": mazo_jugador2[0]});
+			io.emit('listo', jugadores); //Evento para armar interfaz de los clientes
 		}
 
 		socket.on('disconnect', function(){

@@ -21,26 +21,33 @@
 
 		function registrar_espera(socket) {
 
-			socket.on('listo', function(arr) {
+			socket.on('connect', function() {
+				console.log('Me conecte al servidor');
+				console.log('Registro eventos:\nlisto\nretiro\nmano');
 
-				document.getElementById("amigo").style.visibility = "hidden";
-				document.getElementById("btn_elegir").style.visibility = "hidden";
-				
-				document.getElementById('titulo').innerHTML = 'Arranca el juego';
-				document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+				socket.on('listo', function(arr) {
+
+					document.getElementById("amigo").style.visibility = "hidden";
+					document.getElementById("btn_elegir").style.visibility = "hidden";
+					
+					document.getElementById('titulo').innerHTML = 'Arranca el juego';
+					document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+				});
+
+				socket.on('retiro', function(msg) {
+					document.getElementById('titulo').innerHTML = msg + ' Se retiro';
+					document.getElementById('nombres').innerHTML = "";
+				});
+
+				socket.on('mano', function(o) {
+					console.log(JSON.stringify(o, null, 2));
+					console.log('Respondo'); 
+					socket.emit('respuesta', {my: 'data'});
+				});
+
 			});
 
-			socket.on('retiro', function(msg) {
-				document.getElementById('titulo').innerHTML = msg + ' Se retiro';
-				document.getElementById('nombres').innerHTML = "";
-			});
-
-			socket.on('mano', function(o) {
-				console.log(JSON.stringify(o, null, 2));
-				console.log('Respondo'); 
-				socket.emit('respuesta', {my: 'data'});
-			});
-
+			
 
 		}
 	</script>
