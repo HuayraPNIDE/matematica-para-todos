@@ -26,10 +26,15 @@ function iniciar_servidor(puerto)
 	var respuestas = [];
 	var i = 1;
 
+	var historico_respuestas = [];
+	var opcion_respuestas = [];
+
 	io.on('connection', function(socket) {
 
-		socket.on('respuesta', function(msg) {
+		socket.on('respuesta', function(opcion) {
 			respuestas.push(jugador_ip);
+			
+			opcion_respuestas.push(opcion);
 
 			console.log('Tengo '+respuestas.length+' respuestas');
 			if(respuestas.length == 2) {
@@ -44,9 +49,25 @@ function iniciar_servidor(puerto)
 					i = 0;
 				}
 
+				if(i == 1) {
+
+					if(mazo_jugador1[0].lados > mazo_jugador2[0].lados) {
+						respuesta_real = "jugador1";
+					} else if(mazo_jugador1[0].lados < mazo_jugador2[0].lados) {
+						respuesta_real = "jugador2";
+					} else {
+						respuesta_real = "empate";
+					}
+
+					console.log("Opcion real:" + respuesta_real);
+					console.log("Opciones jugadores: " + opcion_respuestas);
+
+				}
+
 				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
 				i++;
 				respuestas = [];
+				opcion_respuestas = [];
 			}
 		});
 
@@ -89,8 +110,8 @@ function iniciar_servidor(puerto)
 			}
 
 			io.emit('listo', jugadores); //Evento para armar interfaz de los clientes
-
 			io.emit('mano', {"carta1": mazo_jugador1[0], "carta2": mazo_jugador2[0]});
+
 		}
 
 		socket.on('disconnect', function(){

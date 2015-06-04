@@ -26,9 +26,12 @@
 				console.log('Registro eventos:\nlisto\nretiro\nmano');
 
 				socket.on('listo', function(arr) {
-
+					document.getElementById("mazos").style.display = "block";
 					document.getElementById("amigo").style.visibility = "hidden";
 					document.getElementById("btn_elegir").style.visibility = "hidden";
+
+					document.getElementById("opcion_yo").value = arr[0];
+					document.getElementById("opcion_el").value = arr[1];
 					
 					document.getElementById('titulo').innerHTML = 'Arranca el juego';
 					document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
@@ -37,11 +40,13 @@
 				socket.on('retiro', function(msg) {
 					document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
 					document.getElementById('nombres').innerHTML = "";
+					document.getElementById("mazos").style.visibility = "hidden";
 					socket.disconnect();
 				});
 
 				socket.on('fin', function() {
 					document.getElementById('titulo').innerHTML = 'Es el fin del juego';
+					document.getElementById("mazos").style.visibility = "hidden";
 					socket.disconnect();
 				});
 
@@ -49,12 +54,23 @@
 				socket.on('mano', function(o) {
 					console.log('Desde el server me llegan cartas:');
 					console.log(JSON.stringify(o, null, 2));
+					document.getElementById('carta1').innerHTML = o.carta1.lados;
+					document.getElementById('carta2').innerHTML = o.carta2.lados;
+					document.getElementById("cartas").style.display = "block";
+					document.getElementById("opciones").style.display = "block";
 					btn_mano.disabled = false;
 				});
 
 				btn_mano.onclick = function() {
 					console.log('Respondo'); 
-					socket.emit('respuesta');
+					var eleccion = document.getElementsByName("opcion");
+					var val="";
+					for(var j=0; j < eleccion.length; j++) {
+						if(eleccion[j].checked) {
+							val = eleccion[j].value;
+						}
+					}
+					socket.emit('respuesta', val);
 					btn_mano.disabled = true;
 				};
 
@@ -64,14 +80,35 @@
 
 		}
 	</script>
+<style>
+
+</style>
+
 
   </head>
   <body onload="init()">
 	<h1 id="titulo">Amigos</h1>
+
+	<div id="mazos" style="display: none">
+		<div id="mazo1" style="float: left"><img src="res/imgs/lomo.png" /></div>
+		<div id="mazo2" style="float: right"><img src="res/imgs/lomo.png" /></div>
+	</div>
+
 	<input type="text" id="amigo">
 	<input type="button" value="Elegir" id="btn_elegir" onclick="elegir_amigo()">
 
 	<p id="nombres"></p>
-	<input type="button" value="Otra mano" id="btn_mano">
+
+	<div id="cartas" style="display: none">
+		<div id="carta1" style="float: left"></div>
+		<div id="carta2" style="float: right"></div>
+	</div>
+
+	<div id="opciones" style="display: none">
+		<input name="opcion" type="radio" value="0" id="opcion_yo"> YO<br>
+		<input name="opcion" type="radio" value="1" id="opcion_el"> EL <br>
+		<input name="opcion" type="radio" value="empate"> EMPATE<br>
+		<input type="button" value="Otra mano" id="btn_mano">
+	</div>
   </body>
 </html>
