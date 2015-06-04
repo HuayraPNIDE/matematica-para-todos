@@ -33,6 +33,7 @@ function iniciar_servidor(puerto)
 	io.on('connection', function(socket) {
 
 		socket.on('respuesta', function(opcion) {
+			console.log('Se jugo la mano numero '+i+'\n');
 			respuestas.push(jugador_ip);
 			
 			opcion_respuestas.push(opcion);
@@ -40,7 +41,15 @@ function iniciar_servidor(puerto)
 			//console.log('Tengo '+respuestas.length+' respuestas');
 			console.log('Tengo respuesta de '+jugador_ip+' y vale '+opcion);
 			if(respuestas.length == 2) {
-				console.log("Imprimo el objeto de jugadores mapeando ip");
+
+				if(i == 24) {
+					console.log('Ya se repartieron todas las cartas');
+					console.log('Se muestra historico de respuestas');
+					console.log(historico_respuestas);
+					io.emit('fin');
+					i = 0;
+					return;
+				}
 
 				if(i == 1) {
 
@@ -52,6 +61,7 @@ function iniciar_servidor(puerto)
 						respuesta_real = "empate";
 					}
 
+
 				} else {
 					if(mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
 						respuesta_real = "jugador1";
@@ -62,15 +72,20 @@ function iniciar_servidor(puerto)
 					}
 				}
 
-				console.log("Opcion real:" + respuesta_real);
+
+				console.log("\tOpcion real:" + respuesta_real);
 				console.log("Opciones jugadores: " + opcion_respuestas);
 
-				console.log('Numero '+i+' de mano');
-				if(i == 24) {
-					console.log('Ya se repartieron todas las cartas');
-					io.emit('fin');
-					i = 0;
+				if(opcion_respuestas[0] == opcion_respuestas[1]) { //Jugador1 y Jugador2 opinan lo mismo
+					console.log('Las respuestas son iguales, las cartas son para '+opcion_respuestas[0]);
+					historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0]});
+				} else {
+					console.log('Las respuestas difieren, repreguntar');
 				}
+
+				
+
+				
 
 				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
 				i++;

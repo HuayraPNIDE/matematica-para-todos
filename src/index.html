@@ -50,6 +50,8 @@
 				socket.on('fin', function() {
 					document.getElementById('titulo').innerHTML = 'Es el fin del juego';
 					document.getElementById("mazos").style.visibility = "hidden";
+					document.getElementById("opciones").style.visibility = "hidden";
+					document.getElementById("cartas").style.visibility = "hidden";
 					socket.disconnect();
 				});
 
