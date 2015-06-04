@@ -33,13 +33,13 @@
 					document.getElementById("amigo").style.visibility = "hidden";
 					document.getElementById("btn_elegir").style.visibility = "hidden";
 
-					console.log(JSON.stringify(o, null, 2));
+					console.log(JSON.stringify(o, null, 4));
 
-					//document.getElementById("opcion_yo").value = arr[0];
-					//document.getElementById("opcion_el").value = arr[1];
+					document.getElementById("opcion_jugador1").value = "jugador1";
+					document.getElementById("opcion_jugador2").value = "jugador2";
 
 					document.getElementById('titulo').innerHTML = 'Arranca el juego';
-					document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+					//document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
 				});
 
 				socket.on('retiro', function(msg) {
@@ -110,8 +110,9 @@
 	</div>
 
 	<div id="opciones" style="display: none">
-		<input name="opcion" type="radio" value="0" id="opcion_yo"> YO<br>
-		<input name="opcion" type="radio" value="1" id="opcion_el"> EL<br>
+		<input name="opcion" type="radio" value="0" id="opcion_jugador1">Jugador 1<br>
+		<input name="opcion" type="radio" value="1" id="opcion_jugador2">Jugador 2<br>
+
 		<input name="opcion" type="radio" value="empate"> EMPATE<br>
 		<input type="button" value="Otra mano" id="btn_mano">
 	</div>
