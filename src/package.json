@@ -4,6 +4,10 @@
     "main": "index.html",
     "window": {
         "toolbar": true,
-        "position": "center"
+        "position": "center",
+	"width": 1000,
+	"height": 550,
+	"resizable": false
+
     }
 }
