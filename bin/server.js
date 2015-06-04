@@ -12,7 +12,7 @@ function conectado(socket)
 function desconectado(socket)
 {
 	var jugador_ip = socket.handshake.address;
-	console.log("Se fue un jugador en "+jugador_ip);
+	console.log("Se fue un jugador en "+jugador_ip+"\n");
 }
 
 function iniciar_servidor(puerto)
@@ -41,11 +41,6 @@ function iniciar_servidor(puerto)
 			console.log('Tengo respuesta de '+jugador_ip+' y vale '+opcion);
 			if(respuestas.length == 2) {
 				console.log("Imprimo el objeto de jugadores mapeando ip");
-
-
-				respuestas.forEach(function(ip) {
-					console.log(ip+' respondio');
-				});
 
 				if(i == 1) {
 
