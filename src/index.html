@@ -28,19 +28,16 @@
 
 				socket.emit('registrar_jugador', nombre_jugador);
 
-				socket.on('listo', function(arr) {
+				socket.on('listo', function(o) {
 					document.getElementById("mazos").style.display = "block";
 					document.getElementById("amigo").style.visibility = "hidden";
 					document.getElementById("btn_elegir").style.visibility = "hidden";
 
-					/*
-					document.getElementById("opcion_yo").value = arr[0];
-					document.getElementById("opcion_el").value = arr[1];
-					*/
+					console.log(JSON.stringify(o, null, 2));
 
-					document.getElementById("opcion_yo").value = "jugador1";
-					document.getElementById("opcion_el").value = "jugador2";
-					
+					//document.getElementById("opcion_yo").value = arr[0];
+					//document.getElementById("opcion_el").value = arr[1];
+
 					document.getElementById('titulo').innerHTML = 'Arranca el juego';
 					document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
 				});

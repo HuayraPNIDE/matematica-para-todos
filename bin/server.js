@@ -127,7 +127,7 @@ function iniciar_servidor(puerto)
 				mazo_completo.splice(id_carta_jugador2, 1);
 			}
 
-			io.emit('listo', jugadores); //Evento para armar interfaz de los clientes
+			io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
 			io.emit('mano', {"carta1": mazo_jugador1[0], "carta2": mazo_jugador2[0]});
 
 		}
