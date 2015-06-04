@@ -42,16 +42,20 @@
 
 				socket.on('retiro', function(msg) {
 					document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
-					document.getElementById('nombres').innerHTML = "";
-					document.getElementById("mazos").style.visibility = "hidden";
-					socket.disconnect();
-				});
-
-				socket.on('fin', function() {
-					document.getElementById('titulo').innerHTML = 'Es el fin del juego';
 					document.getElementById("mazos").style.visibility = "hidden";
 					document.getElementById("opciones").style.visibility = "hidden";
 					document.getElementById("cartas").style.visibility = "hidden";
+					document.getElementById('nombres').innerHTML = "";
+					socket.disconnect();
+				});
+
+				socket.on('fin', function(resultados) {
+					document.getElementById('titulo').innerHTML = 'Es el fin del juego <br> Estos son los resultados';
+					document.getElementById("mazos").style.visibility = "hidden";
+					document.getElementById("opciones").style.visibility = "hidden";
+					document.getElementById("cartas").style.visibility = "hidden";
+
+					//document.getElementById('resultados').innerHTML = resultados;
 					socket.disconnect();
 				});
 
@@ -117,5 +121,6 @@
 		<div id="carta1" style="float: left"><img id="carta1_img"/></div>
 		<div id="carta2" style="float: right"><img id="carta2_img"/></div>
 	</div>
+
   </body>
 </html>

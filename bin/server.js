@@ -29,6 +29,10 @@ function iniciar_servidor(puerto)
 	var historico_respuestas = [];
 	var opcion_respuestas = [];
 	var obj_ip_jugador = {};
+	var obj_cartas_jugador = {};
+	obj_cartas_jugador['jugador1'] = 0;
+	obj_cartas_jugador['jugador2'] = 0;
+	var cartas_guerra = 0;
 
 	io.on('connection', function(socket) {
 
@@ -46,10 +50,16 @@ function iniciar_servidor(puerto)
 					console.log('Ya se repartieron todas las cartas');
 					console.log('Se muestra historico de respuestas');
 					console.log(historico_respuestas);
-					io.emit('fin');
+
+					console.log('El jugador1 uno tiene '+obj_cartas_jugador.jugador1+' cartas');
+					console.log('El jugador2 uno tiene '+obj_cartas_jugador.jugador2+' cartas');
+					io.emit('fin', historico_respuestas);
 					i = 0;
 					return;
 				}
+
+				var lados_j1 = 0;
+				var lados_j2 = 0;
 
 				if(i == 1) {
 
@@ -61,6 +71,9 @@ function iniciar_servidor(puerto)
 						respuesta_real = "empate";
 					}
 
+					lados_j1 = mazo_jugador1[0].lados;
+					lados_j2 = mazo_jugador2[0].lados;
+
 
 				} else {
 					if(mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
@@ -70,6 +83,9 @@ function iniciar_servidor(puerto)
 					} else {
 						respuesta_real = "empate";
 					}
+
+					lados_j1 = mazo_jugador1[i].lados;
+					lados_j2 = mazo_jugador2[i].lados;
 				}
 
 
@@ -77,13 +93,23 @@ function iniciar_servidor(puerto)
 				console.log("Opciones jugadores: " + opcion_respuestas);
 
 				if(opcion_respuestas[0] == opcion_respuestas[1]) { //Jugador1 y Jugador2 opinan lo mismo
-					console.log('Las respuestas son iguales, las cartas son para '+opcion_respuestas[0]);
-					historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0]});
+					if(opcion_respuestas[0] == 'empate') {
+						console.log('Aca hay guerra');
+						cartas_guerra++;
+					} else {
+						console.log('Las respuestas son iguales, la cartas es para '+opcion_respuestas[0]);
+
+						if(cartas_guerra) {
+							console.log('Hay '+cartas_guerra+' retenidas por guerra\nSe las queda '+opcion_respuestas[0]);
+							obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
+							cartas_guerra = 0;
+						}
+						obj_cartas_jugador[opcion_respuestas[0]]++;
+						historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2});
+					}
 				} else {
 					console.log('Las respuestas difieren, repreguntar');
 				}
-
-				
 
 				
 
@@ -114,11 +140,6 @@ function iniciar_servidor(puerto)
 		if(jugadores.length == MAX_JUGADORES) {
 			console.log("\nYa tenemos a todos los jugadores");
 			console.log("Arrancamos el juego");
-			/*
-			jugadores.forEach(function(jugador) {
-				console.log(jugador);
-			});
-			*/
 
 			var mazo = require('../src/mazo.json');
 			var mazo_completo = mazo.mazo;
