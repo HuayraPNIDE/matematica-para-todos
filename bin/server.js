@@ -42,13 +42,6 @@ function iniciar_servidor(puerto)
 					console.log(ip+' respondio');
 				});
 
-				console.log('Se repartieron '+i+' cartas');
-				if(i == 24) {
-					console.log('Ya se repartieron todas las cartas');
-					io.emit('fin');
-					i = 0;
-				}
-
 				if(i == 1) {
 
 					if(mazo_jugador1[0].lados > mazo_jugador2[0].lados) {
@@ -59,9 +52,24 @@ function iniciar_servidor(puerto)
 						respuesta_real = "empate";
 					}
 
-					console.log("Opcion real:" + respuesta_real);
-					console.log("Opciones jugadores: " + opcion_respuestas);
+				} else {
+					if(mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
+						respuesta_real = "jugador1";
+					} else if(mazo_jugador1[i].lados < mazo_jugador2[i].lados) {
+						respuesta_real = "jugador2";
+					} else {
+						respuesta_real = "empate";
+					}
+				}
 
+				console.log("Opcion real:" + respuesta_real);
+				console.log("Opciones jugadores: " + opcion_respuestas);
+
+				console.log('Numero '+i+' de mano');
+				if(i == 24) {
+					console.log('Ya se repartieron todas las cartas');
+					io.emit('fin');
+					i = 0;
 				}
 
 				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
