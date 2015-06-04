@@ -32,10 +32,6 @@ function iniciar_servidor(puerto)
 
 	io.on('connection', function(socket) {
 
-		socket.on('registrar_jugador', function(nombre_jugador) {
-			obj_ip_jugador[nombre_jugador] = jugador_ip;
-		});
-
 		socket.on('respuesta', function(opcion) {
 			respuestas.push(jugador_ip);
 			
@@ -45,7 +41,6 @@ function iniciar_servidor(puerto)
 			console.log('Tengo respuesta de '+jugador_ip+' y vale '+opcion);
 			if(respuestas.length == 2) {
 				console.log("Imprimo el objeto de jugadores mapeando ip");
-				console.log(obj_ip_jugador);
 
 
 				respuestas.forEach(function(ip) {
@@ -94,8 +89,13 @@ function iniciar_servidor(puerto)
 			return;
 		}
 
+
 		var jugador_ip = socket.handshake.address;
+		var nombre_jugador = socket.handshake.query.nombre_jugador;
+
 		jugadores.push(jugador_ip);
+
+		obj_ip_jugador[nombre_jugador] = jugador_ip;
 
 		//jugadores++;
 		console.log('Hay conectados '+jugadores.length+' jugadores');
