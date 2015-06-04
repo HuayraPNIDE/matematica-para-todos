@@ -9,21 +9,24 @@
 			var local_ip = require('my-local-ip')()
 			var socket = io("http://"+local_ip+":3000");
 
-			registrar_espera(socket);
+			registrar_espera(socket, 'jugador1');
 		}
 
 		function elegir_amigo() {
+
 			var amigo = document.getElementById('amigo').value;
 			var socket = io("http://"+amigo+":3000");
 
-			registrar_espera(socket);
+			registrar_espera(socket, 'jugador2');
 		}
 
-		function registrar_espera(socket) {
+		function registrar_espera(socket, nombre_jugador) {
 
 			socket.on('connect', function() {
 				console.log('Me conecte al servidor');
 				console.log('Registro eventos:\nlisto\nretiro\nmano');
+
+				socket.emit('registrar_jugador', nombre_jugador);
 
 				socket.on('listo', function(arr) {
 					document.getElementById("mazos").style.display = "block";

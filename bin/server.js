@@ -28,16 +28,26 @@ function iniciar_servidor(puerto)
 
 	var historico_respuestas = [];
 	var opcion_respuestas = [];
+	var obj_ip_jugador = {};
 
 	io.on('connection', function(socket) {
+
+		socket.on('registrar_jugador', function(nombre_jugador) {
+			obj_ip_jugador[nombre_jugador] = jugador_ip;
+		});
 
 		socket.on('respuesta', function(opcion) {
 			respuestas.push(jugador_ip);
 			
 			opcion_respuestas.push(opcion);
 
-			console.log('Tengo '+respuestas.length+' respuestas');
+			//console.log('Tengo '+respuestas.length+' respuestas');
+			console.log('Tengo respuesta de '+jugador_ip+' y vale '+opcion);
 			if(respuestas.length == 2) {
+				console.log("Imprimo el objeto de jugadores mapeando ip");
+				console.log(obj_ip_jugador);
+
+
 				respuestas.forEach(function(ip) {
 					console.log(ip+' respondio');
 				});
