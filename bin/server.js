@@ -24,7 +24,7 @@ function iniciar_servidor(puerto)
 	var mazo_jugador2 = [];
 
 	var respuestas = [];
-	var i = 1;
+	var i = 0;
 
 	var historico_respuestas = [];
 	var opcion_respuestas = [];
@@ -37,14 +37,14 @@ function iniciar_servidor(puerto)
 	io.on('connection', function(socket) {
 
 		socket.on('respuesta', function(opcion) {
-			console.log('Se jugo la mano numero '+i+'\n');
 			respuestas.push(jugador_ip);
 			
 			opcion_respuestas.push(opcion);
 
 			//console.log('Tengo '+respuestas.length+' respuestas');
-			console.log('Tengo respuesta de '+jugador_ip+' y vale '+opcion);
+			console.log(jugador_ip+' = '+opcion);
 			if(respuestas.length == 2) {
+				console.log('Tengo ambas respuestas');
 
 				if(i == 24) {
 					console.log('Ya se repartieron todas las cartas');
@@ -61,6 +61,10 @@ function iniciar_servidor(puerto)
 				var lados_j1 = 0;
 				var lados_j2 = 0;
 
+				var img_j1 = 0;
+				var img_j2 = 0;
+
+				/*
 				if(i == 1) {
 
 					if(mazo_jugador1[0].lados > mazo_jugador2[0].lados) {
@@ -74,6 +78,9 @@ function iniciar_servidor(puerto)
 					lados_j1 = mazo_jugador1[0].lados;
 					lados_j2 = mazo_jugador2[0].lados;
 
+					img_j1 = mazo_jugador1[0].img;
+					img_j2 = mazo_jugador2[0].img;
+
 
 				} else {
 					if(mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
@@ -86,10 +93,26 @@ function iniciar_servidor(puerto)
 
 					lados_j1 = mazo_jugador1[i].lados;
 					lados_j2 = mazo_jugador2[i].lados;
+
+					img_j1 = mazo_jugador1[i].img;
+					img_j2 = mazo_jugador2[i].img;
+
+				}*/
+				if(mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
+					respuesta_real = "jugador1";
+				} else if(mazo_jugador1[i].lados < mazo_jugador2[i].lados) {
+					respuesta_real = "jugador2";
+				} else {
+					respuesta_real = "empate";
 				}
 
+				lados_j1 = mazo_jugador1[i].lados;
+				lados_j2 = mazo_jugador2[i].lados;
 
-				console.log("\tOpcion real:" + respuesta_real);
+				img_j1 = mazo_jugador1[i].img;
+				img_j2 = mazo_jugador2[i].img;
+
+				console.log("Opcion real:" + respuesta_real);
 				console.log("Opciones jugadores: " + opcion_respuestas);
 
 				if(opcion_respuestas[0] == opcion_respuestas[1]) { //Jugador1 y Jugador2 opinan lo mismo
@@ -105,16 +128,17 @@ function iniciar_servidor(puerto)
 							cartas_guerra = 0;
 						}
 						obj_cartas_jugador[opcion_respuestas[0]]++;
-						historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2});
+						historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
 					}
 				} else {
 					console.log('Las respuestas difieren, repreguntar');
 				}
 
-				
-
-				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
+				console.log('Se jugo la mano numero '+i);
+				console.log("=======================================================================");
 				i++;
+				console.log('Se juega ahora la mano '+i);
+				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
 				respuestas = [];
 				opcion_respuestas = [];
 			}
@@ -159,7 +183,8 @@ function iniciar_servidor(puerto)
 			}
 
 			io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
-			io.emit('mano', {"carta1": mazo_jugador1[0], "carta2": mazo_jugador2[0]});
+			console.log('Se juega ahora la mano '+i);
+			io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
 
 		}
 
