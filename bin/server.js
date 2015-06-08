@@ -119,7 +119,7 @@ function iniciar_servidor(puerto)
 				console.log("=======================================================================");
 				i++;
 				console.log('Se juega ahora la mano '+i);
-				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
+				io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": obj_cartas_jugador.jugador1, "contador_jugador2": obj_cartas_jugador.jugador2, , "contador_guerra": cartas_guerra});
 				respuestas = [];
 				opcion_respuestas = [];
 			}
@@ -165,8 +165,7 @@ function iniciar_servidor(puerto)
 
 			io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
 			console.log('Se juega ahora la mano '+i);
-			io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i]});
-
+			io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
 		}
 
 		socket.on('disconnect', function(){
