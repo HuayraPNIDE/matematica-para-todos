@@ -25,6 +25,7 @@ function iniciar_servidor(puerto)
 
 	var respuestas = [];
 	var i = 0;
+	var max_respuestas_diferentes = 0;
 
 	var historico_respuestas = [];
 	var opcion_respuestas = [];
@@ -32,6 +33,8 @@ function iniciar_servidor(puerto)
 	var obj_cartas_jugador = {};
 	obj_cartas_jugador['jugador1'] = 0;
 	obj_cartas_jugador['jugador2'] = 0;
+	obj_cartas_jugador['empate'] = 0;
+	obj_cartas_jugador['eliminadas'] = 0;
 	var cartas_guerra = 0;
 
 	io.on('connection', function(socket) {
@@ -46,58 +49,12 @@ function iniciar_servidor(puerto)
 			if(respuestas.length == 2) {
 				console.log('Tengo ambas respuestas');
 
-				if(i == 24) {
-					console.log('Ya se repartieron todas las cartas');
-					console.log('Se muestra historico de respuestas');
-					console.log(historico_respuestas);
-
-					console.log('El jugador1 uno tiene '+obj_cartas_jugador.jugador1+' cartas');
-					console.log('El jugador2 uno tiene '+obj_cartas_jugador.jugador2+' cartas');
-					io.emit('fin', historico_respuestas);
-					i = 0;
-					return;
-				}
-
 				var lados_j1 = 0;
 				var lados_j2 = 0;
 
 				var img_j1 = 0;
 				var img_j2 = 0;
 
-				/*
-				if(i == 1) {
-
-					if(mazo_jugador1[0].lados > mazo_jugador2[0].lados) {
-						respuesta_real = "jugador1";
-					} else if(mazo_jugador1[0].lados < mazo_jugador2[0].lados) {
-						respuesta_real = "jugador2";
-					} else {
-						respuesta_real = "empate";
-					}
-
-					lados_j1 = mazo_jugador1[0].lados;
-					lados_j2 = mazo_jugador2[0].lados;
-
-					img_j1 = mazo_jugador1[0].img;
-					img_j2 = mazo_jugador2[0].img;
-
-
-				} else {
-					if(mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
-						respuesta_real = "jugador1";
-					} else if(mazo_jugador1[i].lados < mazo_jugador2[i].lados) {
-						respuesta_real = "jugador2";
-					} else {
-						respuesta_real = "empate";
-					}
-
-					lados_j1 = mazo_jugador1[i].lados;
-					lados_j2 = mazo_jugador2[i].lados;
-
-					img_j1 = mazo_jugador1[i].img;
-					img_j2 = mazo_jugador2[i].img;
-
-				}*/
 				if(mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
 					respuesta_real = "jugador1";
 				} else if(mazo_jugador1[i].lados < mazo_jugador2[i].lados) {
@@ -119,6 +76,7 @@ function iniciar_servidor(puerto)
 					if(opcion_respuestas[0] == 'empate') {
 						console.log('Aca hay guerra');
 						cartas_guerra++;
+						obj_cartas_jugador['empate']++;
 					} else {
 						console.log('Las respuestas son iguales, la cartas es para '+opcion_respuestas[0]);
 
@@ -128,13 +86,36 @@ function iniciar_servidor(puerto)
 							cartas_guerra = 0;
 						}
 						obj_cartas_jugador[opcion_respuestas[0]]++;
-						historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
 					}
+
+					historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
 				} else {
-					console.log('Las respuestas difieren, repreguntar');
+					console.log('Las respuestas difieren\nRepregunto');
+					//if(!max_respuestas_diferentes) {
+						//console.log('Contador de respuestas diferentes: '+max_respuestas_diferentes);
+						//max_respuestas_diferentes++
+						i--; //Decremento para que vuelva a enviar la misma mano al emitir
+					/*
+					} else {
+						console.log('Maximo de respuestas diferentes alcanzadas');
+						max_respuestas_diferentes = 0;
+					}
+					*/
 				}
 
-				console.log('Se jugo la mano numero '+i);
+				if(i == 23) {
+					console.log('Ya se repartieron todas las cartas');
+					console.log('Se muestra historico de respuestas');
+					console.log(historico_respuestas);
+
+					console.log('El jugador1 uno tiene '+obj_cartas_jugador.jugador1+' cartas');
+					console.log('El jugador2 uno tiene '+obj_cartas_jugador.jugador2+' cartas');
+					console.log('Hubo '+obj_cartas_jugador.empate+' empatadas');
+					io.emit('fin', historico_respuestas);
+					i = 0;
+					return;
+				}
+
 				console.log("=======================================================================");
 				i++;
 				console.log('Se juega ahora la mano '+i);
