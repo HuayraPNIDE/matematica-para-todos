@@ -190,6 +190,21 @@ function publicar_servidor()
 	return 0;
 }
 
+var usuario;
+
+process.argv.forEach(function (val, index, array) {
+
+	if(/--usuario=/.test(val)) {
+		usuario = val.split('=')[1];
+	}
+});
+
+if(!usuario) {
+	console.log("ERROR: No se especifico usuario");
+	console.log("# node bin/server.js --usuario=Nombre");
+	process.exit(-1);
+}
+
 var puerto = 3000;
 iniciar_servidor(puerto);
 publicar_servidor();
