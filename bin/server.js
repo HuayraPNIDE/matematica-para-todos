@@ -125,11 +125,6 @@ function iniciar_servidor(puerto)
 			}
 		});
 
-		if(socket.handshake.query.info_amigo) {
-			io.emit('info_amigo', {"nombre": "Prueba de nombre", "avatar": 'base64'});
-			socket.disconnect();
-		}
-
 
 		if(jugadores.length >= MAX_JUGADORES) {
 			console.log('Se conecto el maximo de jugadores: '+jugadores);

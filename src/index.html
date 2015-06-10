@@ -14,10 +14,10 @@
 			buscar_amigos();
 		}
 
-		function elegir_amigo() {
+		function elegir_amigo(amigo_ip) {
 
-			var amigo = document.getElementById('amigo').value;
-			var socket = io("http://"+amigo+":3000", {query: "nombre_jugador=jugador2"});
+			//var amigo = document.getElementById('amigo').value;
+			var socket = io("http://"+amigo_ip+":3000", {query: "nombre_jugador=jugador2"});
 
 			registrar_espera(socket);
 		}
@@ -31,9 +31,8 @@
 				socket.on('listo', function(o) {
 					document.getElementById("mazos").style.display = "block";
 					document.getElementById("amigo").style.visibility = "hidden";
-					document.getElementById("btn_elegir").style.visibility = "hidden";
-
-					console.log(JSON.stringify(o, null, 4));
+					document.getElementById("btn_actualizar_amigos").style.visibility = "hidden";
+					document.getElementById("lista_amigos").style.visibility = "hidden";
 
 					document.getElementById("opcion_jugador1").value = "jugador1";
 					document.getElementById("opcion_jugador2").value = "jugador2";
@@ -93,13 +92,13 @@
 
 			}
 
+			var amigos = {};
 			function buscar_amigos() {
 
 				var spawn = require('child_process').spawn;
 				var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
 				var data = '';
 				var lineas;
-				var amigos=[];
 
 				proceso.stdout.on("data", function(chunk) {
 					lineas = (""+chunk).split("\n");
@@ -110,21 +109,38 @@
 							// tipo
 							if(campos[0] == '=') {
 								ip = campos[3].split('-')[1].replace(/\\/gi, "");
-								amigos.push(ip);
-								console.log("Se agrego IP: " + ip);
-								var socket = io("http://"+ip+":3000", {query: "info_amigo=true"});
-
-								socket.on('connect', function(o) {
-									console.log(o);
-								});
+								nombre = campos[3].split('-')[2];
+								amigos[ip] = nombre;
                                     			}
 	
 							if(campos[0] == '-') {
-				    				console.log("Borrar IP del ARRAY");
+								ip = campos[3].split('-')[1].replace(/\\/gi, "");
+								delete amigos[ip];
 							}
 						}
 					}
                         	});
+			}
+
+			function actualizar_amigos() {
+
+				var div_lista_amigos = document.getElementById('lista_amigos');
+
+				for (var k in amigos) {
+					var amigo = amigos[k];
+					var nd = document.createElement('div');
+					nd.innerHTML = amigo;
+					nd.onclick = function() {
+						console.log(k);
+						elegir_amigo(k);
+					};
+
+					div_lista_amigos.appendChild(nd);
+					div_lista_amigos.appendChild(document.createElement('br'));
+
+				}
+
+				document.getElementById("lista_amigos").style.display = "block";
 			}
 
 
@@ -136,6 +152,7 @@
     }
     #mazos,
     #opciones,
+    #lista_amigos,
     #cartas {
         display: none;
     }
@@ -149,7 +166,7 @@
 
   </head>
   <body onload="init()">
-	<h1 id="titulo">Amigos</h1>
+	<h1 id="titulo">Lista de amigos</h1>
 
 	<div id="mazos">
             <div id="mazo1" style="float: left"><div id="cont_jugador1">0</div><img src="res/imgs/lomo.png" /></div>
@@ -157,8 +174,7 @@
             <div id="mazo2" style="float: right"><div id="cont_jugador2">0</div><img src="res/imgs/lomo.png" /></div>
 	</div>
 
-	<input type="text" id="amigo">
-	<input type="button" value="Elegir" id="btn_elegir" onclick="elegir_amigo()">
+	<input type="button" value="Actualizar lista de amigos" id="btn_actualizar_amigos" onclick="actualizar_amigos()">
 
 	<p id="nombres"></p>
 
@@ -172,6 +188,10 @@
 	<div id="cartas">
 		<div id="carta1" style="float: left"><img id="carta1_img"/></div>
 		<div id="carta2" style="float: right"><img id="carta2_img"/></div>
+	</div>
+
+	<div id="lista_amigos">
+
 	</div>
 
   </body>
