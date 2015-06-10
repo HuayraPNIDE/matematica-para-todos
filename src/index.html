@@ -7,38 +7,11 @@
 		function init()
 		{
 			var local_ip = require('my-local-ip')()
-			var spawn = require('child_process').spawn;
-                        
+
 			var socket = io("http://"+local_ip+":3000/", {query: "nombre_jugador=jugador1"});
 
 			registrar_espera(socket);
-                        
-                        
-                        
-                        var spawn = require('child_process').spawn;
-                        var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
-                        var data = '';
-                        var lineas;
-                        var amigos=[];
-                        
-                        proceso.stdout.on("data", function(chunk) {
-                            lineas = (""+chunk).split("\n");
-                            for(i=0; lineas.length > i; i++) {
-                                //                     
-                                if(/huayra_mxt/.test(lineas[i])) {
-                                    campos = lineas[i].split(";");
-                                    // tipo
-                                    if(campos[0] == '=') {
-                                        ip=campos[3].split('-')[1].replace(/\\/gi, "");
-                                        amigos.push(ip);
-                                        console.log("Se agrego IP: " + ip);
-                                    }
-                                    if(campos[0] == '-') {
-                                        console.log("Borrar IP del ARRAY");
-                                    }
-                                }
-                            }
-                        });
+			buscar_amigos();
 		}
 
 		function elegir_amigo() {
@@ -118,9 +91,44 @@
 
 			});
 
-			
+			}
 
-		}
+			function buscar_amigos() {
+
+				var spawn = require('child_process').spawn;
+				var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
+				var data = '';
+				var lineas;
+				var amigos=[];
+
+				proceso.stdout.on("data", function(chunk) {
+					lineas = (""+chunk).split("\n");
+					for(i = 0; lineas.length > i; i++) {
+						if(/huayra_mxt/.test(lineas[i])) {
+                                    			campos = lineas[i].split(";");
+
+							// tipo
+							if(campos[0] == '=') {
+								ip = campos[3].split('-')[1].replace(/\\/gi, "");
+								amigos.push(ip);
+								console.log("Se agrego IP: " + ip);
+								var socket = io("http://"+ip+":3000", {query: "info_amigo=true"});
+
+								socket.on('connect', function(o) {
+									console.log(o);
+								});
+                                    			}
+	
+							if(campos[0] == '-') {
+				    				console.log("Borrar IP del ARRAY");
+							}
+						}
+					}
+                        	});
+			}
+
+
+
 	</script>
 <style>
     body {
