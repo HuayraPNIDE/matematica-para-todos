@@ -2,6 +2,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var local_ip = require('my-local-ip')()
+var spawn = require('child_process').spawn;
 
 function conectado(socket)
 {
@@ -188,7 +189,29 @@ function iniciar_servidor(puerto)
 
 function publicar_servidor()
 {
-	return 0;
+	cliente = spawn('avahi-publish-service',
+			[
+			'-s',
+			'huayra_mxt-'+local_ip+'-'+usuario,
+			'_http._tcp', puerto
+			]
+	);
+
+	cliente.stdout.on('data', function(data) {
+		//console.log("stderr", data);
+	});
+
+	cliente.on('error', function(codigo) {
+		console.error("ERROR: no se puede ejecutar avahi-publish-service", codigo);
+	});
+
+	cliente.on('exit', function(codigo) {
+		if (codigo)
+			console.log("Error, el comando retorno: " + codigo);
+		else
+			console.log("ha finalizado el comando avahi-publish-service");
+	});
+
 }
 
 var usuario;
