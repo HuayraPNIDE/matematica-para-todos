@@ -17,6 +17,9 @@
 
             function elegir_amigo(amigo_ip) {
                     //var amigo = document.getElementById('amigo').value;
+
+		    console.log('AMIGO_IP: '+amigo_ip);
+
                     var socket = io("http://"+amigo_ip+":3000", {query: "nombre_jugador=jugador2"});
 
                     registrar_espera(socket);
@@ -128,10 +131,15 @@
 
                             for (var k in amigos) {
                                     var amigo = amigos[k];
+				    console.log('FOR: El amigo es '+k+' y se llama '+amigo);
                                     var nd = document.createElement('div');
-                                    nd.innerHTML = amigo;
+				    var ni = document.createElement('img');
+
+                                    nd.innerHTML = amigo+'<br>'+k;
+				    nd.ip = k;
+
                                     nd.onclick = function() {
-                                            elegir_amigo(k);
+                                            elegir_amigo(this.ip);
                                     };
 
                                     div_lista_amigos.appendChild(nd);
@@ -140,7 +148,7 @@
                             }
 
                             document.getElementById("lista_amigos").style.display = "block";
-                    }
+	    }
 
     </script>
     <link href="css/style.css" media='screen' rel="stylesheet" />
