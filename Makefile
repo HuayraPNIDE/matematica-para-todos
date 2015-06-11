@@ -7,3 +7,6 @@ server:
 	-killall node
 	-killall avahi-publish-service
 	node bin/server.js --usuario=Sebastian
+
+cliente:
+	nw src/
