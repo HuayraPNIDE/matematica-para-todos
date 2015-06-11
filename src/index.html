@@ -3,180 +3,152 @@
   <head>
   <script src="./js/socket.io/socket.io-1.2.0.js"></script>
     <title>Matematica para todos - MXT</title>
-	<script>
-		function init()
-		{
-			var local_ip = require('my-local-ip')()
 
-			var socket = io("http://"+local_ip+":3000/", {query: "nombre_jugador=jugador1"});
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script>
+            function init() {
+                    var local_ip = require('my-local-ip')()
 
-			registrar_espera(socket);
-			buscar_amigos();
-		}
+                    var socket = io("http://"+local_ip+":3000/", {query: "nombre_jugador=jugador1"});
 
-		function elegir_amigo(amigo_ip) {
+                    registrar_espera(socket);
+                    buscar_amigos();
+            }
 
-			//var amigo = document.getElementById('amigo').value;
-			var socket = io("http://"+amigo_ip+":3000", {query: "nombre_jugador=jugador2"});
+            function elegir_amigo(amigo_ip) {
+                    //var amigo = document.getElementById('amigo').value;
+                    var socket = io("http://"+amigo_ip+":3000", {query: "nombre_jugador=jugador2"});
 
-			registrar_espera(socket);
-		}
+                    registrar_espera(socket);
+            }
 
-		function registrar_espera(socket) {
+            function registrar_espera(socket) {
 
-			socket.on('connect', function() {
-				console.log('Me conecte al servidor');
-				console.log('Registro eventos:\nlisto\nretiro\nmano');
+                    socket.on('connect', function() {
+                            console.log('Me conecte al servidor');
+                            console.log('Registro eventos:\nlisto\nretiro\nmano');
 
-				socket.on('listo', function(o) {
-					document.getElementById("mazos").style.display = "block";
-					document.getElementById("btn_actualizar_amigos").style.visibility = "hidden";
-					document.getElementById("lista_amigos").style.visibility = "hidden";
+                            socket.on('listo', function(o) {
+                                    document.getElementById("mazos").style.display = "block";
+                                    document.getElementById("btn_actualizar_amigos").style.visibility = "hidden";
+                                    document.getElementById("lista_amigos").style.visibility = "hidden";
 
-					document.getElementById("opcion_jugador1").value = "jugador1";
-					document.getElementById("opcion_jugador2").value = "jugador2";
+                                    document.getElementById("opcion_jugador1").value = "jugador1";
+                                    document.getElementById("opcion_jugador2").value = "jugador2";
 
-					document.getElementById('titulo').innerHTML = 'Arranca el juego';
-					//document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
-				});
+                                    document.getElementById('titulo').innerHTML = 'Arranca el juego';
+                                    //document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+                            });
 
-				socket.on('retiro', function(msg) {
-					document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
-					document.getElementById("mazos").style.visibility = "hidden";
-					document.getElementById("opciones").style.visibility = "hidden";
-					document.getElementById("cartas").style.visibility = "hidden";
-					document.getElementById('nombres').innerHTML = "";
-					socket.disconnect();
-				});
+                            socket.on('retiro', function(msg) {
+                                    document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
+                                    document.getElementById("mazos").style.visibility = "hidden";
+                                    document.getElementById("opciones").style.visibility = "hidden";
+                                    document.getElementById("cartas").style.visibility = "hidden";
+                                    document.getElementById('nombres').innerHTML = "";
+                                    socket.disconnect();
+                            });
 
-				socket.on('fin', function(resultados) {
-					document.getElementById('titulo').innerHTML = 'Es el fin del juego <br> Estos son los resultados';
-					document.getElementById("mazos").style.visibility = "hidden";
-					document.getElementById("opciones").style.visibility = "hidden";
-					document.getElementById("cartas").style.visibility = "hidden";
+                            socket.on('fin', function(resultados) {
+                                    document.getElementById('titulo').innerHTML = 'Es el fin del juego <br> Estos son los resultados';
+                                    document.getElementById("mazos").style.visibility = "hidden";
+                                    document.getElementById("opciones").style.visibility = "hidden";
+                                    document.getElementById("cartas").style.visibility = "hidden";
 
-					//document.getElementById('resultados').innerHTML = resultados;
-					socket.disconnect();
-				});
+                                    //document.getElementById('resultados').innerHTML = resultados;
+                                    socket.disconnect();
+                            });
 
-				var btn_mano = document.getElementById('btn_mano');
-				socket.on('mano', function(o) {
-					console.log('Desde el server me llegan cartas:');
-					console.log(JSON.stringify(o, null, 2));
-					document.getElementById('cont_jugador1').innerHTML = o.contador_jugador1;
-					document.getElementById('cont_jugador2').innerHTML = o.contador_jugador2;
-					document.getElementById('cont_guerra').innerHTML = o.contador_guerra;
-					document.getElementById('carta1_img').src = o.carta1.img;
-					document.getElementById('carta2_img').src = o.carta2.img;
-					document.getElementById("cartas").style.display = "block";
-					document.getElementById("opciones").style.display = "block";
-					btn_mano.disabled = false;
-                                        
-				});
+                            var btn_mano = document.getElementById('btn_mano');
+                            socket.on('mano', function(o) {
+                                    console.log('Desde el server me llegan cartas:');
+                                    console.log(JSON.stringify(o, null, 2));
+                                    document.getElementById('cont_jugador1').innerHTML = o.contador_jugador1;
+                                    document.getElementById('cont_jugador2').innerHTML = o.contador_jugador2;
+                                    document.getElementById('cont_guerra').innerHTML = o.contador_guerra;
+                                    document.getElementById('carta1_img').src = o.carta1.img;
+                                    document.getElementById('carta2_img').src = o.carta2.img;
+                                    document.getElementById("cartas").style.display = "block";
+                                    document.getElementById("opciones").style.display = "block";
+                                    btn_mano.disabled = false;
 
-				btn_mano.onclick = function() {
-					console.log('Respondo'); 
-					var eleccion = document.getElementsByName("opcion");
-					var val="";
-					for(var j=0; j < eleccion.length; j++) {
-						if(eleccion[j].checked) {
-							val = eleccion[j].value;
-						}
-					}
-					socket.emit('respuesta', val);
-					btn_mano.disabled = true;
-				};
+                            });
 
-			});
+                            btn_mano.onclick = function() {
+                                    console.log('Respondo'); 
+                                    var eleccion = document.getElementsByName("opcion");
+                                    var val="";
+                                    for(var j=0; j < eleccion.length; j++) {
+                                            if(eleccion[j].checked) {
+                                                    val = eleccion[j].value;
+                                            }
+                                    }
+                                    socket.emit('respuesta', val);
+                                    btn_mano.disabled = true;
+                            };
 
-			}
+                    });
 
-			var amigos = {};
-			function buscar_amigos() {
+                    }
 
-				var spawn = require('child_process').spawn;
-				var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
-				var data = '';
-				var lineas;
+            var amigos = {};
+            function buscar_amigos() {
 
-				proceso.stdout.on("data", function(chunk) {
-					lineas = (""+chunk).split("\n");
-					for(i = 0; lineas.length > i; i++) {
-						if(/huayra_mxt/.test(lineas[i])) {
-                                    			campos = lineas[i].split(";");
+                    var spawn = require('child_process').spawn;
+                    var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
+                    var data = '';
+                    var lineas;
 
-							// tipo
-							if(campos[0] == '=') {
-								ip = campos[3].split('-')[1].replace(/\\/gi, "");
-								nombre = campos[3].split('-')[2];
-								amigos[ip] = nombre;
-                                    			}
-	
-							if(campos[0] == '-') {
-								ip = campos[3].split('-')[1].replace(/\\/gi, "");
-								delete amigos[ip];
-							}
-						}
-					}
-                        	});
-			}
+                    proceso.stdout.on("data", function(chunk) {
+                            lineas = (""+chunk).split("\n");
+                            for(i = 0; lineas.length > i; i++) {
+                                    if(/huayra_mxt/.test(lineas[i])) {
+                                            campos = lineas[i].split(";");
 
-			function actualizar_amigos() {
+                                            // tipo
+                                            if(campos[0] == '=') {
+                                                    ip = campos[3].split('-')[1].replace(/\\/gi, "");
+                                                    nombre = campos[3].split('-')[2];
+                                                    amigos[ip] = nombre;
+                                            }
 
-				var div_lista_amigos = document.getElementById('lista_amigos');
-				div_lista_amigos.innerHTML = "";
-				
-				document.getElementById('titulo').innerHTML = 'Lista de amigos';
-	
+                                            if(campos[0] == '-') {
+                                                    ip = campos[3].split('-')[1].replace(/\\/gi, "");
+                                                    delete amigos[ip];
+                                            }
+                                    }
+                            }
+                    });
+            }
 
-				for (var k in amigos) {
-					var amigo = amigos[k];
-					var nd = document.createElement('div');
-					var ni = document.createElement('img');
+            function actualizar_amigos() {
 
-					nd.innerHTML = amigo;
-					nd.onclick = function() {
-						elegir_amigo(k);
-					};
+                            var div_lista_amigos = document.getElementById('lista_amigos');
+                            div_lista_amigos.innerHTML = "";
 
-					ni.src = "res/gui/avatar-neutro.png";
-					ni.onclick = function() {
-						elegir_amigo(k);
-					};
+                            for (var k in amigos) {
+                                    var amigo = amigos[k];
+                                    var nd = document.createElement('div');
+                                    nd.innerHTML = amigo;
+                                    nd.onclick = function() {
+                                            elegir_amigo(k);
+                                    };
 
-					div_lista_amigos.appendChild(ni);
-					div_lista_amigos.appendChild(nd);
-					div_lista_amigos.appendChild(document.createElement('br'));
+                                    div_lista_amigos.appendChild(nd);
+                                    div_lista_amigos.appendChild(document.createElement('br'));
 
-				}
+                            }
 
-				document.getElementById("lista_amigos").style.display = "block";
-			}
+                            document.getElementById("lista_amigos").style.display = "block";
+                    }
 
+    </script>
+    <link href="css/style.css" media='screen' rel="stylesheet" />
 
-
-	</script>
-<style>
-    body {
-        background-image: url("res/backgrounds/background1.png");
-    }
-    #mazos,
-    #opciones,
-    #lista_amigos,
-    #cartas {
-        display: none;
-    }
-    #cont_jugador1,
-    #cont_jugador2 {
-        text-align: center;
-    }
-
-</style>
-
-
-  </head>
-  <body onload="init()">
-	<h1 id="titulo"></h1>
+</head>
+<body onload="init()">
+    <div id="container">
+	<h1 id="titulo">Lista de amigos</h1>
 
 	<div id="mazos">
             <div id="mazo1" style="float: left"><div id="cont_jugador1">0</div><img src="res/imgs/lomo.png" /></div>
@@ -201,8 +173,7 @@
 	</div>
 
 	<div id="lista_amigos">
-
 	</div>
-
+    </div>
   </body>
 </html>

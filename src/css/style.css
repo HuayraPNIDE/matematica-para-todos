@@ -1,0 +1,13 @@
+body {
+    background-image: url("res/backgrounds/background1.png");
+}
+#mazos,
+#opciones,
+#lista_amigos,
+#cartas {
+    display: none;
+}
+#cont_jugador1,
+#cont_jugador2 {
+    text-align: center;
+}
