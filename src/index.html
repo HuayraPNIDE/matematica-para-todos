@@ -16,9 +16,8 @@
             }
 
             function elegir_amigo(amigo_ip) {
-                    //var amigo = document.getElementById('amigo').value;
                     var socket = io("http://"+amigo_ip+":3000", {query: "nombre_jugador=jugador2"});
-
+console.log("AAAAAAAAAAAAAAAAAAAAAAA");
                     registrar_espera(socket);
             }
 
@@ -29,48 +28,40 @@
                             console.log('Registro eventos:\nlisto\nretiro\nmano');
 
                             socket.on('listo', function(o) {
-                                    document.getElementById("mazos").style.display = "block";
-                                    document.getElementById("btn_actualizar_amigos").style.visibility = "hidden";
-                                    document.getElementById("lista_amigos").style.visibility = "hidden";
-
-                                    document.getElementById("opcion_jugador1").value = "jugador1";
-                                    document.getElementById("opcion_jugador2").value = "jugador2";
-
-                                    document.getElementById('titulo').innerHTML = 'Arranca el juego';
-                                    //document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+                                $("#mazos").show();
+                                $("#amigos").hide();
+                                $("#titulo").html('Arranca el juego');
+document.getElementById("opcion_jugador1").value = "jugador1";
+document.getElementById("opcion_jugador2").value = "jugador2";
                             });
 
                             socket.on('retiro', function(msg) {
-                                    document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
-                                    document.getElementById("mazos").style.visibility = "hidden";
-                                    document.getElementById("opciones").style.visibility = "hidden";
-                                    document.getElementById("cartas").style.visibility = "hidden";
-                                    document.getElementById('nombres').innerHTML = "";
-                                    socket.disconnect();
+                                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
+                                $("#mazos, #opciones, #cartas").hide();
+                                $("#nombres").html('');
+                                socket.disconnect();
                             });
 
                             socket.on('fin', function(resultados) {
-                                    document.getElementById('titulo').innerHTML = 'Es el fin del juego <br> Estos son los resultados';
-                                    document.getElementById("mazos").style.visibility = "hidden";
-                                    document.getElementById("opciones").style.visibility = "hidden";
-                                    document.getElementById("cartas").style.visibility = "hidden";
-
-                                    //document.getElementById('resultados').innerHTML = resultados;
-                                    socket.disconnect();
+                                $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
+                                $("#mazos, #opciones, #cartas").hide();
+                                socket.disconnect();
                             });
 
                             var btn_mano = document.getElementById('btn_mano');
                             socket.on('mano', function(o) {
                                     console.log('Desde el server me llegan cartas:');
                                     console.log(JSON.stringify(o, null, 2));
-                                    document.getElementById('cont_jugador1').innerHTML = o.contador_jugador1;
-                                    document.getElementById('cont_jugador2').innerHTML = o.contador_jugador2;
-                                    document.getElementById('cont_guerra').innerHTML = o.contador_guerra;
+                                
+                                $("#cont_jugador1").html(o.contador_jugador1);
+                                $("#cont_jugador2").html(o.contador_jugador2);
+                                $("#cont_guerra").html(o.contador_guerra);
+                                
                                     document.getElementById('carta1_img').src = o.carta1.img;
                                     document.getElementById('carta2_img').src = o.carta2.img;
-                                    document.getElementById("cartas").style.display = "block";
-                                    document.getElementById("opciones").style.display = "block";
-                                    btn_mano.disabled = false;
+                                    
+                                $("#opciones, #cartas").show();
+                                btn_mano.disabled = false;
 
                             });
 
@@ -93,7 +84,6 @@
 
             var amigos = {};
             function buscar_amigos() {
-
                     var spawn = require('child_process').spawn;
                     var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
                     var data = '';
@@ -138,10 +128,8 @@
                                     div_lista_amigos.appendChild(document.createElement('br'));
 
                             }
-
                             document.getElementById("lista_amigos").style.display = "block";
                     }
-
     </script>
     <link href="css/style.css" media='screen' rel="stylesheet" />
 
@@ -155,7 +143,6 @@
             <div id="cont_guerra"></div>
             <div id="mazo2"><div id="cont_jugador2">0</div><img src="res/imgs/lomo.png" /></div>
 	</div>
-
         
 	<p id="nombres"></p>
 
@@ -167,12 +154,14 @@
 	</div>
 
 	<div id="cartas">
-		<div id="carta1"><img id="carta1_img"/></div>
-		<div id="carta2"><img id="carta2_img"/></div>
+            <div id="carta1"><img id="carta1_img"/></div>
+            <div id="carta2"><img id="carta2_img"/></div>
 	</div>
 
-	<input type="button" value="Actualizar lista de amigos" id="btn_actualizar_amigos" onclick="actualizar_amigos()">
-	<div id="lista_amigos">
+	<div id="amigos">
+            <input type="button" value="Actualizar lista de amigos" id="btn_actualizar_amigos" onclick="actualizar_amigos()">
+            <div id="lista_amigos">
+            </div>
 	</div>
     </div>
   </body>
