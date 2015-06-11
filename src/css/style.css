@@ -1,5 +1,5 @@
 body {
-    background-image: url("res/backgrounds/background1.png");
+    background-image: url("../res/backgrounds/background1.png");
 }
 #mazos,
 #opciones,
@@ -10,4 +10,13 @@ body {
 #cont_jugador1,
 #cont_jugador2 {
     text-align: center;
+}
+
+#mazo1,
+#carta1 {
+    float: left;
+}
+#mazo2,
+#carta2 {
+    float: right;
 }
