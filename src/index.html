@@ -125,15 +125,26 @@
 
 				var div_lista_amigos = document.getElementById('lista_amigos');
 				div_lista_amigos.innerHTML = "";
+				
+				document.getElementById('titulo').innerHTML = 'Lista de amigos';
+	
 
 				for (var k in amigos) {
 					var amigo = amigos[k];
 					var nd = document.createElement('div');
+					var ni = document.createElement('img');
+
 					nd.innerHTML = amigo;
 					nd.onclick = function() {
 						elegir_amigo(k);
 					};
 
+					ni.src = "res/gui/avatar-neutro.png";
+					ni.onclick = function() {
+						elegir_amigo(k);
+					};
+
+					div_lista_amigos.appendChild(ni);
 					div_lista_amigos.appendChild(nd);
 					div_lista_amigos.appendChild(document.createElement('br'));
 
@@ -165,7 +176,7 @@
 
   </head>
   <body onload="init()">
-	<h1 id="titulo">Lista de amigos</h1>
+	<h1 id="titulo"></h1>
 
 	<div id="mazos">
             <div id="mazo1" style="float: left"><div id="cont_jugador1">0</div><img src="res/imgs/lomo.png" /></div>
