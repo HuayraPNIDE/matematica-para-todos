@@ -32,10 +32,9 @@ function iniciar_servidor(puerto)
 	var opcion_respuestas = [];
 	var obj_ip_jugador = {};
 	var obj_cartas_jugador = {};
-	obj_cartas_jugador['jugador1'] = 0;
-	obj_cartas_jugador['jugador2'] = 0;
 	obj_cartas_jugador['empate'] = 0;
 	obj_cartas_jugador['eliminadas'] = 0;
+	
 	var cartas_guerra = 0;
 
 	io.on('connection', function(socket) {
@@ -92,16 +91,7 @@ function iniciar_servidor(puerto)
 					historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
 				} else {
 					console.log('Las respuestas difieren\nRepregunto');
-					//if(!max_respuestas_diferentes) {
-						//console.log('Contador de respuestas diferentes: '+max_respuestas_diferentes);
-						//max_respuestas_diferentes++
-						i--; //Decremento para que vuelva a enviar la misma mano al emitir
-					/*
-					} else {
-						console.log('Maximo de respuestas diferentes alcanzadas');
-						max_respuestas_diferentes = 0;
-					}
-					*/
+					i--; //Decremento para que vuelva a enviar la misma mano al emitir
 				}
 
 				if(i == 23) {
@@ -136,7 +126,14 @@ function iniciar_servidor(puerto)
 		var jugador_ip = socket.handshake.address;
 		var nombre_jugador = socket.handshake.query.nombre_jugador;
 
+		if(nombre_jugador == 'jugador1') { //Hack
+			nombre_jugador = usuario;
+		}
+
 		jugadores.push(jugador_ip);
+
+		obj_cartas_jugador[nombre_jugador] = 0;
+	
 
 		obj_ip_jugador[nombre_jugador] = jugador_ip;
 
@@ -147,6 +144,9 @@ function iniciar_servidor(puerto)
 		if(jugadores.length == MAX_JUGADORES) {
 			console.log("\nYa tenemos a todos los jugadores");
 			console.log("Arrancamos el juego");
+
+
+			console.log(JSON.stringify(obj_cartas_jugador, null, 2));
 
 			var mazo = require('../src/mazo.json');
 			var mazo_completo = mazo.mazo;

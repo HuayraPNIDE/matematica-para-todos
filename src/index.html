@@ -6,6 +6,7 @@
 
     <script src="js/jquery-1.11.3.min.js"></script>
     <script>
+	    var usuario_info = {};
             function init() {
                     var local_ip = require('my-local-ip')()
 
@@ -18,9 +19,8 @@
             function elegir_amigo(amigo_ip) {
                     //var amigo = document.getElementById('amigo').value;
 
-		    console.log('AMIGO_IP: '+amigo_ip);
 
-                    var socket = io("http://"+amigo_ip+":3000", {query: "nombre_jugador=jugador2"});
+                    var socket = io("http://"+amigo_ip+":3000", {query: "nombre_jugador="+usuario_info.nombre});
 
                     registrar_espera(socket);
             }
@@ -33,7 +33,6 @@
 
                             socket.on('listo', function(o) {
                                     document.getElementById("mazos").style.display = "block";
-                                    document.getElementById("btn_actualizar_amigos").style.visibility = "hidden";
                                     document.getElementById("lista_amigos").style.visibility = "hidden";
 
                                     document.getElementById("opcion_jugador1").value = "jugador1";
@@ -131,7 +130,6 @@
 
                             for (var k in amigos) {
                                     var amigo = amigos[k];
-				    console.log('FOR: El amigo es '+k+' y se llama '+amigo);
                                     var nd = document.createElement('div');
 				    var ni = document.createElement('img');
 
@@ -150,13 +148,30 @@
                             document.getElementById("lista_amigos").style.display = "block";
 	    }
 
+	    function set_usuario_info() {
+		usuario_info['nombre'] = document.getElementById('nombre').value;
+
+		//Hago aparecer listado de amigos
+
+		document.getElementById('avatar').style.visibility = "hidden";
+
+		document.getElementById('lista_amigos').style.display = "block";
+
+	    }
+
     </script>
     <link href="css/style.css" media='screen' rel="stylesheet" />
 
 </head>
 <body onload="init()">
     <div id="container">
-	<h1 id="titulo">Lista de amigos</h1>
+	<h1 id="titulo">La Guerra de los Lados</h1>
+
+	<div id="avatar">
+		<img src="res/gui/avatar-neutro.png"/>
+		<input name="nombre" id="nombre" type="text">
+		<input type="button" id="btn_set_usuario_info" value="Siguiente" onclick="set_usuario_info()">
+	</div>
 
 	<div id="mazos">
             <div id="mazo1"><div id="cont_jugador1">0</div><img src="res/imgs/lomo.png" /></div>
@@ -179,8 +194,8 @@
 		<div id="carta2"><img id="carta2_img"/></div>
 	</div>
 
-	<input type="button" value="Actualizar lista de amigos" id="btn_actualizar_amigos" onclick="actualizar_amigos()">
 	<div id="lista_amigos">
+		<input type="button" value="Actualizar lista de amigos" id="btn_actualizar_amigos" onclick="actualizar_amigos()">
 	</div>
     </div>
   </body>
