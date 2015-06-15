@@ -4,7 +4,7 @@ NODE_BINARY_NAME=node
 
 
 all:
-	@echo "Ayuda"
+	./matematica-para-todos
 
 check_node_binary:
 ifdef IS_NODEJS

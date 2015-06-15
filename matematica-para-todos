@@ -1,0 +1,15 @@
+#!/bin/bash
+
+NODE_BINARY_NAME=node
+
+NODE_EXISTS=$(which $NODE_BINARY_NAME)
+
+if [ -z $NODE_EXISTS ]; then
+	NODE_BINARY_NAME=nodejs
+fi
+
+killall $NODE_BINARY_NAME
+
+echo "ESTA MATANDO TODOS LOS AVAHI, CAMBIAR ESTO"
+killall avahi-publish-service
+nw src/
