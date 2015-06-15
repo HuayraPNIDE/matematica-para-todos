@@ -5,8 +5,8 @@ var Servidor = function(nombre) {
     spawn('nodejs', ['../bin/server.js', "--usuario="+nombre]);
 };
 
-var Conexion = function (ip, nombreJugador) {
-    this.socket = io("http://" + ip + ":" + puerto + "/", {query: "nombre_jugador=" + nombreJugador});
+var Conexion = function (ip, nroJugador, nombreJugador) {
+    this.socket = io("http://" + ip + ":" + puerto + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
     this.registrarEspera = function() {
         var self = this;
         self.socket.on('connect', function () {
@@ -71,7 +71,7 @@ var Cliente = function(nombre, avatar) {
     this.avatar = avatar;
     this.localIp = require('my-local-ip')();
     this.init = function() {
-        var conexion = new Conexion(this.localIp, this.nombre);
+        var conexion = new Conexion(this.localIp, 'jugador1', this.nombre);
         $("#avatar").hide();
         $("#btn_actualizar_amigos, #lista_amigos").show();
         conexion.registrarEspera();
@@ -125,7 +125,7 @@ var Amigos = function () {
         $('#lista_amigos').show();
     },
     this.elegir = function(ip, nombreJugador) { // Se conecta al Servidor elegido //
-        var conexion = new Conexion(ip, nombreJugador);
+        var conexion = new Conexion(ip, 'jugador2', nombreJugador);
         conexion.registrarEspera();
     }
 };

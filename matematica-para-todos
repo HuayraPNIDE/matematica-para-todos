@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NODE_BINARY_NAME=node
+NODE_BINARY_NAME=nodejs
 
 NODE_EXISTS=$(which $NODE_BINARY_NAME)
 

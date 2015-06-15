@@ -1,3 +1,60 @@
+var Jugadores = function() {
+
+	this.jugadores = {};
+
+	this.nuevoJugador = function(jugadorNro, jugadorNombre, jugadorIp) {
+		this.jugadores.jugadorNro = {'nombre': jugadorNombre, 'ip': jugadorIp};
+	},
+
+	this.getJugadoresCount = function() {
+		return Object.keys(this.jugadores).length;
+	};
+};
+
+var Servidor = function(puerto) {
+
+	this.app = require('express')();
+	this.http = require('http').Server(this.app);
+	this.io = require('socket.io')(this.http);
+	this.jugadores = new Jugadores();
+
+	this.puerto = puerto;
+
+	this.init = function() {
+		
+		this.http.listen(this.puerto, function () {
+			logger.write('Esperando jugadores en ' + puerto);
+		});
+	},
+
+	this.registrarEspera = function() { 
+		var self = this;
+
+		self.io.on('connection', function(socket) {
+			jugadoresCount = self.jugadores.getJugadoresCount();
+
+			if(jugadoresCount < 2) {
+				logger.write('Se conecto un nuevo jugador');
+				jugadorNro = socket.handshake.query.nro_jugador;
+				jugadorNombre = socket.handshake.query.nombre_jugador;
+				jugadorIp = socket.handshake.address;
+				self.jugadores.nuevoJugador(jugadorNro, jugadorNombre, jugadorIp);
+
+				logger.write("jugadorNro: "+ jugadorNro + ", jugadorNombre: " + jugadorNombre + ", jugadorIp: " + jugadorIp);
+
+			}
+			jugadoresCount = self.jugadores.getJugadoresCount();
+			logger.write('Hay conectados '+jugadoresCount+' jugadores');
+
+			
+		});
+	
+	}
+};
+
+
+
+/*
 var app = require('express')();
 var fs = require('fs');
 var http = require('http').Server(app);
@@ -242,11 +299,13 @@ if (!usuario) {
     process.exit(-1);
 }
 
-iniciar_servidor(puerto);
-publicar_servidor();
+//iniciar_servidor(puerto);
+//publicar_servidor();
 
+*/
 var LoggerFile = function() {
     this.filename = '/tmp/log.txt';
+    var fs = require('fs');
     fs.writeFileSync(this.filename, "INICIO\n");
     this.write = function (data) {
         fs.appendFileSync(this.filename, data + "\n");
@@ -254,4 +313,10 @@ var LoggerFile = function() {
     fs.appendFileSync(this.filename, "==========================================\n");
 }
 
+
 var logger = new LoggerFile();
+
+var puerto = 3000;
+var servidor = new Servidor(puerto)
+servidor.init();
+servidor.registrarEspera();
