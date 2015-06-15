@@ -12,4 +12,5 @@ killall $NODE_BINARY_NAME
 
 echo "ESTA MATANDO TODOS LOS AVAHI, CAMBIAR ESTO"
 killall avahi-publish-service
+killall avahi-browse
 nw src/

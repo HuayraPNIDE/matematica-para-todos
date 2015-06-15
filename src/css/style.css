@@ -5,7 +5,8 @@ body {
 #mazos,
 #opciones,
 #lista_amigos,
-#cartas {
+#cartas,
+#msg {
     display: none;
 }
 #cont_jugador1,
@@ -14,10 +15,13 @@ body {
 }
 
 #mazo1,
-#carta1 {
+#carta_jugador1 {
     float: left;
 }
 #mazo2,
-#carta2 {
+#carta_jugador2 {
     float: right;
+}
+#cartas div {
+    display: inline-block;
 }
