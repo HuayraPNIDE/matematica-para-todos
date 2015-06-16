@@ -14,7 +14,7 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
 
             self.socket.on('listo', function (o) {
                 $("#mazos").show();
-                $("#lista_amigos, #btn_actualizar_amigos").hide();
+                $("#amigos, #actualizar_amigos").hide();
                 $("#titulo").html('Arranca el juego');
             });
 
@@ -73,7 +73,7 @@ var Cliente = function(nombre, avatar) {
     this.init = function() {
         var conexion = new Conexion(this.localIp, 'jugador1', this.nombre);
         $("#avatar").hide();
-        $("#btn_actualizar_amigos, #lista_amigos").show();
+        $("#actualizar_amigos, #amigos").show();
         conexion.registrarEspera();
     }
 };
