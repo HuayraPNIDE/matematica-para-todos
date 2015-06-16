@@ -107,18 +107,18 @@ var Amigos = function () {
             }
         });
     },
-    this.actualizarVista = function() {
+    this.actualizarVista = function(cliente) {
         var self = this;
         e = $("<div></div>");
         for (var k in this.amigos) {
             amigo = this.amigos[k];
-            tmp = '<div class="media" data-ip="' + k + '" data-nombre="' + this.amigos[k] + '"> \
+            tmp = '<div class="media" data-ip="' + k + '"> \
               <div class="media-left"><a href="#"><img class="media-object" src="res/gui/avatar-neutro.png"></a></div> \
               <div class="media-body"><h4 class="media-heading">' + this.amigos[k] + '</h4></div> \
             </div>';
 
             $(e).append($(tmp).on('click', function() {
-                self.elegir($(this).data('ip'), $(this).data('nombre'));
+                self.elegir($(this).data('ip'), cliente.nombre);
             }));
         }
         $('#lista_amigos').html(e);

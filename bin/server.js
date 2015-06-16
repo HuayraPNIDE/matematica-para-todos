@@ -19,7 +19,7 @@ var Juego = function (jugadores) {
     cartas = new Mazo();
     cartas.repartir(jugadores);
     this.jugar = function() {
-console.dir(jugadores);
+        logger.write(JSON.stringify(jugadores, null, 2));
 //        this.io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
     }
 };
@@ -75,19 +75,20 @@ var Servidor = function (puerto) {
             if (jugadoresCount > MAX_JUGADORES) {
                 logger.write("Se alcanzaron el máximo de jugadores");
                 return;
-            } else if(jugadoresCount == MAX_JUGADORES) {
+            }
+            logger.write('Se conecto un nuevo jugador');
+            jugadorNro = socket.handshake.query.nro_jugador;
+            jugadorNombre = socket.handshake.query.nombre_jugador;
+            jugadorIp = socket.handshake.address;
+            self.jugadores.nuevoJugador(jugadorNro, jugadorNombre, jugadorIp);
+            logger.write("jugadorNro: " + jugadorNro + ", jugadorNombre: " + jugadorNombre + ", jugadorIp: " + jugadorIp);
+            jugadoresCount = self.jugadores.getJugadoresCount();
+            logger.write('Hay conectados ' + jugadoresCount + ' jugadores');
+            
+            if(jugadoresCount == MAX_JUGADORES) {
                 logger.write("Empezamos a jugar");
                 juego = new Juego(self.jugadores.jugadores);
                 juego.jugar();
-            } else {
-                logger.write('Se conecto un nuevo jugador');
-                jugadorNro = socket.handshake.query.nro_jugador;
-                jugadorNombre = socket.handshake.query.nombre_jugador;
-                jugadorIp = socket.handshake.address;
-                self.jugadores.nuevoJugador(jugadorNro, jugadorNombre, jugadorIp);
-                logger.write("jugadorNro: " + jugadorNro + ", jugadorNombre: " + jugadorNombre + ", jugadorIp: " + jugadorIp);
-                jugadoresCount = self.jugadores.getJugadoresCount();
-                logger.write('Hay conectados ' + jugadoresCount + ' jugadores');
             }
         });
     }

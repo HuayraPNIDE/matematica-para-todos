@@ -78,13 +78,13 @@
                     cliente = new Cliente(nombre);
                     cliente.init();
                     amigos.buscar();
-                    amigos.actualizarVista();
+//                    amigos.actualizarVista();
                 }, 1001);
             });
             
             $("#actualizar_amigos").on("click", function(event) {
                 event.stopPropagation();
-                amigos.actualizarVista();
+                amigos.actualizarVista(cliente);
                 console.log("Evento actualizar_amigos INDEX.HTML");
             });
         });
