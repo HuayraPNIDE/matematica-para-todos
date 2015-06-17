@@ -8,27 +8,36 @@
 var Jugadores = function () {
     this.jugadores = {};
     this.nuevoJugador = function (jugadorNro, jugadorNombre, jugadorIp) {
-        this.jugadores[jugadorNro] = {'nombre': jugadorNombre, 'ip': jugadorIp, 'mazo': []};
+        this.jugadores[jugadorNro] = {nombre: jugadorNombre, ip: jugadorIp, contador: '', mazo: []};
     },
     this.getJugadoresCount = function () {
         return Object.keys(this.jugadores).length;
     },
-    this.getJugadores = function () {
+    this.getJugadores = function() {
         return {
             jugador1: {nombre: this.jugadores.jugador1.nombre, ip: this.jugadores.jugador1.ip },
             jugador2: {nombre: this.jugadores.jugador2.nombre, ip: this.jugadores.jugador2.ip },
+        };
+    },
+    this.getMano = function(i) {
+        return {
+            jugador1: {carta: this.jugadores.jugador1.mazo[i], contador: 0},
+            jugador2: {carta: this.jugadores.jugador2.mazo[i], contador: 0},
+            contador_guerra: 0
         };
     }
 };
  
 var Juego = function (io, socket, jugadores) {
     this.respuestaCorrecta;
+    this.i=0;
     cartas = new Mazo();
-    cartas.repartir(jugadores);
+    cartas.repartir(jugadores.jugadores);
     this.jugar = function() {
+//console.log(JSON.stringify(jugadores, null,2 ));
         io.emit('listo', jugadores.getJugadores());
-        io.emit('mano', {jugador1: {carta: jugadores.jugador1.mazo[i], contador: 0 }, jugador2: {carta: jugadores.jugador2.mazo[i], contador: 0 }, "contador_guerra": 0});
-        socket.on('respuesta', this.respuestaJugadores(opcion));
+        io.emit('mano', jugadores.getMano(this.i++));
+        socket.on('respuesta', function(opcion) {this.respuestaJugadores(opcion)});
 //        this.io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
     },
     this.respuestaJugadores = function(opcion) {
@@ -40,10 +49,6 @@ var Juego = function (io, socket, jugadores) {
         } else {
             this.respuestaCorrecta = "empate";
         }
-        
-        
-        
-        
         
         
 //        socket.on('respuesta', function (opcion) {
@@ -234,7 +239,7 @@ var Servidor = function (puerto) {
             
             if(jugadoresCount == MAX_JUGADORES) {
                 logger.write("Empezamos a jugar");
-                juego = new Juego(self.io, self.socket, self.jugadores.jugadores);
+                juego = new Juego(self.io, socket, self.jugadores);
                 juego.jugar();
             }
         });
