@@ -11,33 +11,38 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
         var self = this;
         self.socket.on('connect', function () {
             console.log('Me conecte al servidor');
-
             self.socket.on('listo', function (o) {
-                $("#mazos").show();
-                $("#amigos, #actualizar_amigos").hide();
-                $("#titulo").html('Arranca el juego');
+                $("#amigos").hide();
+                $("#titulo").html('TITULO a CAMBIAR!!!');
+                $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
+                $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+                $(".juego").show();
             });
 
             self.socket.on('retiro', function (msg) {
                 $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
-                $("#mazos, #opciones, #cartas").hide();
-                $("#nombres").html('');
+                $(".juego").hide();
                 self.socket.disconnect();
             });
 
             self.socket.on('fin', function (resultados) {
                 $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
-                $("#mazos, #opciones, #cartas").hide();
+                $(".juego").hide();
                 self.socket.disconnect();
             });
 
             self.socket.on('mano', function (o) {
                 console.log('Desde el server me llegan cartas:');
                 console.log(JSON.stringify(o, null, 2));
+//                jugador1: {carta: jugadores.jugador1.mazo[i], contador: 0 }
+
+                
                 $("#cont_jugador1").html(o.contador_jugador1);
                 $("#cont_jugador2").html(o.contador_jugador2);
                 $("#cont_guerra").html(o.contador_guerra);
                 $("#mazos, #opciones").show();
+                
+                
                 // Cambia las cartas para la nueva mano
                 console.log($("#carta_jugador1").find("img"));
                 $("#carta_jugador1").find("img").prop("src", o.carta1.img).on('click', function () {
@@ -46,25 +51,27 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 console.log($("#carta_jugador1").find("img").prop("src"));
                 $("#carta_jugador2").find("img").prop("src", o.carta2.img);
                 $("#mazos, #opciones, #cartas").show();
-
+                
+                
+                ///***///
+                
+                btn_mano.onclick = function () {
+                    console.log('Respondo');
+                    var eleccion = document.getElementsByName("opcion");
+                    var val = "";
+                    for (var j = 0; j < eleccion.length; j++) {
+                        if (eleccion[j].checked) {
+                            val = eleccion[j].value;
+                        }
+                    }
+                    this.socket.emit('respuesta', val);
+                    btn_mano.disabled = true;
+                };
+                
             });
-
-//                btn_mano.onclick = function () {
-//                    console.log('Respondo');
-//                    var eleccion = document.getElementsByName("opcion");
-//                    var val = "";
-//                    for (var j = 0; j < eleccion.length; j++) {
-//                        if (eleccion[j].checked) {
-//                            val = eleccion[j].value;
-//                        }
-//                    }
-//                    this.socket.emit('respuesta', val);
-//                    btn_mano.disabled = true;
-//                };
-
-            });
-        }
-}
+        });
+    };
+};
 
 var Cliente = function(nombre, avatar) {
     this.nombre = nombre;
@@ -73,7 +80,7 @@ var Cliente = function(nombre, avatar) {
     this.init = function() {
         var conexion = new Conexion(this.localIp, 'jugador1', this.nombre);
         $("#avatar").hide();
-        $("#actualizar_amigos, #amigos").show();
+        $("#actualizar, #amigos").show();
         conexion.registrarEspera();
     }
 };
@@ -112,7 +119,7 @@ var Amigos = function () {
         e = $("<div></div>");
         for (var k in this.amigos) {
             amigo = this.amigos[k];
-            tmp = '<div class="media" data-ip="' + k + '"> \
+            tmp = '<div class="media thumbnail" data-ip="' + k + '"> \
               <div class="media-left"><a href="#"><img class="media-object" src="res/gui/avatar-neutro.png"></a></div> \
               <div class="media-body"><h4 class="media-heading">' + this.amigos[k] + '</h4></div> \
             </div>';
@@ -121,8 +128,8 @@ var Amigos = function () {
                 self.elegir($(this).data('ip'), cliente.nombre);
             }));
         }
-        $('#lista_amigos').html(e);
-        $('#lista_amigos').show();
+        $('#listado').html(e);
+        $('#listado').show();
     },
     this.elegir = function(ip, nombreJugador) { // Se conecta al Servidor elegido //
         var conexion = new Conexion(ip, 'jugador2', nombreJugador);

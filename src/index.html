@@ -8,17 +8,20 @@
         <script src="js/jquery-1.11.3.min.js"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
         <script src="js/main.js"></script>
-
     </head>
-    <body>
+    <body class="centro">
         <main id="container">
-            <h1 id="titulo">La Guerra de los Lados</h1>
-            <section id="msg" class="alert alert-danger alert-dismissible" role="alert">
+            <header>
+                <h1>La Guerra de los Lados</h1>
+                <h2 id="titulo"></h2>
+            </header>
+            <aside id="msg" class="alert alert-danger alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <strong>ERROR!</strong> MSG Error.
-            </section>
-            <section id="avatar">
-                <div class="row">
+            </aside>
+            
+            <article id="avatar">
+                <section class="row">
                     <div class="col-xs-6 col-sm-4"></div>
                     <div class="col-xs-6 col-sm-4 centro">
                         <div class="thumbnail">
@@ -27,45 +30,45 @@
                                 <div class="form-group">
                                     <input name="nombre" id="nombre" type="text" class="form-control" placeholder="Ingrese un nombre de usuario.">
                                 </div>
-                                <p><a href="#" id="set_usuario" class="btn btn-primary" role="button">Entrar</a></p>
+                                <p><a href="#" id="entrar" class="btn btn-primary" role="button">Entrar</a></p>
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-6 col-sm-4"></div>
-                </div>
-            </section>
+                </section>
+            </article>
 
-            <section id="mazos">
-                <div id="mazo1"><div id="cont_jugador1">0</div><img src="res/imgs/lomo.png" /></div>
-                <div id="cont_guerra"></div>
-                <div id="mazo2"><div id="cont_jugador2">0</div><img src="res/imgs/lomo.png" /></div>
-            </section>
-
-            <p id="nombres"></p>
-
-            <div id="opciones">
-                <input name="opcion" type="radio" value="0" id="opcion_jugador1">Jugador 1<br>
-                <input name="opcion" type="radio" value="1" id="opcion_jugador2">Jugador 2<br>
-                <input name="opcion" type="radio" value="empate">EMPATE<br>
-                <input type="button" value="Responder" id="btn_mano">
-            </div>
-
-            <section id="cartas">
-                <div id="carta_jugador1"><img alt="Jugador 1" /></div>
-                <div id="carta_empate"><img src="" alt="Empate" /></div>
-                <div id="carta_jugador2"><img src="" alt="Jugador 2" /></div>
-            </section>
-
-            <section id="amigos">
-                <p><a href="#" id="actualizar_amigos" class="btn btn-primary" role="button">Actualizar</a></p>
-                <div id="lista_amigos"></div>
-            </section>
+            <article id="amigos">
+                <p><a href="#" id="actualizar" class="btn btn-primary" role="button">Actualizar</a></p>
+                <div id="listado"></div>
+            </article>
+            
+            <article class="juego">
+                <article id="jugadores">
+                    <section class="jugador1">
+                        <div class="avatar"></div>
+                        <div class="cartas"></div>
+                        <div class="contador"></div>
+                    </section>
+                    <section class="jugador2">
+                        <div class="avatar"></div>
+                        <div class="cartas"></div>
+                        <div class="contador"></div>
+                    </section>
+                </article>
+                
+                <article id="mano">
+                    <section></section>
+                    <section></section>
+                    <section></section>
+                </article>
+            </article>
         </main>
     <script>
         $(document).ready(function() {
             console.log("Inicio");
             var amigos = new Amigos();
-            $("#set_usuario").on("click", function(event) {
+            $("#entrar").on("click", function(event) {
                 event.stopPropagation();
                 nombre = $("#nombre").val();
                 if(!nombre) {
@@ -78,14 +81,14 @@
                     cliente = new Cliente(nombre);
                     cliente.init();
                     amigos.buscar();
-//                    amigos.actualizarVista();
+                    amigos.actualizarVista();
                 }, 1001);
             });
             
-            $("#actualizar_amigos").on("click", function(event) {
+            $("#actualizar").on("click", function(event) {
                 event.stopPropagation();
                 amigos.actualizarVista(cliente);
-                console.log("Evento actualizar_amigos INDEX.HTML");
+                console.log("Evento actualizar amigos");
             });
         });
     </script>

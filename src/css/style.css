@@ -1,29 +1,19 @@
 body {
     background-image: url("../res/backgrounds/background1.png");
 }
-body,
 .centro {
     text-align: center;
 }
-#actualizar_amigos,
-#mazos,
-#opciones,
+.juego,
+#mano,
 #amigos,
-#cartas,
 #msg {
     display: none;
 }
-#cont_jugador1,
-#cont_jugador2 {
-    text-align: center;
-}
-
-#mazo1,
-#carta_jugador1 {
+.fizq {
     float: left;
 }
-#mazo2,
-#carta_jugador2 {
+.fder {
     float: right;
 }
 #cartas div {
