@@ -32,6 +32,7 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
             });
 
             self.socket.on('mano', function (o) {
+		/*
                 console.log('Desde el server me llegan cartas:');
                 console.log(JSON.stringify(o, null, 2));
 //                jugador1: {carta: jugadores.jugador1.mazo[i], contador: 0 }
@@ -53,7 +54,7 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 $("#mazos, #opciones, #cartas").show();
                 
                 
-                ///***///
+                //////
                 
                 btn_mano.onclick = function () {
                     console.log('Respondo');
@@ -67,6 +68,7 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                     this.socket.emit('respuesta', val);
                     btn_mano.disabled = true;
                 };
+		*/
                 
             });
         });

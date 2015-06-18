@@ -242,7 +242,17 @@ var Servidor = function (puerto) {
                 juego = new Juego(self.io, socket, self.jugadores);
                 juego.jugar();
             }
+
+
+	    socket.on('disconnect', function(socket) {this.registrarDesconexion(socket)});
         });
+    },
+    this.registrarDesconexion = function(socket) {
+            logger.write('Se desconecto un jugador');
+	    jugadorNro = socket.handshake.query.nro_jugador;
+            jugadorNombre = socket.handshake.query.nombre_jugador;
+            jugadorIp = socket.handshake.address;
+            logger.write("jugadorNro: " + jugadorNro + ", jugadorNombre: " + jugadorNombre + ", jugadorIp: " + jugadorIp);
     }
 };
 
