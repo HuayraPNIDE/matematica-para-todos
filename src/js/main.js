@@ -40,31 +40,16 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 $(".jugador2 .contador figcaption").html(o.jugador2.contador);
                 
                 // Cartas
-                $("#mano .jugador1")
-                    .data("id", o.jugador1.carta.id)
-                    .data('jugador', 'jugador1')
-                    .find('img').prop("src", 'img/' + o.jugador1.carta.img);
-                $("#mano .jugador2")
-                    .data("id", o.jugador2.carta.id)
-                    .data('jugador', 'jugador2')
-                    .find('img').prop("src", 'img/' + o.jugador2.carta.img);
-                
-//                $("#mano .jugador1").find("img").prop("src", o.jugador1.carta);
-//                $("#mano .jugador2").find("img").prop("src", o.jugador2.carta);
-//                $("#mano .jugador1").data("id", o.jugador1.cartaId);
-//                $("#mano .jugador2").data("id", o.jugador2.cartaId);
+                $("#mano .jugador1").prop("src", 'img/' + o.jugador1.carta.img);
+                $("#mano .jugador2").prop("src", 'img/' + o.jugador2.carta.img);
                 
                 $("#mano .respuesta").on('click', function() {
-                    self.socket.emit('respuesta', { jugador: $(this).data('jugador'), id: $(this).data('id') });
-                    $(this).off('click');
+console.log({ jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+                    self.socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+                    $("#mano .respuesta").off('click');
                 });
                 
-                
-                
                 $(".jugador2 .contador figcaption").html(o.jugador2.contador);
-                
-                
-                
                 
                 // Cuando hay Guerra
                 if(o.contador_guerra) {
@@ -75,26 +60,26 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 
                 // Cambia las cartas para la nueva mano
 //                console.log($("#carta_jugador1").find("img"));
-                $("#carta_jugador1").find("img").prop("src", o.carta1.img).on('click', function () {
-                    this.socket.emit('respuesta', usuario_info.nombre);
-                });
-                console.log($("#carta_jugador1").find("img").prop("src"));
-                $("#carta_jugador2").find("img").prop("src", o.carta2.img);
-                $("#mazos, #opciones, #cartas").show();
-                
-                
-                btn_mano.onclick = function () {
-                    console.log('Respondo');
-                    var eleccion = document.getElementsByName("opcion");
-                    var val = "";
-                    for (var j = 0; j < eleccion.length; j++) {
-                        if (eleccion[j].checked) {
-                            val = eleccion[j].value;
-                        }
-                    }
-                    this.socket.emit('respuesta', val);
-                    btn_mano.disabled = true;
-                };
+//                $("#carta_jugador1").find("img").prop("src", o.carta1.img).on('click', function () {
+//                    this.socket.emit('respuesta', usuario_info.nombre);
+//                });
+//                console.log($("#carta_jugador1").find("img").prop("src"));
+//                $("#carta_jugador2").find("img").prop("src", o.carta2.img);
+//                $("#mazos, #opciones, #cartas").show();
+//                
+//                
+//                btn_mano.onclick = function () {
+//                    console.log('Respondo');
+//                    var eleccion = document.getElementsByName("opcion");
+//                    var val = "";
+//                    for (var j = 0; j < eleccion.length; j++) {
+//                        if (eleccion[j].checked) {
+//                            val = eleccion[j].value;
+//                        }
+//                    }
+//                    this.socket.emit('respuesta', val);
+//                    btn_mano.disabled = true;
+//                };
                 
             });
         });
@@ -148,7 +133,7 @@ var Amigos = function () {
         for (var k in this.amigos) {
             amigo = this.amigos[k];
             tmp = '<div class="media thumbnail" data-ip="' + k + '"> \
-              <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png"></a></div> \
+              <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png" width="81" height="86"></a></div> \
               <div class="media-body"><h4 class="media-heading">' + this.amigos[k] + '</h4></div> \
             </div>';
 

@@ -70,14 +70,6 @@ console.log("SERVIDOR: Respuesta: " + JSON.stringify(opcion, null, 2));
 //                var img_j1 = 0;
 //                var img_j2 = 0;
 //
-//                if (mazo_jugador1[i].lados > mazo_jugador2[i].lados) {
-//                    respuesta_real = "jugador1";
-//                } else if (mazo_jugador1[i].lados < mazo_jugador2[i].lados) {
-//                    respuesta_real = "jugador2";
-//                } else {
-//                    respuesta_real = "empate";
-//                }
-//
 //                lados_j1 = mazo_jugador1[i].lados;
 //                lados_j2 = mazo_jugador2[i].lados;
 //
