@@ -3,27 +3,26 @@
  var FILE_MAZO = '../src/mazo.json';
  var MAX_RESPUESTAS_DIFIRENTES = 0;
 
- console.log(__filename);
- 
 var Jugadores = function () {
     this.jugadores = {};
+    this.contadorGuerra=0;
     this.nuevoJugador = function (jugadorNro, jugadorNombre, jugadorIp) {
-        this.jugadores[jugadorNro] = {nombre: jugadorNombre, ip: jugadorIp, contador: '', mazo: []};
+        this.jugadores[jugadorNro] = { nombre: jugadorNombre, ip: jugadorIp, contador: 0, mazo: [] };
     },
     this.getJugadoresCount = function () {
         return Object.keys(this.jugadores).length;
     },
     this.getJugadores = function() {
         return {
-            jugador1: {nombre: this.jugadores.jugador1.nombre, ip: this.jugadores.jugador1.ip },
-            jugador2: {nombre: this.jugadores.jugador2.nombre, ip: this.jugadores.jugador2.ip },
+            jugador1: { nombre: this.jugadores.jugador1.nombre, ip: this.jugadores.jugador1.ip },
+            jugador2: { nombre: this.jugadores.jugador2.nombre, ip: this.jugadores.jugador2.ip },
         };
     },
     this.getMano = function(i) {
         return {
-            jugador1: {carta: this.jugadores.jugador1.mazo[i], contador: 0},
-            jugador2: {carta: this.jugadores.jugador2.mazo[i], contador: 0},
-            contador_guerra: 0
+            jugador1: { carta: this.jugadores.jugador1.mazo[i], contador: this.jugadores.jugador1.contador },
+            jugador2: { carta: this.jugadores.jugador2.mazo[i], contador: this.jugadores.jugador2.contador },
+            contador_guerra: this.contadorGuerra
         };
     }
 };
@@ -34,13 +33,15 @@ var Juego = function (io, socket, jugadores) {
     cartas = new Mazo();
     cartas.repartir(jugadores.jugadores);
     this.jugar = function() {
-//console.log(JSON.stringify(jugadores, null,2 ));
         io.emit('listo', jugadores.getJugadores());
         io.emit('mano', jugadores.getMano(this.i++));
-        socket.on('respuesta', function(opcion) {this.respuestaJugadores(opcion)});
-//        this.io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
+        socket.on('respuesta', function(opcion) {
+            this.respuestaJugadores(opcion);
+        });
     },
     this.respuestaJugadores = function(opcion) {
+console.log("SERVIDOR: Respuesta: " + JSON.stringify(opcion, null, 2));
+        
         this.respuestaCorrecta = "";
         if (jugadores.jugador1.mazo[i].lados > jugadores.jugador2.mazo[i].lados) {
             this.respuestaCorrecta = "jugador1";
@@ -242,7 +243,9 @@ var Servidor = function (puerto) {
                 juego = new Juego(self.io, socket, self.jugadores);
                 juego.jugar();
             }
-	    socket.on('disconnect', function(socket) {this.registrarDesconexion(socket)});
+	    socket.on('disconnect', function(socket) {
+                this.registrarDesconexion(socket);
+            });
         });
     },
     this.registrarDesconexion = function(socket) {

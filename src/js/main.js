@@ -13,7 +13,7 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
             console.log('Me conecte al servidor');
             self.socket.on('listo', function (o) {
                 $("#amigos").hide();
-                $("#titulo").html('TITULO a CAMBIAR!!!');
+                $("#titulo").html('A Jugar!!!');
                 $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
                 $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
                 $(".juego").show();
@@ -32,20 +32,49 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
             });
 
             self.socket.on('mano', function (o) {
-		/*
                 console.log('Desde el server me llegan cartas:');
                 console.log(JSON.stringify(o, null, 2));
-//                jugador1: {carta: jugadores.jugador1.mazo[i], contador: 0 }
-
                 
-                $("#cont_jugador1").html(o.contador_jugador1);
-                $("#cont_jugador2").html(o.contador_jugador2);
-                $("#cont_guerra").html(o.contador_guerra);
-                $("#mazos, #opciones").show();
+                // Contador
+                $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
                 
+                // Cartas
+                $("#mano .jugador1")
+                    .data("id", o.jugador1.carta.id)
+                    .data('jugador', 'jugador1')
+                    .find('img').prop("src", 'img/' + o.jugador1.carta.img);
+                $("#mano .jugador2")
+                    .data("id", o.jugador2.carta.id)
+                    .data('jugador', 'jugador2')
+                    .find('img').prop("src", 'img/' + o.jugador2.carta.img);
+                
+//                $("#mano .jugador1").find("img").prop("src", o.jugador1.carta);
+//                $("#mano .jugador2").find("img").prop("src", o.jugador2.carta);
+//                $("#mano .jugador1").data("id", o.jugador1.cartaId);
+//                $("#mano .jugador2").data("id", o.jugador2.cartaId);
+                
+                $("#mano .respuesta").on('click', function() {
+                    self.socket.emit('respuesta', { jugador: $(this).data('jugador'), id: $(this).data('id') });
+                    $(this).off('click');
+                });
+                
+                
+                
+                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+                
+                
+                
+                
+                // Cuando hay Guerra
+                if(o.contador_guerra) {
+                    $("#cont_guerra").html(o.contador_guerra);
+                }
+                
+                $("#mano").show();
                 
                 // Cambia las cartas para la nueva mano
-                console.log($("#carta_jugador1").find("img"));
+//                console.log($("#carta_jugador1").find("img"));
                 $("#carta_jugador1").find("img").prop("src", o.carta1.img).on('click', function () {
                     this.socket.emit('respuesta', usuario_info.nombre);
                 });
@@ -53,8 +82,6 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 $("#carta_jugador2").find("img").prop("src", o.carta2.img);
                 $("#mazos, #opciones, #cartas").show();
                 
-                
-                //////
                 
                 btn_mano.onclick = function () {
                     console.log('Respondo');
@@ -68,7 +95,6 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                     this.socket.emit('respuesta', val);
                     btn_mano.disabled = true;
                 };
-		*/
                 
             });
         });
@@ -122,7 +148,7 @@ var Amigos = function () {
         for (var k in this.amigos) {
             amigo = this.amigos[k];
             tmp = '<div class="media thumbnail" data-ip="' + k + '"> \
-              <div class="media-left"><a href="#"><img class="media-object" src="res/gui/avatar-neutro.png"></a></div> \
+              <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png"></a></div> \
               <div class="media-body"><h4 class="media-heading">' + this.amigos[k] + '</h4></div> \
             </div>';
 
