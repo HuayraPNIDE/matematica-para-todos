@@ -1,4 +1,7 @@
-var puerto = 3000;
+var PUERTO = 3000;
+var IMG_CARPETA = 'img/';
+var IMG_NOMBRE = 'carta_';
+var IMG_EXTENSION = '.png';
 
 var Servidor = function(nombre) {
     spawn = require('child_process').spawn;
@@ -6,7 +9,7 @@ var Servidor = function(nombre) {
 };
 
 var Conexion = function (ip, nroJugador, nombreJugador) {
-    this.socket = io("http://" + ip + ":" + puerto + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
+    this.socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
     this.registrarEspera = function() {
         var self = this;
         self.socket.on('connect', function () {
@@ -36,51 +39,34 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 console.log(JSON.stringify(o, null, 2));
                 
                 // Contador
+                if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                    $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                }
                 $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+                
+                if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                    $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                }
                 $(".jugador2 .contador figcaption").html(o.jugador2.contador);
                 
                 // Cartas
-                $("#mano .jugador1").prop("src", 'img/' + o.jugador1.carta.img);
-                $("#mano .jugador2").prop("src", 'img/' + o.jugador2.carta.img);
+                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+                // Cuando hay Guerra
+                if(o.contador_guerra) {
+                    $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+                }
                 
                 $("#mano .respuesta").on('click', function() {
 console.log({ jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+                    // Deshabilita cartas
+                    $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+                    $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
                     self.socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
                     $("#mano .respuesta").off('click');
                 });
                 
-                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
-                
-                // Cuando hay Guerra
-                if(o.contador_guerra) {
-                    $("#cont_guerra").html(o.contador_guerra);
-                }
-                
                 $("#mano").show();
-                
-                // Cambia las cartas para la nueva mano
-//                console.log($("#carta_jugador1").find("img"));
-//                $("#carta_jugador1").find("img").prop("src", o.carta1.img).on('click', function () {
-//                    this.socket.emit('respuesta', usuario_info.nombre);
-//                });
-//                console.log($("#carta_jugador1").find("img").prop("src"));
-//                $("#carta_jugador2").find("img").prop("src", o.carta2.img);
-//                $("#mazos, #opciones, #cartas").show();
-//                
-//                
-//                btn_mano.onclick = function () {
-//                    console.log('Respondo');
-//                    var eleccion = document.getElementsByName("opcion");
-//                    var val = "";
-//                    for (var j = 0; j < eleccion.length; j++) {
-//                        if (eleccion[j].checked) {
-//                            val = eleccion[j].value;
-//                        }
-//                    }
-//                    this.socket.emit('respuesta', val);
-//                    btn_mano.disabled = true;
-//                };
-                
             });
         });
     };

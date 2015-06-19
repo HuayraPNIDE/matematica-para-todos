@@ -1,13 +1,14 @@
- 
- var MAX_JUGADORES = 2;
- var FILE_MAZO = '../src/mazo.json';
- var MAX_RESPUESTAS_DIFIRENTES = 0;
+var MAX_JUGADORES = 2;
+var FILE_MAZO = '../src/mazo.json';
+var FILE_LOGGER = '/tmp/log-servidor.txt';
+var MAX_RESPUESTAS_DIFIRENTES = 0;
+var PUERTO = 3000;
 
 var Jugadores = function () {
     this.jugadores = {};
-    this.contadorGuerra=0;
-    this.nuevoJugador = function (jugadorNro, jugadorNombre, jugadorIp) {
-        this.jugadores[jugadorNro] = { nombre: jugadorNombre, ip: jugadorIp, contador: 0, mazo: [] };
+    this.contadorGuerra;
+    this.nuevoJugador = function (jugador) {
+        this.jugadores[jugador.numero] = { nombre: jugador.nombre, ip: jugador.ip, contador: 0, mazo: [] };
     },
     this.getJugadoresCount = function () {
         return Object.keys(this.jugadores).length;
@@ -22,78 +23,117 @@ var Jugadores = function () {
         return {
             jugador1: { carta: this.jugadores.jugador1.mazo[i], contador: this.jugadores.jugador1.contador },
             jugador2: { carta: this.jugadores.jugador2.mazo[i], contador: this.jugadores.jugador2.contador },
-            contador_guerra: this.contadorGuerra
+            contadorGuerra: this.getContadorGuerra()
         };
+    },
+    this.addContadorJugador = function(jugador) {
+        if(this.existGuerra()) {
+            logger.write('Habia ' + this.contadorGuerra + ' retenidas por guerra.', 'respuestaJugadores');
+            this.jugadores[jugador].contador += this.contadorGuerra;
+            this.contadorGuerra = 0;
+        }
+        this.jugadores[jugador].contador++;
+    },
+    this.existGuerra = function() {
+        return this.contadorGuerra ? true : false;
+    },
+    this.addContadorGuerra = function() {
+        this.contadorGuerra++;
     }
 };
  
 var Juego = function (io, socket, jugadores) {
+    this.resultados = [];
     this.respuestaCorrecta;
-    this.i=0;
+    this.indice=0;
     cartas = new Mazo();
     cartas.repartir(jugadores.jugadores);
     this.jugar = function() {
+        logger.write('Jugar.', 'Juego');
         io.emit('listo', jugadores.getJugadores());
-        io.emit('mano', jugadores.getMano(this.i++));
+        io.emit('mano', jugadores.getMano(this.indice));
         socket.on('respuesta', function(opcion) {
             this.respuestaJugadores(opcion);
         });
     },
     this.respuestaJugadores = function(opcion) {
-console.log("SERVIDOR: Respuesta: " + JSON.stringify(opcion, null, 2));
-        
+        logger.write('Jugar.', 'respuestaJugadores');
         this.respuestaCorrecta = "";
-        if (jugadores.jugador1.mazo[i].lados > jugadores.jugador2.mazo[i].lados) {
+        if (jugadores.jugador1.mazo[this.indice].lados > jugadores.jugador2.mazo[this.indice].lados) {
             this.respuestaCorrecta = "jugador1";
-        } else if (jugadores.jugador1.mazo[i].lados < jugadores.jugador2.mazo[i].lados) {
+        } else if (jugadores.jugador1.mazo[this.indice].lados < jugadores.jugador2.mazo[this.indice].lados) {
             this.respuestaCorrecta = "jugador2";
         } else {
             this.respuestaCorrecta = "empate";
         }
         
+        this.resultados[this.indice] = { respuestaCorrecta: this.respuestaCorrecta };
+        this.resultados[this.indice][opcion.jugador] = opcion.respuesta;
+        
+        // Tengo ambas respuestas //
+        if(this.resultados[this.indice].jugador1 && this.resultados[this.indice].jugador2) {
+            // Respuestas iguales //
+            if(this.resultados[this.indice].jugador1.respuesta == this.resultados[this.indice].jugador2.respuesta) {
+                logger.write('Respuestas iguales.', 'respuestaJugadores');
+                // Empate = Guerra //
+                if(this.resultados[this.indice].jugador1.respuesta == 'empate') {
+                    logger.write('Empate = Guerra.', 'respuestaJugadores');
+                    jugadores.addContadorGuerra();
+                } else {
+                    logger.write('Respuestas iguales.', 'respuestaJugadores');
+
+                    jugadores.addContadorJugador(JUGAs);
+                }
+                
+                
+                if (opcion_respuestas[0] == 'empate') {
+                    console.log('Aca hay guerra');
+                    cartas_guerra++;
+                    obj_cartas_jugador['empate']++;
+                } else {
+                    console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
+                    if (cartas_guerra) {
+                        logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
+                        obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
+                        cartas_guerra = 0;
+                    }
+                    obj_cartas_jugador[opcion_respuestas[0]]++;
+                }
+
+        historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
+    } else {
+        console.log('Las respuestas difieren\nRepregunto');
+        i--; //Decremento para que vuelva a enviar la misma mano al emitir
+    }
+        }
         
 //        socket.on('respuesta', function (opcion) {
 //            respuestas.push(jugador_ip);
-//
 //            opcion_respuestas.push(opcion);
-//
-//            //console.log('Tengo '+respuestas.length+' respuestas');
-//            console.log(jugador_ip + ' = ' + opcion);
 //            logger.write(jugador_ip + ' = ' + opcion);
 //            if (respuestas.length == 2) {
-//                console.log('Tengo ambas respuestas');
 //                logger.write('Tengo ambas respuestas');
-//
 //                var lados_j1 = 0;
 //                var lados_j2 = 0;
-//
 //                var img_j1 = 0;
 //                var img_j2 = 0;
-//
 //                lados_j1 = mazo_jugador1[i].lados;
 //                lados_j2 = mazo_jugador2[i].lados;
-//
 //                img_j1 = mazo_jugador1[i].img;
 //                img_j2 = mazo_jugador2[i].img;
 //
 //                console.log("Opcion real:" + respuesta_real);
 //                console.log("Opciones jugadores: " + opcion_respuestas);
-//                logger.write("Opcion real:" + respuesta_real);
-//                logger.write("Opciones jugadores: " + opcion_respuestas);
 //
 //                // Jugador1 y Jugador2 opinan lo mismo //
 //                if (opcion_respuestas[0] == opcion_respuestas[1]) {
 //                    if (opcion_respuestas[0] == 'empate') {
 //                        console.log('Aca hay guerra');
-//                        logger.write('Aca hay guerra');
 //                        cartas_guerra++;
 //                        obj_cartas_jugador['empate']++;
 //                    } else {
 //                        console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
-//                        logger.write('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
-//
 //                        if (cartas_guerra) {
-//                            console.log('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
 //                            logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
 //                            obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
 //                            cartas_guerra = 0;
@@ -104,21 +144,14 @@ console.log("SERVIDOR: Respuesta: " + JSON.stringify(opcion, null, 2));
 //                    historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
 //                } else {
 //                    console.log('Las respuestas difieren\nRepregunto');
-//                    logger.write('Las respuestas difieren\nRepregunto');
 //                    i--; //Decremento para que vuelva a enviar la misma mano al emitir
 //                }
 //
 //                if (i == 23) {
-//                    console.log('Ya se repartieron todas las cartas');
-//                    console.log('Se muestra historico de respuestas');
-//                    console.log(historico_respuestas);
 //                    logger.write('Ya se repartieron todas las cartas');
 //                    logger.write('Se muestra historico de respuestas');
 //                    logger.write(historico_respuestas);
 //
-//                    console.log('El jugador1 uno tiene ' + obj_cartas_jugador.jugador1 + ' cartas');
-//                    console.log('El jugador2 uno tiene ' + obj_cartas_jugador.jugador2 + ' cartas');
-//                    console.log('Hubo ' + obj_cartas_jugador.empate + ' empatadas');
 //                    logger.write('El jugador1 uno tiene ' + obj_cartas_jugador.jugador1 + ' cartas');
 //                    logger.write('El jugador2 uno tiene ' + obj_cartas_jugador.jugador2 + ' cartas');
 //                    logger.write('Hubo ' + obj_cartas_jugador.empate + ' empatadas');
@@ -127,10 +160,8 @@ console.log("SERVIDOR: Respuesta: " + JSON.stringify(opcion, null, 2));
 //                    return;
 //                }
 //
-//                console.log("=======================================================================");
 //                logger.write("=======================================================================");
 //                i++;
-//                console.log('Se juega ahora la mano ' + i);
 //                logger.write('Se juega ahora la mano ' + i);
 //                io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": obj_cartas_jugador.jugador1, "contador_jugador2": obj_cartas_jugador.jugador2, "contador_guerra": cartas_guerra});
 //                respuestas = [];
@@ -191,15 +222,14 @@ var Mazo = function () {
     }
 };
 
-var Servidor = function (puerto) {
+var Servidor = function () {
     this.app = require('express')();
     this.http = require('http').Server(this.app);
     this.io = require('socket.io')(this.http);
     this.jugadores = new Jugadores();
-    this.puerto = puerto;
-    
-    this.http.listen(this.puerto, function () {
-        logger.write('Esperando jugadores en ' + puerto);
+   
+    this.http.listen(PUERTO, function () {
+        logger.write('Se crea el SERVIDOR. Esperando jugadores en el puerto: ', 'Servidor' + PUERTO);
     });
     
     this.publicar = function() {
@@ -210,28 +240,26 @@ var Servidor = function (puerto) {
                 usuario = val.split('=')[1];
             }
         });
+        logger.write('avahi-publish-service', 'publicar');
         spawn = require('child_process').spawn;
-        spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', this.puerto]);
+        spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', PUERTO]);
     },
     this.registrarEspera = function () {
         var self = this;
         this.io.on('connection', function (socket) {
-            jugadoresCount = self.jugadores.getJugadoresCount();
-            if (jugadoresCount > MAX_JUGADORES) {
-                logger.write("Se alcanzaron el máximo de jugadores");
+            logger.write('connection', 'registrarEspera');
+            if (self.jugadores.getJugadoresCount() > MAX_JUGADORES) {
+                logger.write('Se alcanzaron el máximo de jugadores.', 'registrarEspera');
                 return;
             }
-            logger.write('Se conecto un nuevo jugador');
-            jugadorNro = socket.handshake.query.nro_jugador;
-            jugadorNombre = socket.handshake.query.nombre_jugador;
-            jugadorIp = socket.handshake.address;
-            self.jugadores.nuevoJugador(jugadorNro, jugadorNombre, jugadorIp);
-            logger.write("jugadorNro: " + jugadorNro + ", jugadorNombre: " + jugadorNombre + ", jugadorIp: " + jugadorIp);
-            jugadoresCount = self.jugadores.getJugadoresCount();
-            logger.write('Hay conectados ' + jugadoresCount + ' jugadores');
+            logger.write('Se conecto un nuevo jugador.', 'registrarEspera');
+            logger.write('nuevoJugador.', 'registrarEspera');
+            nuevoJugador = this.queryString(socket);
+            self.jugadores.nuevoJugador(nuevoJugador);
+            logger.write('Hay conectados ' + self.jugadores.getJugadoresCount() + ' jugadores', 'registrarEspera');
             
-            if(jugadoresCount == MAX_JUGADORES) {
-                logger.write("Empezamos a jugar");
+            if(self.jugadores.getJugadoresCount() == MAX_JUGADORES) {
+                logger.write('Empezamos a jugar.', 'registrarEspera');
                 juego = new Juego(self.io, socket, self.jugadores);
                 juego.jugar();
             }
@@ -241,11 +269,16 @@ var Servidor = function (puerto) {
         });
     },
     this.registrarDesconexion = function(socket) {
-        logger.write('Se desconecto un jugador');
-        jugadorNro = socket.handshake.query.nro_jugador;
-        jugadorNombre = socket.handshake.query.nombre_jugador;
-        jugadorIp = socket.handshake.address;
-        logger.write("jugadorNro: " + jugadorNro + ", jugadorNombre: " + jugadorNombre + ", jugadorIp: " + jugadorIp);
+        logger.write('Se desconecto un jugador.', 'registrarDesconexion');
+        this.queryString(socket);
+    },
+    this.queryString = function(socket) {
+        jugador = {
+            numero: socket.handshake.query.nro_jugador,
+            nombre: socket.handshake.query.nombre_jugador,
+            ip: socket.handshake.address
+        };
+        logger.write("jugadorNro: " + jugador.numero + ", jugadorNombre: " + jugador.nombre + ", jugadorIp: " + jugador.ip, 'queryString');
     }
 };
 
@@ -498,20 +531,23 @@ var Servidor = function (puerto) {
  
  */
 var LoggerFile = function () {
-    this.filename = '/tmp/log.txt';
     var fs = require('fs');
-    fs.writeFileSync(this.filename, "INICIO\n");
-    console.log("INICIO\n");
-    this.write = function (data) {
-        fs.appendFileSync(this.filename, data + "\n");
-        console.log(data + "\n");
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| INICIO |' + '='.repeat(20) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    this.write = function (data, ref) {
+        if(ref) {
+            ref = ref;
+        }
+        fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
+        console.log('', 'LoggerFile' + data);
     }
-    fs.appendFileSync(this.filename, "==========================================\n");
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| FIN |' + '='.repeat(20) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
 }
 var logger = new LoggerFile();
-
-var puerto = 3000;
-var servidor = new Servidor(puerto)
+var servidor = new Servidor();
 servidor.publicar();
 servidor.registrarEspera();
 

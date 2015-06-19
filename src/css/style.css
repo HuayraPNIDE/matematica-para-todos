@@ -7,7 +7,8 @@ body {
 .juego,
 #mano,
 #amigos,
-#msg {
+#msg,
+.guerra {
     display: none;
 }
 .fizq {
