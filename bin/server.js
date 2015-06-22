@@ -8,7 +8,8 @@ var Jugadores = function () {
     this.jugadores = {};
     this.contadorGuerra;
     this.nuevoJugador = function (jugador) {
-        this.jugadores[jugador.numero] = { nombre: jugador.nombre, ip: jugador.ip, contador: 0, mazo: [] };
+        jugadorNumero = jugador.numero;
+        this.jugadores[jugadorNumero] = { nombre: jugador.nombre, ip: jugador.ip, contador: 0, mazo: [] };
     },
     this.getJugadoresCount = function () {
         return Object.keys(this.jugadores).length;
@@ -254,7 +255,7 @@ var Servidor = function () {
             }
             logger.write('Se conecto un nuevo jugador.', 'registrarEspera');
             logger.write('nuevoJugador.', 'registrarEspera');
-            nuevoJugador = this.queryString(socket);
+            nuevoJugador = self.queryString(socket);
             self.jugadores.nuevoJugador(nuevoJugador);
             logger.write('Hay conectados ' + self.jugadores.getJugadoresCount() + ' jugadores', 'registrarEspera');
             
@@ -279,6 +280,7 @@ var Servidor = function () {
             ip: socket.handshake.address
         };
         logger.write("jugadorNro: " + jugador.numero + ", jugadorNombre: " + jugador.nombre + ", jugadorIp: " + jugador.ip, 'queryString');
+        return jugador;
     }
 };
 
@@ -531,10 +533,22 @@ var Servidor = function () {
  
  */
 var LoggerFile = function () {
+//    var fs = require('fs');
+//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+//    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| INICIO |' + '='.repeat(20) + '\n');
+//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+//    this.write = function (data, ref) {
+//        if(ref) {
+//            ref = ref;
+//        }
+//        fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
+//        console.log('', 'LoggerFile' + data);
+//    }
+//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+//    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| FIN |' + '='.repeat(20) + '\n');
+//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
     var fs = require('fs');
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| INICIO |' + '='.repeat(20) + '\n');
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    fs.writeFileSync(FILE_LOGGER, '=\n');
     this.write = function (data, ref) {
         if(ref) {
             ref = ref;
@@ -542,9 +556,6 @@ var LoggerFile = function () {
         fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
         console.log('', 'LoggerFile' + data);
     }
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| FIN |' + '='.repeat(20) + '\n');
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
 }
 var logger = new LoggerFile();
 var servidor = new Servidor();
