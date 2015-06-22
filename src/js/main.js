@@ -58,7 +58,6 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 }
                 
                 $("#mano .respuesta").on('click', function() {
-console.log({ jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
                     // Deshabilita cartas
                     $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
                     $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);

@@ -4,6 +4,48 @@ var FILE_LOGGER = '/tmp/log-servidor.txt';
 var MAX_RESPUESTAS_DIFIRENTES = 0;
 var PUERTO = 3000;
 
+if (!String.prototype.repeat) {
+    String.prototype.repeat = function (count) {
+        'use strict';
+        if (this == null) {
+            throw new TypeError('can\'t convert ' + this + ' to object');
+        }
+        var str = '' + this;
+        count = +count;
+        if (count != count) {
+            count = 0;
+        }
+        if (count < 0) {
+            throw new RangeError('repeat count must be non-negative');
+        }
+        if (count == Infinity) {
+            throw new RangeError('repeat count must be less than infinity');
+        }
+        count = Math.floor(count);
+        if (str.length == 0 || count == 0) {
+            return '';
+        }
+// Ensuring count is a 31-bit integer allows us to heavily optimize the
+// main part. But anyway, most current (August 2014) browsers can't handle
+// strings 1 << 28 chars or longer, so:
+        if (str.length * count >= 1 << 28) {
+            throw new RangeError('repeat count must not overflow maximum string size');
+        }
+        var rpt = '';
+        for (; ; ) {
+            if ((count & 1) == 1) {
+                rpt += str;
+            }
+            count >>>= 1;
+            if (count == 0) {
+                break;
+            }
+            str += str;
+        }
+        return rpt;
+    }
+}
+
 var Jugadores = function () {
     this.jugadores = {};
     this.contadorGuerra;
@@ -49,20 +91,21 @@ var Juego = function (io, socket, jugadores) {
     this.indice=0;
     cartas = new Mazo();
     cartas.repartir(jugadores.jugadores);
+    self=this;
     this.jugar = function() {
         logger.write('Jugar.', 'Juego');
         io.emit('listo', jugadores.getJugadores());
         io.emit('mano', jugadores.getMano(this.indice));
         socket.on('respuesta', function(opcion) {
-            this.respuestaJugadores(opcion);
+            self.respuestaJugadores(opcion);
         });
     },
     this.respuestaJugadores = function(opcion) {
         logger.write('Jugar.', 'respuestaJugadores');
         this.respuestaCorrecta = "";
-        if (jugadores.jugador1.mazo[this.indice].lados > jugadores.jugador2.mazo[this.indice].lados) {
+        if (jugadores.jugadores.jugador1.mazo[this.indice].lados > jugadores.jugadores.jugador2.mazo[this.indice].lados) {
             this.respuestaCorrecta = "jugador1";
-        } else if (jugadores.jugador1.mazo[this.indice].lados < jugadores.jugador2.mazo[this.indice].lados) {
+        } else if (jugadores.jugadores.jugador1.mazo[this.indice].lados < jugadores.jugadores.jugador2.mazo[this.indice].lados) {
             this.respuestaCorrecta = "jugador2";
         } else {
             this.respuestaCorrecta = "empate";
@@ -70,10 +113,10 @@ var Juego = function (io, socket, jugadores) {
         
         this.resultados[this.indice] = { respuestaCorrecta: this.respuestaCorrecta };
         this.resultados[this.indice][opcion.jugador] = opcion.respuesta;
-        
+
         // Tengo ambas respuestas //
         if(this.resultados[this.indice].jugador1 && this.resultados[this.indice].jugador2) {
-            // Respuestas iguales //
+            // Respuestas IGUALES //
             if(this.resultados[this.indice].jugador1.respuesta == this.resultados[this.indice].jugador2.respuesta) {
                 logger.write('Respuestas iguales.', 'respuestaJugadores');
                 // Empate = Guerra //
@@ -82,122 +125,16 @@ var Juego = function (io, socket, jugadores) {
                     jugadores.addContadorGuerra();
                 } else {
                     logger.write('Respuestas iguales.', 'respuestaJugadores');
-
-                    jugadores.addContadorJugador(JUGAs);
+                    jugadores.addContadorJugador(this.resultados[this.indice].jugador1.respuesta);
                 }
-                
-                
-                if (opcion_respuestas[0] == 'empate') {
-                    console.log('Aca hay guerra');
-                    cartas_guerra++;
-                    obj_cartas_jugador['empate']++;
-                } else {
-                    console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
-                    if (cartas_guerra) {
-                        logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
-                        obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
-                        cartas_guerra = 0;
-                    }
-                    obj_cartas_jugador[opcion_respuestas[0]]++;
-                }
-
-        historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
-    } else {
-        console.log('Las respuestas difieren\nRepregunto');
-        i--; //Decremento para que vuelva a enviar la misma mano al emitir
-    }
+                this.indice++;
+            } else {
+            // Respuestas DIFERENTES //
+                logger.write('Las respuestas difieren. Repreguntar.', 'respuestaJugadores');
+                this.indice--;
+            }
+            io.emit('mano', jugadores.getMano(this.indice));
         }
-        
-//        socket.on('respuesta', function (opcion) {
-//            respuestas.push(jugador_ip);
-//            opcion_respuestas.push(opcion);
-//            logger.write(jugador_ip + ' = ' + opcion);
-//            if (respuestas.length == 2) {
-//                logger.write('Tengo ambas respuestas');
-//                var lados_j1 = 0;
-//                var lados_j2 = 0;
-//                var img_j1 = 0;
-//                var img_j2 = 0;
-//                lados_j1 = mazo_jugador1[i].lados;
-//                lados_j2 = mazo_jugador2[i].lados;
-//                img_j1 = mazo_jugador1[i].img;
-//                img_j2 = mazo_jugador2[i].img;
-//
-//                console.log("Opcion real:" + respuesta_real);
-//                console.log("Opciones jugadores: " + opcion_respuestas);
-//
-//                // Jugador1 y Jugador2 opinan lo mismo //
-//                if (opcion_respuestas[0] == opcion_respuestas[1]) {
-//                    if (opcion_respuestas[0] == 'empate') {
-//                        console.log('Aca hay guerra');
-//                        cartas_guerra++;
-//                        obj_cartas_jugador['empate']++;
-//                    } else {
-//                        console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
-//                        if (cartas_guerra) {
-//                            logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
-//                            obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
-//                            cartas_guerra = 0;
-//                        }
-//                        obj_cartas_jugador[opcion_respuestas[0]]++;
-//                    }
-//
-//                    historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
-//                } else {
-//                    console.log('Las respuestas difieren\nRepregunto');
-//                    i--; //Decremento para que vuelva a enviar la misma mano al emitir
-//                }
-//
-//                if (i == 23) {
-//                    logger.write('Ya se repartieron todas las cartas');
-//                    logger.write('Se muestra historico de respuestas');
-//                    logger.write(historico_respuestas);
-//
-//                    logger.write('El jugador1 uno tiene ' + obj_cartas_jugador.jugador1 + ' cartas');
-//                    logger.write('El jugador2 uno tiene ' + obj_cartas_jugador.jugador2 + ' cartas');
-//                    logger.write('Hubo ' + obj_cartas_jugador.empate + ' empatadas');
-//                    io.emit('fin', historico_respuestas);
-//                    i = 0;
-//                    return;
-//                }
-//
-//                logger.write("=======================================================================");
-//                i++;
-//                logger.write('Se juega ahora la mano ' + i);
-//                io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": obj_cartas_jugador.jugador1, "contador_jugador2": obj_cartas_jugador.jugador2, "contador_guerra": cartas_guerra});
-//                respuestas = [];
-//                opcion_respuestas = [];
-//            }
-//        });
-//
-//        var jugador_ip = socket.handshake.address;
-//        var nombre_jugador = socket.handshake.query.nombre_jugador;
-//
-//        if (nombre_jugador == 'jugador1') { //Hack
-//            nombre_jugador = usuario;
-//        }
-//
-//        jugadores.push(jugador_ip);
-//
-//        obj_cartas_jugador[nombre_jugador] = 0;
-//
-//        obj_ip_jugador[nombre_jugador] = jugador_ip;
-//
-//        //jugadores++;
-//        console.log('Hay conectados ' + jugadores.length + ' jugadores');
-//        logger.write('Hay conectados ' + jugadores.length + ' jugadores');
-//        conectado(socket);
-//
-//        if (jugadores.length == MAX_JUGADORES) {
-//            REPARTIJA
-//            io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
-//            console.log('Se juega ahora la mano ' + i);
-//            logger.write('Se juega ahora la mano ' + i);
-//            io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
-//        }
-//    });
-
-
     }
 };
 
@@ -229,9 +166,13 @@ var Servidor = function () {
     this.io = require('socket.io')(this.http);
     this.jugadores = new Jugadores();
    
-    this.http.listen(PUERTO, function () {
-        logger.write('Se crea el SERVIDOR. Esperando jugadores en el puerto: ', 'Servidor' + PUERTO);
-    });
+    try {
+        this.http.listen(PUERTO, function () {
+            logger.write('Se crea el SERVIDOR. Esperando jugadores en el puerto: ' + PUERTO, 'Servidor');
+        });
+    } catch (e) {
+        console.log(e.name + ": " + e.message);
+    }
     
     this.publicar = function() {
         var usuario;
@@ -242,8 +183,15 @@ var Servidor = function () {
             }
         });
         logger.write('avahi-publish-service', 'publicar');
-        spawn = require('child_process').spawn;
-        spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', PUERTO]);
+        try {
+            spawn = require('child_process').spawn;
+            proceso = spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', PUERTO]);
+            proceso.on('error', function(code, signal) {
+                console.log("Salio con errorr: [%s] - %s", code, signal);
+            });
+        } catch (e) {
+            console.log(e.name + ": " + e.message);
+        }
     },
     this.registrarEspera = function () {
         var self = this;
@@ -533,32 +481,23 @@ var Servidor = function () {
  
  */
 var LoggerFile = function () {
-//    var fs = require('fs');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| INICIO |' + '='.repeat(20) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-//    this.write = function (data, ref) {
-//        if(ref) {
-//            ref = ref;
-//        }
-//        fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
-//        console.log('', 'LoggerFile' + data);
-//    }
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| FIN |' + '='.repeat(20) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
     var fs = require('fs');
-    fs.writeFileSync(FILE_LOGGER, '=\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| INICIO |' + '='.repeat(20) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
     this.write = function (data, ref) {
         if(ref) {
-            ref = ref;
+            ref = '[' + ref + '] ';
         }
         fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
-        console.log('', 'LoggerFile' + data);
+        console.log('', 'LoggerFile: ' + ref + data);
     }
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| FIN |' + '='.repeat(20) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
 }
+
 var logger = new LoggerFile();
 var servidor = new Servidor();
 servidor.publicar();
 servidor.registrarEspera();
-
