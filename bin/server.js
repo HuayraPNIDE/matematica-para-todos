@@ -24,7 +24,7 @@ var Jugadores = function () {
         return {
             jugador1: { carta: this.jugadores.jugador1.mazo[i], contador: this.jugadores.jugador1.contador },
             jugador2: { carta: this.jugadores.jugador2.mazo[i], contador: this.jugadores.jugador2.contador },
-            contadorGuerra: this.getContadorGuerra()
+            contadorGuerra: this.contadorGuerra
         };
     },
     this.addContadorJugador = function(jugador) {
