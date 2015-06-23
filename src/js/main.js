@@ -42,7 +42,9 @@ console.log(socket);
                 console.log("mano");
                 setInterval(function(){
                     socket.emit('respuesta', {llave: nroJugador});
-                    console.log("Cada 2.5 segundos" + JSON.stringify(socket, null, 2));
+//                    console.log("Cada 2.5 segundos" + JSON.stringify(socket, null, 2));
+                    console.log("Cada 2.5 segundos");
+                    console.dir(socket);
                 }, 2500);
 
 //                console.log('Desde el server me llegan cartas:');
