@@ -6,11 +6,13 @@ NODE_BINARY_NAME=nodejs
 all:
 	./matematica-para-todos
 
-test:
+matar:
 	clear
 	-killall nodejs
 	-killall avahi-publish-service
 	-killall avahi-browse
+
+test:
 	$(NODE_BINARY_NAME) bin/server.js --usuario=USUARIO_TEMPORAL
 
 check_node_binary:
