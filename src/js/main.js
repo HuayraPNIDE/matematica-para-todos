@@ -10,64 +10,71 @@ var Servidor = function(nombre) {
 
 var Conexion = function (ip, nroJugador, nombreJugador) {
     socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
-console.log(socket.ids);
+    
+console.log(socket);
+
     var self = this;
     this.registrarEspera = function() {
-        socket.on('connect', function () {
-            console.log('Me conecte al servidor');
-            socket.on('listo', function (o) {
-                $("#amigos").hide();
-                $("#titulo").html('A Jugar!!!');
-                $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
-                $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
-                $(".juego").show();
-            });
-
-            socket.on('retiro', function (msg) {
-                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
-                $(".juego").hide();
-                socket.disconnect();
-            });
-
-            socket.on('fin', function (resultados) {
-                $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
-                $(".juego").hide();
-                socket.disconnect();
-            });
-
-            socket.on('mano', function (o) {
-                console.log('Desde el server me llegan cartas:');
-                console.log(JSON.stringify(o, null, 2));
-                
-                // Contador
-                if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                    $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-                }
-                $(".jugador1 .contador figcaption").html(o.jugador1.contador);
-                
-                if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                    $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-                }
-                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
-                
-                // Cartas
-                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
-                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
-                // Cuando hay Guerra
-                if(o.contador_guerra) {
-                    $("#mano .guerra .contador figcaption").html(o.contador_guerra);
-                }
-                
-                $("#mano .respuesta").on('click', function() {
-                    // Deshabilita cartas
-                    $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-                    $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-                    socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
-                    $("#mano .respuesta").off('click');
-                });
-                
-                $("#mano").show();
-            });
+        self.socket.on('connect', function () {
+            setInterval(function(){
+                socket.emit('respuesta', {llave: nroJugador});
+            }, 2500);
+            
+//            console.log('Me conecte al servidor');
+//            socket.on('listo', function (o) {
+//                $("#amigos").hide();
+//                $("#titulo").html('A Jugar!!!');
+//                $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
+//                $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+//                $(".juego").show();
+//            });
+//
+//            socket.on('retiro', function (msg) {
+//                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
+//                $(".juego").hide();
+//                socket.disconnect();
+//            });
+//
+//            socket.on('fin', function (resultados) {
+//                $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
+//                $(".juego").hide();
+//                socket.disconnect();
+//            });
+//
+//            socket.on('mano', function (o) {
+//                console.log('Desde el server me llegan cartas:');
+//                console.log(JSON.stringify(o, null, 2));
+//                
+//                // Contador
+//                if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+//                    $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+//                }
+//                $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+//                
+//                if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+//                    $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+//                }
+//                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+//                
+//                // Cartas
+//                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+//                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+//                // Cuando hay Guerra
+//                if(o.contador_guerra) {
+//                    $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+//                }
+//                
+//                $("#mano .respuesta").on('click', function() {
+//                    // Deshabilita cartas //
+//                    $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//                    $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//                    // Envia la selección //
+//                    socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+//                    $("#mano .respuesta").off('click');
+//                });
+//                
+//                $("#mano").show();
+//            });
         });
     };
 };
@@ -77,10 +84,10 @@ var Cliente = function(nombre, avatar) {
     this.avatar = avatar;
     this.localIp = require('my-local-ip')();
     this.init = function() {
-        conexion = new Conexion(this.localIp, 'jugador1', this.nombre);
+        conexionServidorLocal = new Conexion(this.localIp, 'jugador1', this.nombre);
         $("#avatar").hide();
         $("#actualizar, #amigos").show();
-        conexion.registrarEspera();
+        conexionServidorLocal.registrarEspera();
     }
 };
 
@@ -131,7 +138,12 @@ var Amigos = function () {
         $('#listado').show();
     },
     this.elegir = function(ip, nombreJugador) { // Se conecta al Servidor elegido //
-        conexion = new Conexion(ip, 'jugador2', nombreJugador);
-        conexion.registrarEspera();
+        conexionAlServidor = new Conexion(ip, 'jugador2', nombreJugador);
+        conexionAlServidor.registrarEspera();
     }
 };
+
+
+function enviarla() {
+    
+}

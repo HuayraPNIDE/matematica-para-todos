@@ -97,9 +97,12 @@ var Juego = function (io, socket, jugadores) {
         io.emit('mano', jugadores.getMano(self.indice));
         
         socket.on('respuesta', function(opcion) {
-logger.write('OPCION: ' + JSON.stringify(opcion, null, 2), 'respuesta');
-logger.write('self.indice: ' + self.indice, 'respuesta');
-io.emit('mano', jugadores.getMano(++self.indice));
+            console.log(opcion.llave);
+            
+//            
+//logger.write('OPCION: ' + JSON.stringify(opcion, null, 2), 'respuesta');
+//logger.write('self.indice: ' + self.indice, 'respuesta');
+//io.emit('mano', jugadores.getMano(++self.indice));
 //            self.respuestaJugadores(opcion);
         });
     },
@@ -195,7 +198,7 @@ var Servidor = function () {
         });
     },
     this.registrarEspera = function () {
-        this.io.on('connection', function (socket) {
+        self.io.on('connection', function (socket) {
             logger.write('connection', 'registrarEspera');
             if (self.jugadores.getJugadoresCount() > MAX_JUGADORES) {
                 logger.write('Se alcanzaron el máximo de jugadores.', 'registrarEspera');
@@ -220,6 +223,7 @@ var Servidor = function () {
     this.registrarDesconexion = function(socket) {
         logger.write('Se desconecto un jugador.', 'registrarDesconexion');
         logger.close();
+        socket=null;
     },
     this.queryString = function(socket) {
         jugador = {
@@ -262,7 +266,6 @@ var Servidor = function () {
  
  var mazo_jugador1 = [];
  var mazo_jugador2 = [];
- 
  var respuestas = [];
  var i = 0;
  
