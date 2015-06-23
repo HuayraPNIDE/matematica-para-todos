@@ -87,7 +87,6 @@ var Jugadores = function () {
  
 var Juego = function (io, socket, jugadores) {
     this.resultados = [];
-    this.respuestaCorrecta;
     this.indice=0;
     cartas = new Mazo();
     cartas.repartir(jugadores.jugadores);
@@ -95,45 +94,51 @@ var Juego = function (io, socket, jugadores) {
     this.jugar = function() {
         logger.write('Jugar.', 'Juego');
         io.emit('listo', jugadores.getJugadores());
-        io.emit('mano', jugadores.getMano(this.indice));
+        io.emit('mano', jugadores.getMano(self.indice));
+        
         socket.on('respuesta', function(opcion) {
             self.respuestaJugadores(opcion);
         });
     },
-    this.respuestaJugadores = function(opcion) {
-        logger.write('Jugar.', 'respuestaJugadores');
-        this.respuestaCorrecta = "";
-        if (jugadores.jugadores.jugador1.mazo[this.indice].lados > jugadores.jugadores.jugador2.mazo[this.indice].lados) {
-            this.respuestaCorrecta = "jugador1";
-        } else if (jugadores.jugadores.jugador1.mazo[this.indice].lados < jugadores.jugadores.jugador2.mazo[this.indice].lados) {
-            this.respuestaCorrecta = "jugador2";
+    this.respuestaCorrecta = function() {
+        respuestaCorrecta = "";
+        if(jugadores.jugadores.jugador1.mazo[self.indice].lados > jugadores.jugadores.jugador2.mazo[self.indice].lados) {
+            respuestaCorrecta = "jugador1";
+        } else if (jugadores.jugadores.jugador1.mazo[self.indice].lados < jugadores.jugadores.jugador2.mazo[self.indice].lados) {
+            respuestaCorrecta = "jugador2";
         } else {
-            this.respuestaCorrecta = "empate";
+            respuestaCorrecta = "empate";
         }
+        return respuestaCorrecta;
+    },
+    this.respuestaJugadores = function(opcion) {
+        logger.write('resPUesTAS.', 'respuestaJugadores');
+        logger.write('OPCION: ' + opcion, 'respuestaJugadores');
+        logger.write('resPUesTAS.', 'respuestaJugadores');
         
-        this.resultados[this.indice] = { respuestaCorrecta: this.respuestaCorrecta };
-        this.resultados[this.indice][opcion.jugador] = opcion.respuesta;
+        this.resultados[self.indice] = { respuestaCorrecta: this.respuestaCorrecta() };
+        this.resultados[self.indice][opcion.jugador] = opcion.respuesta;
 
         // Tengo ambas respuestas //
-        if(this.resultados[this.indice].jugador1 && this.resultados[this.indice].jugador2) {
+        if(this.resultados[self.indice].jugador1 && this.resultados[self.indice].jugador2) {
             // Respuestas IGUALES //
-            if(this.resultados[this.indice].jugador1.respuesta == this.resultados[this.indice].jugador2.respuesta) {
+            if(this.resultados[self.indice].jugador1.respuesta == this.resultados[self.indice].jugador2.respuesta) {
                 logger.write('Respuestas iguales.', 'respuestaJugadores');
                 // Empate = Guerra //
-                if(this.resultados[this.indice].jugador1.respuesta == 'empate') {
+                if(this.resultados[self.indice].jugador1.respuesta == 'empate') {
                     logger.write('Empate = Guerra.', 'respuestaJugadores');
                     jugadores.addContadorGuerra();
                 } else {
                     logger.write('Respuestas iguales.', 'respuestaJugadores');
-                    jugadores.addContadorJugador(this.resultados[this.indice].jugador1.respuesta);
+                    jugadores.addContadorJugador(this.resultados[self.indice].jugador1.respuesta);
                 }
-                this.indice++;
+                self.indice++;
             } else {
             // Respuestas DIFERENTES //
                 logger.write('Las respuestas difieren. Repreguntar.', 'respuestaJugadores');
-                this.indice--;
+                self.indice--;
             }
-            io.emit('mano', jugadores.getMano(this.indice));
+            io.emit('mano', jugadores.getMano(self.indice));
         }
     }
 };
@@ -165,14 +170,11 @@ var Servidor = function () {
     this.http = require('http').Server(this.app);
     this.io = require('socket.io')(this.http);
     this.jugadores = new Jugadores();
+    var self = this;
    
-    try {
-        this.http.listen(PUERTO, function () {
-            logger.write('Se crea el SERVIDOR. Esperando jugadores en el puerto: ' + PUERTO, 'Servidor');
-        });
-    } catch (e) {
-        console.log(e.name + ": " + e.message);
-    }
+    this.http.listen(PUERTO, function () {
+        logger.write('Se crea el SERVIDOR. Esperando jugadores en el puerto: ' + PUERTO + '.', 'Servidor');
+    });
     
     this.publicar = function() {
         var usuario;
@@ -183,18 +185,13 @@ var Servidor = function () {
             }
         });
         logger.write('avahi-publish-service', 'publicar');
-        try {
-            spawn = require('child_process').spawn;
-            proceso = spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', PUERTO]);
-            proceso.on('error', function(code, signal) {
-                console.log("Salio con errorr: [%s] - %s", code, signal);
-            });
-        } catch (e) {
-            console.log(e.name + ": " + e.message);
-        }
+        spawn = require('child_process').spawn;
+        proceso = spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', PUERTO]);
+        proceso.on('error', function(code, signal) {
+            console.log("Salio con errorr: [%s] - %s", code, signal);
+        });
     },
     this.registrarEspera = function () {
-        var self = this;
         this.io.on('connection', function (socket) {
             logger.write('connection', 'registrarEspera');
             if (self.jugadores.getJugadoresCount() > MAX_JUGADORES) {
@@ -213,13 +210,13 @@ var Servidor = function () {
                 juego.jugar();
             }
 	    socket.on('disconnect', function(socket) {
-                this.registrarDesconexion(socket);
+                self.registrarDesconexion(socket);
             });
         });
     },
     this.registrarDesconexion = function(socket) {
         logger.write('Se desconecto un jugador.', 'registrarDesconexion');
-        this.queryString(socket);
+        logger.close();
     },
     this.queryString = function(socket) {
         jugador = {
@@ -492,9 +489,11 @@ var LoggerFile = function () {
         fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
         console.log('', 'LoggerFile: ' + ref + data);
     }
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| FIN |' + '='.repeat(20) + '\n');
-    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    this.close = function () {
+        fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+        fs.appendFileSync(FILE_LOGGER, '='.repeat(21) + '| FIN |' + '='.repeat(22) + '\n');
+        fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    }
 }
 
 var logger = new LoggerFile();

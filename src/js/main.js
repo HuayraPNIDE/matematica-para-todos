@@ -10,8 +10,9 @@ var Servidor = function(nombre) {
 
 var Conexion = function (ip, nroJugador, nombreJugador) {
     this.socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
+    var self = this;
     this.registrarEspera = function() {
-        var self = this;
+
         self.socket.on('connect', function () {
             console.log('Me conecte al servidor');
             self.socket.on('listo', function (o) {
