@@ -95,9 +95,9 @@ var Juego = function (io, socket, jugadores) {
         logger.write('Jugar.', 'Juego');
         io.emit('listo', jugadores.getJugadores());
         io.emit('mano', jugadores.getMano(self.indice));
-        
         socket.on('respuesta', function(opcion) {
-            console.log(opcion.llave);
+            logger.write(opcion.llave, 'respuesta');
+//            console.log(opcion.llave);
             
 //            
 //logger.write('OPCION: ' + JSON.stringify(opcion, null, 2), 'respuesta');

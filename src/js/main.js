@@ -15,19 +15,16 @@ console.log(socket);
 
     var self = this;
     this.registrarEspera = function() {
-        self.socket.on('connect', function () {
-            setInterval(function(){
-                socket.emit('respuesta', {llave: nroJugador});
-            }, 2500);
+        socket.on('connect', function () {
             
 //            console.log('Me conecte al servidor');
-//            socket.on('listo', function (o) {
-//                $("#amigos").hide();
-//                $("#titulo").html('A Jugar!!!');
-//                $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
-//                $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
-//                $(".juego").show();
-//            });
+            socket.on('listo', function (o) {
+                $("#amigos").hide();
+                $("#titulo").html('A Jugar!!!');
+                $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
+                $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+                $(".juego").show();
+            });
 //
 //            socket.on('retiro', function (msg) {
 //                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
@@ -41,20 +38,26 @@ console.log(socket);
 //                socket.disconnect();
 //            });
 //
-//            socket.on('mano', function (o) {
+            socket.on('mano', function (o) {
+                console.log("mano");
+                setInterval(function(){
+                    socket.emit('respuesta', {llave: nroJugador});
+                    console.log("Cada 2.5 segundos");
+                }, 2500);
+
 //                console.log('Desde el server me llegan cartas:');
 //                console.log(JSON.stringify(o, null, 2));
 //                
-//                // Contador
-//                if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-//                    $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-//                }
-//                $(".jugador1 .contador figcaption").html(o.jugador1.contador);
-//                
-//                if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-//                    $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-//                }
-//                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+                // Contador
+                if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                    $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                }
+                $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+                
+                if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                    $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                }
+                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
 //                
 //                // Cartas
 //                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
@@ -72,9 +75,9 @@ console.log(socket);
 //                    socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
 //                    $("#mano .respuesta").off('click');
 //                });
-//                
-//                $("#mano").show();
-//            });
+                
+                $("#mano").show();
+            });
         });
     };
 };
