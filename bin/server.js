@@ -97,7 +97,10 @@ var Juego = function (io, socket, jugadores) {
         io.emit('mano', jugadores.getMano(self.indice));
         
         socket.on('respuesta', function(opcion) {
-            self.respuestaJugadores(opcion);
+logger.write('OPCION: ' + JSON.stringify(opcion, null, 2), 'respuesta');
+logger.write('self.indice: ' + self.indice, 'respuesta');
+io.emit('mano', jugadores.getMano(++self.indice));
+//            self.respuestaJugadores(opcion);
         });
     },
     this.respuestaCorrecta = function() {
