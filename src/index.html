@@ -95,8 +95,8 @@
                 cliente = new Cliente(nombre);
                 cliente.init();
                 amigos.buscar();
+                amigos.actualizarVista(cliente);
             }, 1001);
-            amigos.actualizarVista(cliente);
         });
 
         $("#actualizar").on("click", function(event) {

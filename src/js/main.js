@@ -9,13 +9,13 @@ var Servidor = function(nombre) {
 };
 
 var Conexion = function (ip, nroJugador, nombreJugador) {
-    this.socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
-console.log(this.socket.ids);
+    socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
+console.log(socket.ids);
     var self = this;
-    this. registrarEspera = function() {
-        self.socket.on('connect', function () {
+    this.registrarEspera = function() {
+        socket.on('connect', function () {
             console.log('Me conecte al servidor');
-            self.socket.on('listo', function (o) {
+            socket.on('listo', function (o) {
                 $("#amigos").hide();
                 $("#titulo").html('A Jugar!!!');
                 $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
@@ -23,19 +23,19 @@ console.log(this.socket.ids);
                 $(".juego").show();
             });
 
-            self.socket.on('retiro', function (msg) {
+            socket.on('retiro', function (msg) {
                 $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
                 $(".juego").hide();
-                self.socket.disconnect();
+                socket.disconnect();
             });
 
-            self.socket.on('fin', function (resultados) {
+            socket.on('fin', function (resultados) {
                 $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
                 $(".juego").hide();
-                self.socket.disconnect();
+                socket.disconnect();
             });
 
-            self.socket.on('mano', function (o) {
+            socket.on('mano', function (o) {
                 console.log('Desde el server me llegan cartas:');
                 console.log(JSON.stringify(o, null, 2));
                 
@@ -62,7 +62,7 @@ console.log(this.socket.ids);
                     // Deshabilita cartas
                     $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
                     $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-                    self.socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+                    socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
                     $("#mano .respuesta").off('click');
                 });
                 
