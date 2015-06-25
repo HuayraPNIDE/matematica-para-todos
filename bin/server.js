@@ -199,6 +199,9 @@ var Servidor = function () {
     },
     this.registrarEspera = function () {
         self.io.on('connection', function (socket) {
+                    socket.on('ferret', function (name, fn) {
+                        fn('woot');
+                    });
             logger.write('connection', 'registrarEspera');
             if (self.jugadores.getJugadoresCount() > MAX_JUGADORES) {
                 logger.write('Se alcanzaron el máximo de jugadores.', 'registrarEspera');

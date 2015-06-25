@@ -16,8 +16,9 @@ console.log(socket);
     var self = this;
     this.registrarEspera = function() {
         socket.on('connect', function () {
+            var selfSocket = socket;
+            console.log('Me conecte al servidor');
             
-//            console.log('Me conecte al servidor');
             socket.on('listo', function (o) {
                 $("#amigos").hide();
                 $("#titulo").html('A Jugar!!!');
@@ -25,23 +26,21 @@ console.log(socket);
                 $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
                 $(".juego").show();
             });
-//
 //            socket.on('retiro', function (msg) {
 //                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
 //                $(".juego").hide();
 //                socket.disconnect();
 //            });
-//
 //            socket.on('fin', function (resultados) {
 //                $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
 //                $(".juego").hide();
 //                socket.disconnect();
 //            });
-//
+            socket.emit('respuesta', {llave: nroJugador});
             socket.on('mano', function (o) {
                 console.log("mano");
                 setInterval(function(){
-                    socket.emit('respuesta', {llave: nroJugador});
+                    selfSocket.emit('respuesta', {llave: nroJugador});
 //                    console.log("Cada 2.5 segundos" + JSON.stringify(socket, null, 2));
                     console.log("Cada 2.5 segundos");
                     console.dir(socket);
@@ -60,23 +59,23 @@ console.log(socket);
                     $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
                 }
                 $(".jugador2 .contador figcaption").html(o.jugador2.contador);
-//                
-//                // Cartas
-//                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
-//                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
-//                // Cuando hay Guerra
-//                if(o.contador_guerra) {
-//                    $("#mano .guerra .contador figcaption").html(o.contador_guerra);
-//                }
-//                
-//                $("#mano .respuesta").on('click', function() {
-//                    // Deshabilita cartas //
-//                    $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-//                    $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-//                    // Envia la selección //
-//                    socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
-//                    $("#mano .respuesta").off('click');
-//                });
+                
+                // Cartas
+                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+                // Cuando hay Guerra
+                if(o.contador_guerra) {
+                    $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+                }
+                
+                $("#mano .respuesta").on('click', function() {
+                    // Deshabilita cartas //
+                    $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+                    $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+                    // Envia la selección //
+                    socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+                    $("#mano .respuesta").off('click');
+                });
                 
                 $("#mano").show();
             });
@@ -147,8 +146,3 @@ var Amigos = function () {
         conexionAlServidor.registrarEspera();
     }
 };
-
-
-function enviarla() {
-    
-}
