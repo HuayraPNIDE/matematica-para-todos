@@ -11,52 +11,40 @@ var Servidor = function(nombre) {
 var Conexion = function (ip, nroJugador, nombreJugador) {
     var socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
     console.log('Conexion');
+    this.registrarEspera(socket);
+    this.registrarEspera = function(socket) {
+        socket.on('connect', function () {
+            socket.on('listo', function (o) {
+                $("#amigos").hide();
+                $("#titulo").html('A Jugar!!!');
+                $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
+                $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+                $(".juego").show();
+            });
+            socket.on('mano', function (o) {
+                // Contador
+                if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                    $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                }
+                $(".jugador1 .contador figcaption").html(o.jugador1.contador);
 
-    socket.on('connect', function () {
-        socket.on('listo', function (o) {
-            $("#amigos").hide();
-            $("#titulo").html('A Jugar!!!');
-            $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
-            $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
-            $(".juego").show();
+                if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                    $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                }
+                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+
+                // Cartas
+                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+                // Cuando hay Guerra
+                if(o.contador_guerra) {
+                    $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+                }
+
+                this.respuesta(o);
+            });
         });
-
-//            socket.on('retiro', function (msg) {
-//                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
-//                $(".juego").hide();
-//                socket.disconnect();
-//            });
-//
-//            socket.on('fin', function (resultados) {
-//                $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
-//                $(".juego").hide();
-//                socket.disconnect();
-//            });
-//
-        socket.on('mano', function (o) {
-            // Contador
-            if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-            }
-            $(".jugador1 .contador figcaption").html(o.jugador1.contador);
-
-            if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-            }
-            $(".jugador2 .contador figcaption").html(o.jugador2.contador);
-
-            // Cartas
-            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
-            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
-            // Cuando hay Guerra
-            if(o.contador_guerra) {
-                $("#mano .guerra .contador figcaption").html(o.contador_guerra);
-            }
-
-            this.respuesta(o);
-        });
-        
-    });
+    },
     this.respuesta = function(o) {
         $("#mano .respuesta").on('click', function() {
             // Deshabilita cartas //
@@ -68,6 +56,17 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
         });
         $("#mano").show();
     }
+//            socket.on('retiro', function (msg) {
+//                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
+//                $(".juego").hide();
+//                socket.disconnect();
+//            });
+//
+//            socket.on('fin', function (resultados) {
+//                $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
+//                $(".juego").hide();
+//                socket.disconnect();
+//            });
 };
 
 var Cliente = function(nombre, avatar) {
