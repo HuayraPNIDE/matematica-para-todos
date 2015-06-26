@@ -11,6 +11,7 @@ var Servidor = function(nombre) {
 var Conexion = function (ip, nroJugador, nombreJugador) {
     var socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
 //    console.log('Conexion');
+    var self = this;
     this.respuesta = function(o) {
         $("#mano .respuesta").on('click', function() {
             // Deshabilita cartas //
@@ -51,7 +52,7 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                     $("#mano .guerra .contador figcaption").html(o.contador_guerra);
                 }
 
-                this.respuesta(o);
+                self.respuesta(o);
             });
         });
     }
