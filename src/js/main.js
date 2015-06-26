@@ -10,8 +10,7 @@ var Servidor = function(nombre) {
 
 var Conexion = function (ip, nroJugador, nombreJugador) {
     var socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
-    console.log('Conexion');
-    this.registrarEspera(socket);
+//    console.log('Conexion');
     this.registrarEspera = function(socket) {
         socket.on('connect', function () {
             socket.on('listo', function (o) {
@@ -56,6 +55,8 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
         });
         $("#mano").show();
     }
+
+    this.registrarEspera(socket);
 //            socket.on('retiro', function (msg) {
 //                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
 //                $(".juego").hide();
