@@ -172,10 +172,10 @@ function registrar_espera(socket) {
         
         $("#mano .respuesta").on('click', function() {
             // Deshabilita cartas //
-            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
             // Envia la selección //
-            socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+            socket.emit('respuesta', { jugador: "JUGADOR1", respuesta: "ESTASSSS" });
             $("#mano .respuesta").off('click');
         });
 
