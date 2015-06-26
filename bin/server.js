@@ -96,14 +96,13 @@ var Juego = function (io, socket, jugadores) {
         io.emit('listo', jugadores.getJugadores());
         io.emit('mano', jugadores.getMano(self.indice));
         socket.on('respuesta', function(opcion) {
-            logger.write(opcion.llave, 'respuesta');
+//            logger.write(opcion.llave, 'respuesta');
 //            console.log(opcion.llave);
-            
 //            
 //logger.write('OPCION: ' + JSON.stringify(opcion, null, 2), 'respuesta');
 //logger.write('self.indice: ' + self.indice, 'respuesta');
 //io.emit('mano', jugadores.getMano(++self.indice));
-//            self.respuestaJugadores(opcion);
+            self.respuestaJugadores(opcion);
         });
     },
     this.respuestaCorrecta = function() {
@@ -118,9 +117,7 @@ var Juego = function (io, socket, jugadores) {
         return respuestaCorrecta;
     },
     this.respuestaJugadores = function(opcion) {
-        logger.write('resPUesTAS.', 'respuestaJugadores');
         logger.write('OPCION: ' + opcion, 'respuestaJugadores');
-        logger.write('resPUesTAS.', 'respuestaJugadores');
         
         this.resultados[self.indice] = { respuestaCorrecta: this.respuestaCorrecta() };
         this.resultados[self.indice][opcion.jugador] = opcion.respuesta;
