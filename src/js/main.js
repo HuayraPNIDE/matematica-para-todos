@@ -11,6 +11,17 @@ var Servidor = function(nombre) {
 var Conexion = function (ip, nroJugador, nombreJugador) {
     var socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
 //    console.log('Conexion');
+    this.respuesta = function(o) {
+        $("#mano .respuesta").on('click', function() {
+            // Deshabilita cartas //
+            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+            // Envia la selección //
+            socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+            $("#mano .respuesta").off('click');
+        });
+        $("#mano").show();
+    },
     this.registrarEspera = function(socket) {
         socket.on('connect', function () {
             socket.on('listo', function (o) {
@@ -43,19 +54,8 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 this.respuesta(o);
             });
         });
-    },
-    this.respuesta = function(o) {
-        $("#mano .respuesta").on('click', function() {
-            // Deshabilita cartas //
-            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-            // Envia la selección //
-            socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
-            $("#mano .respuesta").off('click');
-        });
-        $("#mano").show();
     }
-
+    
     this.registrarEspera(socket);
 //            socket.on('retiro', function (msg) {
 //                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
