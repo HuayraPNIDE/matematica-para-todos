@@ -117,6 +117,7 @@ var Juego = function (io, socket, jugadores) {
         return respuestaCorrecta;
     },
     this.respuestaJugadores = function(opcion) {
+        console.log(JSON.stringify(opcion, null, 2));
         logger.write('OPCION: ' + opcion, 'respuestaJugadores');
         
         this.resultados[self.indice] = { respuestaCorrecta: this.respuestaCorrecta() };

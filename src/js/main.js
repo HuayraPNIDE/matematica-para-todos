@@ -34,13 +34,6 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
 //            });
 //
         socket.on('mano', function (o) {
-//            setInterval(function(){
-//                socket.emit('respuesta', {llave: nroJugador});
-////                    console.log("Cada 2.5 segundos" + JSON.stringify(socket, null, 2));
-//                console.log("Cada 2.5 segundos");
-//                console.dir(socket);
-//            }, 2500);
-//                
             // Contador
             if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
                 $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
@@ -60,18 +53,21 @@ var Conexion = function (ip, nroJugador, nombreJugador) {
                 $("#mano .guerra .contador figcaption").html(o.contador_guerra);
             }
 
-            $("#mano .respuesta").on('click', function() {
-                // Deshabilita cartas //
-                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-                // Envia la selección //
-                socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
-                $("#mano .respuesta").off('click');
-            });
-
-            $("#mano").show();
+            this.respuesta(o);
         });
+        
     });
+    this.respuesta = function(o) {
+        $("#mano .respuesta").on('click', function() {
+            // Deshabilita cartas //
+            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+            // Envia la selección //
+            socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+            $("#mano .respuesta").off('click');
+        });
+        $("#mano").show();
+    }
 };
 
 var Cliente = function(nombre, avatar) {
