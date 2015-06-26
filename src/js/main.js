@@ -10,60 +10,55 @@ var Servidor = function(nombre) {
 
 var Conexion = function (ip, nroJugador, nombreJugador) {
     var socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
+    registrar_espera(socket);
 //    console.log('Conexion');
-    var self = this;
-    this.respuesta = function(o) {
-        $("#mano .respuesta").on('click', function() {
-            // Deshabilita cartas //
-            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-            // Envia la selección //
-            socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
-            $("#mano .respuesta").off('click');
-        });
-        $("#mano").show();
-    },
-    this.registrarEspera = function(socket) {
-        socket.on('connect', function () {
-            socket.on('listo', function (o) {
-                $("#amigos").hide();
-                $("#titulo").html('A Jugar!!!');
-                $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
-                $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
-                $(".juego").show();
-            });
-            socket.on('mano', function (o) {
-                // Contador
-                if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                    $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-                }
-                $(".jugador1 .contador figcaption").html(o.jugador1.contador);
-
-                if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                    $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-                }
-                $(".jugador2 .contador figcaption").html(o.jugador2.contador);
-
-                // Cartas
-                $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
-                $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
-                // Cuando hay Guerra
-                if(o.contador_guerra) {
-                    $("#mano .guerra .contador figcaption").html(o.contador_guerra);
-                }
-
-                self.respuesta(o);
-            });
-        });
-    }
-    
-    this.registrarEspera(socket);
+//    var self = this;
+//    this.respuesta = function(o) {
+//        $("#mano .respuesta").on('click', function() {
+//            // Deshabilita cartas //
+//            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//            // Envia la selección //
+//            socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+//            $("#mano .respuesta").off('click');
+//        });
+//        $("#mano").show();
+//    },
+//    socket.on('connect', function () {
+//        socket.on('listo', function (o) {
+//            $("#amigos").hide();
+//            $("#titulo").html('A Jugar!!!');
+//            $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
+//            $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+//            $(".juego").show();
+//        });
+//        socket.on('mano', function (o) {
+//            // Contador
+//            if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+//                $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+//            }
+//            $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+//
+//            if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+//                $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+//            }
+//            $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+//
+//            // Cartas
+//            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+//            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+//            // Cuando hay Guerra
+//            if(o.contador_guerra) {
+//                $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+//            }
+//            self.respuesta(o);
+//        });
+//    });
 //            socket.on('retiro', function (msg) {
 //                $("#titulo").html(msg + ' Se retiro <br> Es el fin del juego');
 //                $(".juego").hide();
 //                socket.disconnect();
 //            });
-//
 //            socket.on('fin', function (resultados) {
 //                $("#titulo").html('Es el fin del juego <br> Estos son los resultados');
 //                $(".juego").hide();
@@ -136,6 +131,68 @@ var Amigos = function () {
 };
 
 
-function enviarla() {
-    
+
+
+function registrar_espera(socket) {
+
+    socket.on('connect', function () {
+        console.log('Me conecte al servidor');
+        console.log('Registro eventos:\nlisto\nretiro\nmano');
+
+        socket.on('listo', function (o) {
+            $("#amigos").hide();
+            $("#titulo").html('A Jugar!!!');
+            $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
+            $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+            $(".juego").show();
+        });
+
+        var btn_mano = document.getElementById('btn_mano');
+        socket.on('mano', function (o) {
+            console.log('Desde el server me llegan cartas:');
+            if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+            }
+            $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+
+            if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+            }
+            $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+
+            // Cartas
+            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+            // Cuando hay Guerra
+            if(o.contador_guerra) {
+                $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+            }
+            $("#mano").show();
+        });
+        
+        $("#mano .respuesta").on('click', function() {
+            // Deshabilita cartas //
+            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+            // Envia la selección //
+            socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+            $("#mano .respuesta").off('click');
+        });
+
+//
+//        btn_mano.onclick = function () {
+//            console.log('Respondo');
+//            var eleccion = document.getElementsByName("opcion");
+//            var val = "";
+//            for (var j = 0; j < eleccion.length; j++) {
+//                if (eleccion[j].checked) {
+//                    val = eleccion[j].value;
+//                }
+//            }
+//            socket.emit('respuesta', val);
+//            btn_mano.disabled = true;
+//        };
+
+    });
+
 }
