@@ -10,7 +10,7 @@ var Servidor = function(nombre) {
 
 var Conexion = function (ip, nroJugador, nombreJugador) {
     var socket = io("http://" + ip + ":" + PUERTO + "/", {query: 'nro_jugador=' + nroJugador + "&nombre_jugador=" + nombreJugador});
-    registrar_espera(socket);
+//    registrar_espera(socket);
 //    console.log('Conexion');
     var self = this;
     this.emitir = function() {
