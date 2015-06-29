@@ -134,6 +134,8 @@
 //                        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
                         //self.socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
                         //$("#mano .respuesta").off('click');
+
+                        socket.emit('respuesta', { jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')});
                     });
                     
                 });
