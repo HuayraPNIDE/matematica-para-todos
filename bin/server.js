@@ -3,8 +3,12 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var local_ip = require('my-local-ip')()
 var spawn = require('child_process').spawn;
-var PUERTO = 3000;
 var jugadores;
+var MAX_JUGADORES = 2;
+var FILE_MAZO = '../src/mazo.json';
+var FILE_LOGGER = '/tmp/log-servidor.txt';
+var MAX_RESPUESTAS_DIFIRENTES = 0;
+var PUERTO = 3000;
 
 function conectado(socket)
 {
@@ -40,6 +44,7 @@ function iniciar_servidor(PUERTO)
     var cartas_guerra = 0;
 
     io.on('connection', function (socket) {
+        console.log('connection');
         socket.on('respuesta', function (opcion) {
             respuestas.push(jugador_ip);
             opcion_respuestas.push(opcion);
@@ -116,24 +121,26 @@ function iniciar_servidor(PUERTO)
             }
         });
 
-        if (jugadores.length >= MAX_JUGADORES) {
+        if (get_jugadores_count(jugadores) >= MAX_JUGADORES) {
             console.log('Se conecto el maximo de jugadores: ' + jugadores);
             return;
         }
-
         
         var jugador_ip = socket.handshake.address;
         var jugadorNumero = socket.handshake.query.nro_jugador;
         var nombre_jugador = socket.handshake.query.nombre_jugador;
 
         jugadores[jugadorNumero] = { nombre: nombre_jugador, ip: jugador_ip, contador: 0, mazo: [] };
+        //jugadores++;
+        console.log('Hay conectados '+ get_jugadores_count(jugadores) +' jugadores');
+        conectado(socket);
 //        jugadores.push(jugador_ip);
 //        obj_cartas_jugador[nombre_jugador] = 0;
 //        obj_ip_jugador[nombre_jugador] = jugador_ip;
 //        //jugadores++;
-//        console.log('Hay conectados ' + jugadores.length + ' jugadores');
+//        console.log('Hay conectados ' + get_jugadores_count(jugadores) + ' jugadores');
 //        conectado(socket);
-        if (jugadores.length == MAX_JUGADORES) {
+        if (get_jugadores_count(jugadores) == MAX_JUGADORES) {
             console.log("Ya tenemos a todos los jugadores");
             console.log("Arrancamos el juego");
             
@@ -160,7 +167,8 @@ function iniciar_servidor(PUERTO)
             io.emit('listo', get_jugadores(jugadores));
 //            io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
             console.log('Se juega ahora la mano ' + i);
-            io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
+            io.emit('mano', get_jugadores(jugadores));
+//            io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
         }
 
         socket.on('disconnect', function () {
@@ -168,7 +176,7 @@ function iniciar_servidor(PUERTO)
             jugadores.splice(index, 1);
             io.emit('retiro', jugador_ip);
             desconectado(socket);
-            console.log('Hay conectados ' + jugadores.length + ' jugadores');
+            console.log('Hay conectados ' + get_jugadores_count(jugadores) + ' jugadores');
         });
 
     });
@@ -180,18 +188,23 @@ function iniciar_servidor(PUERTO)
 
 function get_jugadores(jugadores) {
     return {
-        jugador1: { nombre: jugadores.jugador1.nombre, ip: jugadores.jugador1.ip },
-        jugador2: { nombre: jugadores.jugador2.nombre, ip: jugadores.jugador2.ip },
+        jugador1: { nombre: jugadores.jugador1.nombre, ip: jugadores.jugador1.ip, contador: 0 },
+        jugador2: { nombre: jugadores.jugador2.nombre, ip: jugadores.jugador2.ip, contador: 0 },
     };
+//{ nombre: nombre_jugador, ip: jugador_ip, contador: 0, mazo: [] };
+}
+
+function get_jugadores_count(jugadores) {
+    return Object.keys(jugadores).length;
 }
 
 function repartir_cartas(jugadores) {
-    var mazo = require(FILE_MAZO);
-    mazo_completo = mazo.concat(mazo);
+    var Mazo = require(FILE_MAZO);
+    mazo_completo = Mazo.mazo.concat(Mazo.mazo);
     mazo_jugador1 = [];
     mazo_jugador2 = [];
 
-    for (var k = 0; k < mazo.length; k++) {
+    for (var k = 0; k < Mazo.mazo.length; k++) {
         var id_carta_jugador1 = Math.floor(Math.random() * mazo_completo.length);
         var carta_jugador1 = mazo_completo[id_carta_jugador1];
         mazo_jugador1.push(carta_jugador1);
@@ -239,7 +252,6 @@ if (!usuario) {
     console.log("# node bin/server.js --usuario=Nombre");
     process.exit(-1);
 }
-
 
 iniciar_servidor(PUERTO);
 publicar_servidor();

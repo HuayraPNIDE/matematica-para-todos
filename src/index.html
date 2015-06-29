@@ -51,19 +51,19 @@
                     });
 
                     socket.on('retiro', function (msg) {
-                        document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
-                        document.getElementById("mazos").style.visibility = "hidden";
-                        document.getElementById("opciones").style.visibility = "hidden";
-                        document.getElementById("cartas").style.visibility = "hidden";
-                        document.getElementById('nombres').innerHTML = "";
+//                        document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
+//                        document.getElementById("mazos").style.visibility = "hidden";
+//                        document.getElementById("opciones").style.visibility = "hidden";
+//                        document.getElementById("cartas").style.visibility = "hidden";
+//                        document.getElementById('nombres').innerHTML = "";
                         socket.disconnect();
                     });
 
                     socket.on('fin', function (resultados) {
-                        document.getElementById('titulo').innerHTML = 'Es el fin del juego <br> Estos son los resultados';
-                        document.getElementById("mazos").style.visibility = "hidden";
-                        document.getElementById("opciones").style.visibility = "hidden";
-                        document.getElementById("cartas").style.visibility = "hidden";
+//                        document.getElementById('titulo').innerHTML = 'Es el fin del juego <br> Estos son los resultados';
+//                        document.getElementById("mazos").style.visibility = "hidden";
+//                        document.getElementById("opciones").style.visibility = "hidden";
+//                        document.getElementById("cartas").style.visibility = "hidden";
 
                         //document.getElementById('resultados').innerHTML = resultados;
                         socket.disconnect();
