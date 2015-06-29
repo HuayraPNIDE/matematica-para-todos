@@ -4,6 +4,49 @@ var FILE_LOGGER = '/tmp/log-servidor.txt';
 var MAX_RESPUESTAS_DIFIRENTES = 0;
 var PUERTO = 3000;
 
+if (!String.prototype.repeat) {
+    String.prototype.repeat = function (count) {
+        'use strict';
+        if (this == null) {
+            throw new TypeError('can\'t convert ' + this + ' to object');
+        }
+        var str = '' + this;
+        count = +count;
+        if (count != count) {
+            count = 0;
+        }
+        if (count < 0) {
+            throw new RangeError('repeat count must be non-negative');
+        }
+        if (count == Infinity) {
+            throw new RangeError('repeat count must be less than infinity');
+        }
+        count = Math.floor(count);
+        if (str.length == 0 || count == 0) {
+            return '';
+        }
+// Ensuring count is a 31-bit integer allows us to heavily optimize the
+// main part. But anyway, most current (August 2014) browsers can't handle
+// strings 1 << 28 chars or longer, so:
+        if (str.length * count >= 1 << 28) {
+            throw new RangeError('repeat count must not overflow maximum string size');
+        }
+        var rpt = '';
+        for (; ; ) {
+            if ((count & 1) == 1) {
+                rpt += str;
+            }
+            count >>>= 1;
+            if (count == 0) {
+                break;
+            }
+            str += str;
+        }
+        return rpt;
+    }
+}
+
+/*
 var Jugadores = function () {
     this.jugadores = {};
     this.contadorGuerra;
@@ -45,162 +88,66 @@ var Jugadores = function () {
  
 var Juego = function (io, socket, jugadores) {
     this.resultados = [];
-    this.respuestaCorrecta;
     this.indice=0;
     cartas = new Mazo();
     cartas.repartir(jugadores.jugadores);
-    var self=this;
+    self=this;
     this.jugar = function() {
         logger.write('Jugar.', 'Juego');
         io.emit('listo', jugadores.getJugadores());
-        io.emit('mano', jugadores.getMano(this.indice));
+        io.emit('mano', jugadores.getMano(self.indice));
         socket.on('respuesta', function(opcion) {
-            console.log(JSON.stringify(opcion, null, 2));
-            self.respuestaJugadores(opcion);
+            logger.write(opcion.llave, 'respuesta');
+//            console.log(opcion.llave);
+            
+//            
+//logger.write('OPCION: ' + JSON.stringify(opcion, null, 2), 'respuesta');
+//logger.write('self.indice: ' + self.indice, 'respuesta');
+//io.emit('mano', jugadores.getMano(++self.indice));
+//            self.respuestaJugadores(opcion);
         });
     },
-    this.respuestaJugadores = function(opcion) {
-        logger.write('Jugar.', 'respuestaJugadores');
-//        this.respuestaCorrecta = "";
-//        if (jugadores.jugador1.mazo[this.indice].lados > jugadores.jugador2.mazo[this.indice].lados) {
-//            this.respuestaCorrecta = "jugador1";
-//        } else if (jugadores.jugador1.mazo[this.indice].lados < jugadores.jugador2.mazo[this.indice].lados) {
-//            this.respuestaCorrecta = "jugador2";
-//        } else {
-//            this.respuestaCorrecta = "empate";
-//        }
-//        
-//        this.resultados[this.indice] = { respuestaCorrecta: this.respuestaCorrecta };
-//        this.resultados[this.indice][opcion.jugador] = opcion.respuesta;
-//        
-//        // Tengo ambas respuestas //
-//        if(this.resultados[this.indice].jugador1 && this.resultados[this.indice].jugador2) {
-//            // Respuestas iguales //
-//            if(this.resultados[this.indice].jugador1.respuesta == this.resultados[this.indice].jugador2.respuesta) {
-//                logger.write('Respuestas iguales.', 'respuestaJugadores');
-//                // Empate = Guerra //
-//                if(this.resultados[this.indice].jugador1.respuesta == 'empate') {
-//                    logger.write('Empate = Guerra.', 'respuestaJugadores');
-//                    jugadores.addContadorGuerra();
-//                } else {
-//                    logger.write('Respuestas iguales.', 'respuestaJugadores');
-//
-//                    jugadores.addContadorJugador(JUGAs);
-//                }
-//                
-//                
-//                if (opcion_respuestas[0] == 'empate') {
-//                    console.log('Aca hay guerra');
-//                    cartas_guerra++;
-//                    obj_cartas_jugador['empate']++;
-//                } else {
-//                    console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
-//                    if (cartas_guerra) {
-//                        logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
-//                        obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
-//                        cartas_guerra = 0;
-//                    }
-//                    obj_cartas_jugador[opcion_respuestas[0]]++;
-//                }
-//
-//        historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
-//    } else {
-//        console.log('Las respuestas difieren\nRepregunto');
-//        i--; //Decremento para que vuelva a enviar la misma mano al emitir
-//    }
+    this.respuestaCorrecta = function() {
+        respuestaCorrecta = "";
+        if(jugadores.jugadores.jugador1.mazo[self.indice].lados > jugadores.jugadores.jugador2.mazo[self.indice].lados) {
+            respuestaCorrecta = "jugador1";
+        } else if (jugadores.jugadores.jugador1.mazo[self.indice].lados < jugadores.jugadores.jugador2.mazo[self.indice].lados) {
+            respuestaCorrecta = "jugador2";
+        } else {
+            respuestaCorrecta = "empate";
         }
+        return respuestaCorrecta;
+    },
+    this.respuestaJugadores = function(opcion) {
+        logger.write('resPUesTAS.', 'respuestaJugadores');
+        logger.write('OPCION: ' + opcion, 'respuestaJugadores');
+        logger.write('resPUesTAS.', 'respuestaJugadores');
         
-//        socket.on('respuesta', function (opcion) {
-//            respuestas.push(jugador_ip);
-//            opcion_respuestas.push(opcion);
-//            logger.write(jugador_ip + ' = ' + opcion);
-//            if (respuestas.length == 2) {
-//                logger.write('Tengo ambas respuestas');
-//                var lados_j1 = 0;
-//                var lados_j2 = 0;
-//                var img_j1 = 0;
-//                var img_j2 = 0;
-//                lados_j1 = mazo_jugador1[i].lados;
-//                lados_j2 = mazo_jugador2[i].lados;
-//                img_j1 = mazo_jugador1[i].img;
-//                img_j2 = mazo_jugador2[i].img;
-//
-//                console.log("Opcion real:" + respuesta_real);
-//                console.log("Opciones jugadores: " + opcion_respuestas);
-//
-//                // Jugador1 y Jugador2 opinan lo mismo //
-//                if (opcion_respuestas[0] == opcion_respuestas[1]) {
-//                    if (opcion_respuestas[0] == 'empate') {
-//                        console.log('Aca hay guerra');
-//                        cartas_guerra++;
-//                        obj_cartas_jugador['empate']++;
-//                    } else {
-//                        console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
-//                        if (cartas_guerra) {
-//                            logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
-//                            obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
-//                            cartas_guerra = 0;
-//                        }
-//                        obj_cartas_jugador[opcion_respuestas[0]]++;
-//                    }
-//
-//                    historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
-//                } else {
-//                    console.log('Las respuestas difieren\nRepregunto');
-//                    i--; //Decremento para que vuelva a enviar la misma mano al emitir
-//                }
-//
-//                if (i == 23) {
-//                    logger.write('Ya se repartieron todas las cartas');
-//                    logger.write('Se muestra historico de respuestas');
-//                    logger.write(historico_respuestas);
-//
-//                    logger.write('El jugador1 uno tiene ' + obj_cartas_jugador.jugador1 + ' cartas');
-//                    logger.write('El jugador2 uno tiene ' + obj_cartas_jugador.jugador2 + ' cartas');
-//                    logger.write('Hubo ' + obj_cartas_jugador.empate + ' empatadas');
-//                    io.emit('fin', historico_respuestas);
-//                    i = 0;
-//                    return;
-//                }
-//
-//                logger.write("=======================================================================");
-//                i++;
-//                logger.write('Se juega ahora la mano ' + i);
-//                io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": obj_cartas_jugador.jugador1, "contador_jugador2": obj_cartas_jugador.jugador2, "contador_guerra": cartas_guerra});
-//                respuestas = [];
-//                opcion_respuestas = [];
-//            }
-//        });
-//
-//        var jugador_ip = socket.handshake.address;
-//        var nombre_jugador = socket.handshake.query.nombre_jugador;
-//
-//        if (nombre_jugador == 'jugador1') { //Hack
-//            nombre_jugador = usuario;
-//        }
-//
-//        jugadores.push(jugador_ip);
-//
-//        obj_cartas_jugador[nombre_jugador] = 0;
-//
-//        obj_ip_jugador[nombre_jugador] = jugador_ip;
-//
-//        //jugadores++;
-//        console.log('Hay conectados ' + jugadores.length + ' jugadores');
-//        logger.write('Hay conectados ' + jugadores.length + ' jugadores');
-//        conectado(socket);
-//
-//        if (jugadores.length == MAX_JUGADORES) {
-//            REPARTIJA
-//            io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
-//            console.log('Se juega ahora la mano ' + i);
-//            logger.write('Se juega ahora la mano ' + i);
-//            io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
-//        }
-//    });
+        this.resultados[self.indice] = { respuestaCorrecta: this.respuestaCorrecta() };
+        this.resultados[self.indice][opcion.jugador] = opcion.respuesta;
 
-
-//    }
+        // Tengo ambas respuestas //
+        if(this.resultados[self.indice].jugador1 && this.resultados[self.indice].jugador2) {
+            // Respuestas IGUALES //
+            if(this.resultados[self.indice].jugador1.respuesta == this.resultados[self.indice].jugador2.respuesta) {
+                logger.write('Respuestas iguales.', 'respuestaJugadores');
+                // Empate = Guerra //
+                if(this.resultados[self.indice].jugador1.respuesta == 'empate') {
+                    logger.write('Empate = Guerra.', 'respuestaJugadores');
+                    jugadores.addContadorGuerra();
+                } else {
+                    logger.write('Respuestas iguales.', 'respuestaJugadores');
+                    jugadores.addContadorJugador(this.resultados[self.indice].jugador1.respuesta);
+                }
+                self.indice++;
+            } else {
+            // Respuestas DIFERENTES //
+                logger.write('Las respuestas difieren. Repreguntar.', 'respuestaJugadores');
+                self.indice--;
+            }
+            io.emit('mano', jugadores.getMano(self.indice));
+        }
+    }
 };
 
 var Mazo = function () {
@@ -230,9 +177,10 @@ var Servidor = function () {
     this.http = require('http').Server(this.app);
     this.io = require('socket.io')(this.http);
     this.jugadores = new Jugadores();
+    var self = this;
    
     this.http.listen(PUERTO, function () {
-        logger.write('Se crea el SERVIDOR. Esperando jugadores en el puerto: ', 'Servidor' + PUERTO);
+        logger.write('Se crea el SERVIDOR. Esperando jugadores en el puerto: ' + PUERTO + '.', 'Servidor');
     });
     
     this.publicar = function() {
@@ -245,16 +193,23 @@ var Servidor = function () {
         });
         logger.write('avahi-publish-service', 'publicar');
         spawn = require('child_process').spawn;
-        spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', PUERTO]);
+        proceso = spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + this.localIp + '-' + usuario, '_http._tcp', PUERTO]);
+        proceso.on('error', function(code, signal) {
+            console.log("Salio con errorr: [%s] - %s", code, signal);
+        });
     },
     this.registrarEspera = function () {
-        var self = this;
-        this.io.on('connection', function (socket) {
+        self.io.on('connection', function (socket) {
+                    socket.on('ferret', function (name, fn) {
+                        fn('woot');
+                    });
+            logger.write('connection', 'registrarEspera');
             if (self.jugadores.getJugadoresCount() > MAX_JUGADORES) {
                 logger.write('Se alcanzaron el máximo de jugadores.', 'registrarEspera');
                 return;
             }
             logger.write('Se conecto un nuevo jugador.', 'registrarEspera');
+            logger.write('nuevoJugador.', 'registrarEspera');
             nuevoJugador = self.queryString(socket);
             self.jugadores.nuevoJugador(nuevoJugador);
             logger.write('Hay conectados ' + self.jugadores.getJugadoresCount() + ' jugadores', 'registrarEspera');
@@ -265,13 +220,14 @@ var Servidor = function () {
                 juego.jugar();
             }
 	    socket.on('disconnect', function(socket) {
-                this.registrarDesconexion(socket);
+                self.registrarDesconexion(socket);
             });
         });
     },
     this.registrarDesconexion = function(socket) {
         logger.write('Se desconecto un jugador.', 'registrarDesconexion');
-        this.queryString(socket);
+        logger.close();
+        socket=null;
     },
     this.queryString = function(socket) {
         jugador = {
@@ -283,7 +239,7 @@ var Servidor = function () {
         return jugador;
     }
 };
-
+*/
 /*
  var app = require('express')();
  var fs = require('fs');
@@ -314,7 +270,6 @@ var Servidor = function () {
  
  var mazo_jugador1 = [];
  var mazo_jugador2 = [];
- 
  var respuestas = [];
  var i = 0;
  
@@ -532,33 +487,211 @@ var Servidor = function () {
  //publicar_servidor();
  
  */
+
+
 var LoggerFile = function () {
-//    var fs = require('fs');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| INICIO |' + '='.repeat(20) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-//    this.write = function (data, ref) {
-//        if(ref) {
-//            ref = ref;
-//        }
-//        fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
-//        console.log('', 'LoggerFile' + data);
-//    }
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| FIN |' + '='.repeat(20) + '\n');
-//    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
     var fs = require('fs');
-    fs.writeFileSync(FILE_LOGGER, '=\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(20) + '| INICIO |' + '='.repeat(20) + '\n');
+    fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
     this.write = function (data, ref) {
         if(ref) {
-            ref = ref;
+            ref = '[' + ref + '] ';
         }
-        fs.appendFileSync(FILE_LOGGER, '[' + ref + '] ' + data + "\n");
-        console.log('', 'LoggerFile' + data);
+        fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
+        console.log('', 'LoggerFile: ' + ref + data);
+    }
+    this.close = function () {
+        fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
+        fs.appendFileSync(FILE_LOGGER, '='.repeat(21) + '| FIN |' + '='.repeat(22) + '\n');
+        fs.appendFileSync(FILE_LOGGER, '='.repeat(50) + '\n');
     }
 }
+
+function repartir_cartas(jugadores) {
+
+    var mazo = require(FILE_MAZO);
+    mazo_completo = mazo.concat(mazo);
+ 
+    mazo_jugador1 = [];
+    mazo_jugador2 = [];
+
+    for (var k = 0; k < mazo.length; k++) {
+	    var id_carta_jugador1 = Math.floor(Math.random() * mazo_completo.length);
+	    var carta_jugador1 = mazo_completo[id_carta_jugador1];
+	    mazo_jugador1.push(carta_jugador1);
+	    mazo_completo.splice(id_carta_jugador1, 1);
+
+	    var id_carta_jugador2 = Math.floor(Math.random() * mazo_completo.length);
+	    var carta_jugador2 = mazo_completo[id_carta_jugador2];
+	    mazo_jugador2.push(carta_jugador2);
+	    mazo_completo.splice(id_carta_jugador2, 1);
+    }
+
+    jugadores.jugador1.mazo = mazo_jugador1;
+    jugadores.jugador2.mazo = mazo_jugador2;
+}
+
+
+function jugar(io, socket, jugadores) {
+
+	indice = 0;
+	repartir_cartas(jugadores);
+	logger.write("Cartas mezcladas y repartidas", "jugar");
+
+
+	socket.on('respuesta', function (opcion) {
+		logger.write(opcion.llave, 'jugar');
+	});
+
+        io.emit('listo', get_jugadores(jugadores));
+	io.emit('mano', get_mano(indice));
+
+
+
+}
+
+function get_jugadores(jugadores) {
+
+	return {
+            jugador1: { nombre: jugadores.jugador1.nombre, ip: jugadores.jugador1.ip },
+            jugador2: { nombre: jugadores.jugador2.nombre, ip: jugadores.jugador2.ip },
+	};
+}
+
+function get_mano(i) {
+
+	return {
+            jugador1: { carta: jugadores.jugador1.mazo[i], contador: jugadores.jugador1.contador },
+            jugador2: { carta: jugadores.jugador2.mazo[i], contador: jugadores.jugador2.contador }
+            //contadorGuerra: this.contadorGuerra
+        };
+}
+
+
+
+function get_cantidad_jugadores(jugadores) {
+
+        return Object.keys(jugadores).length;
+}
+
+function agregar_nuevo_jugador(jugador_info) {
+        jugador_numero = jugador_info.numero;
+        jugadores[jugador_numero] = { nombre: jugador_info.nombre, ip: jugador_info.ip, contador: 0, mazo: [] };
+    }
+
+function get_jugador_info(socket) {
+
+	jugador = {
+            numero: socket.handshake.query.nro_jugador,
+            nombre: socket.handshake.query.nombre_jugador,
+            ip: socket.handshake.address
+        };
+
+	return jugador;
+}
+
+function publicar_servidor() {
+	var usuario;
+	var localIp = require('my-local-ip')();
+	var spawn = require('child_process').spawn;
+
+	var usuario;
+	process.argv.forEach(function (val, index, array) {
+		if (/--usuario=/.test(val)) {
+			usuario = val.split('=')[1];
+		}
+
+	});
+
+	usuario = usuario || 'nombre_por_defecto';
+
+	proceso = spawn('avahi-publish-service', ['-s', 'huayra_mxt-' + localIp + '-' + usuario, '_http._tcp', PUERTO]);
+
+	logger.write('Se publica servidor con avahi.', 'Servidor');
+
+	proceso.on('error', function(code, signal) {
+		console.log("Salio con errorr: [%s] - %s", code, signal);
+	});
+}
+
+
+function registrar_espera(io) {
+
+	io.on('connection', function (socket) {
+		logger.write('nueva conexion', 'registrar_espera');
+
+		if(get_cantidad_jugadores(jugadores) > MAX_JUGADORES) {
+			logger.write("Se alcanzo la cantidad maxima de jugadores", "registrar_espera");
+			return;
+		}
+
+		nuevo_jugador_info = get_jugador_info(socket);
+		logger.write(nuevo_jugador_info.numero + ":" + nuevo_jugador_info.nombre + ":" + nuevo_jugador_info.ip, "registrar_espera");
+		agregar_nuevo_jugador(nuevo_jugador_info);
+
+		if(get_cantidad_jugadores(jugadores) == MAX_JUGADORES) {
+			logger.write("Tenemos dos jugadores, estos son: ", "registrar_espera");
+			logger.write(JSON.stringify(jugadores, null, 2), "registrar_espera");
+			logger.write("Vamos a jugar", "registrar_espera");
+			jugar(io, socket, jugadores);
+		}
+
+		socket.on('disconnect', function(socket) {
+			logger.write("Uno de los jugadores se retiro", "registrar_espera");
+		});
+
+
+		
+
+
+	/*
+            logger.write('connection', 'registrarEspera');
+            if (self.jugadores.getJugadoresCount() > MAX_JUGADORES) {
+                logger.write('Se alcanzaron el máximo de jugadores.', 'registrarEspera');
+                return;
+            }
+            logger.write('Se conecto un nuevo jugador.', 'registrarEspera');
+            logger.write('nuevoJugador.', 'registrarEspera');
+            nuevoJugador = self.queryString(socket);
+            self.jugadores.nuevoJugador(nuevoJugador);
+            logger.write('Hay conectados ' + self.jugadores.getJugadoresCount() + ' jugadores', 'registrarEspera');
+            
+            if(self.jugadores.getJugadoresCount() == MAX_JUGADORES) {
+                logger.write('Empezamos a jugar.', 'registrarEspera');
+                juego = new Juego(self.io, socket, self.jugadores);
+                juego.jugar();
+            }
+	    socket.on('disconnect', function(socket) {
+                self.registrarDesconexion(socket);
+            });
+	*/
+        });
+}
+
+
 var logger = new LoggerFile();
+
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+var jugadores = {};
+
+http.listen(PUERTO, function () {
+        logger.write('Esperando jugadores en ' + PUERTO + '.', 'Servidor');
+	publicar_servidor();
+	registrar_espera(io);
+});
+
+
+
+
+
+
+
+/*
 var servidor = new Servidor();
 servidor.publicar();
 servidor.registrarEspera();
-
+*/
