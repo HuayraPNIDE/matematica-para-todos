@@ -87,7 +87,6 @@
                         socket.emit('respuesta', val);
                         btn_mano.disabled = true;
                     };
-
                 });
             }
 
@@ -110,7 +109,6 @@
                                 nombre = campos[3].split('-')[2];
                                 amigos[ip] = nombre;
                             }
-
                             if (campos[0] == '-') {
                                 ip = campos[3].split('-')[1].replace(/\\/gi, "");
                                 delete amigos[ip];
@@ -128,10 +126,8 @@
                       <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png" width="81" height="86"></a></div> \
                       <div class="media-body"><h4 class="media-heading">' + amigos[k] + '</h4></div> \
                     </div>';
-
                     $(e).append($(tmp).on('click', function() {
-//                        self.elegir($(this).data('ip'), cliente.nombre);
-                        elegir_amigo(k);
+                        elegir_amigo($(this).data('ip'));
                     }));
                 }
                 $('#lista_amigos').html(e);
@@ -140,12 +136,10 @@
             
             function set_usuario_info() {
                 usuario_info['nombre'] = document.getElementById('nombre').value;
-
                 //Hago aparecer listado de amigos
                 $("#avatar").hide();
                 $("#btn_actualizar_amigos, #lista_amigos").show();
             }
-
         </script>
         <link href="css/style.css" media='screen' rel="stylesheet" />
 
