@@ -54,6 +54,7 @@ var Juego = function (io, socket, jugadores) {
         io.emit('listo', jugadores.getJugadores());
         io.emit('mano', jugadores.getMano(this.indice));
         socket.on('respuesta', function(opcion) {
+            console.log(JSON.stringify(opcion, null, 2));
             this.respuestaJugadores(opcion);
         });
     },

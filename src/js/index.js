@@ -94,7 +94,7 @@ function registrar_espera(socket) {
 console.log("#mano .respuesta");
 console.log($(this).find('img').prop('class'));
         socket.emit('respuesta', {jugador: nombreJugador, respuesta: $(this).find('img').prop('class')});
-console.log(JSON.stringify(socket, null, 2));
+//console.log(JSON.stringify(socket, null, 2));
         $("#mano .respuesta").off('click');
     });
     
