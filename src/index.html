@@ -89,12 +89,10 @@
                     };
 
                 });
-
             }
 
             var amigos = {};
             function buscar_amigos() {
-
                 var spawn = require('child_process').spawn;
                 var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
                 var data = '';
@@ -124,22 +122,22 @@
 
             function actualizar_amigos() {
                 e = $("<div></div>");
-                for (var k in this.amigos) {
-                    amigo = this.amigos[k];
+                for (var k in amigos) {
+                    amigo = amigos[k];
                     tmp = '<div class="media thumbnail" data-ip="' + k + '"> \
                       <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png" width="81" height="86"></a></div> \
-                      <div class="media-body"><h4 class="media-heading">' + this.amigos[k] + '</h4></div> \
+                      <div class="media-body"><h4 class="media-heading">' + amigos[k] + '</h4></div> \
                     </div>';
 
                     $(e).append($(tmp).on('click', function() {
 //                        self.elegir($(this).data('ip'), cliente.nombre);
-                        elegir_amigo(this.ip);
+                        elegir_amigo(k);
                     }));
                 }
                 $('#lista_amigos').html(e);
                 $('#lista_amigos').show();
             }
-
+            
             function set_usuario_info() {
                 usuario_info['nombre'] = document.getElementById('nombre').value;
 
@@ -176,8 +174,6 @@
                     <div class="col-xs-6 col-sm-4"></div>
                 </section>
             </div>
-            
-            
             
 
             <div id="mazos">
