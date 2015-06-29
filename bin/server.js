@@ -49,64 +49,65 @@ var Juego = function (io, socket, jugadores) {
     this.indice=0;
     cartas = new Mazo();
     cartas.repartir(jugadores.jugadores);
+    var self=this;
     this.jugar = function() {
         logger.write('Jugar.', 'Juego');
         io.emit('listo', jugadores.getJugadores());
         io.emit('mano', jugadores.getMano(this.indice));
         socket.on('respuesta', function(opcion) {
             console.log(JSON.stringify(opcion, null, 2));
-            this.respuestaJugadores(opcion);
+            self.respuestaJugadores(opcion);
         });
     },
     this.respuestaJugadores = function(opcion) {
         logger.write('Jugar.', 'respuestaJugadores');
-        this.respuestaCorrecta = "";
-        if (jugadores.jugador1.mazo[this.indice].lados > jugadores.jugador2.mazo[this.indice].lados) {
-            this.respuestaCorrecta = "jugador1";
-        } else if (jugadores.jugador1.mazo[this.indice].lados < jugadores.jugador2.mazo[this.indice].lados) {
-            this.respuestaCorrecta = "jugador2";
-        } else {
-            this.respuestaCorrecta = "empate";
-        }
-        
-        this.resultados[this.indice] = { respuestaCorrecta: this.respuestaCorrecta };
-        this.resultados[this.indice][opcion.jugador] = opcion.respuesta;
-        
-        // Tengo ambas respuestas //
-        if(this.resultados[this.indice].jugador1 && this.resultados[this.indice].jugador2) {
-            // Respuestas iguales //
-            if(this.resultados[this.indice].jugador1.respuesta == this.resultados[this.indice].jugador2.respuesta) {
-                logger.write('Respuestas iguales.', 'respuestaJugadores');
-                // Empate = Guerra //
-                if(this.resultados[this.indice].jugador1.respuesta == 'empate') {
-                    logger.write('Empate = Guerra.', 'respuestaJugadores');
-                    jugadores.addContadorGuerra();
-                } else {
-                    logger.write('Respuestas iguales.', 'respuestaJugadores');
-
-                    jugadores.addContadorJugador(JUGAs);
-                }
-                
-                
-                if (opcion_respuestas[0] == 'empate') {
-                    console.log('Aca hay guerra');
-                    cartas_guerra++;
-                    obj_cartas_jugador['empate']++;
-                } else {
-                    console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
-                    if (cartas_guerra) {
-                        logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
-                        obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
-                        cartas_guerra = 0;
-                    }
-                    obj_cartas_jugador[opcion_respuestas[0]]++;
-                }
-
-        historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
-    } else {
-        console.log('Las respuestas difieren\nRepregunto');
-        i--; //Decremento para que vuelva a enviar la misma mano al emitir
-    }
+//        this.respuestaCorrecta = "";
+//        if (jugadores.jugador1.mazo[this.indice].lados > jugadores.jugador2.mazo[this.indice].lados) {
+//            this.respuestaCorrecta = "jugador1";
+//        } else if (jugadores.jugador1.mazo[this.indice].lados < jugadores.jugador2.mazo[this.indice].lados) {
+//            this.respuestaCorrecta = "jugador2";
+//        } else {
+//            this.respuestaCorrecta = "empate";
+//        }
+//        
+//        this.resultados[this.indice] = { respuestaCorrecta: this.respuestaCorrecta };
+//        this.resultados[this.indice][opcion.jugador] = opcion.respuesta;
+//        
+//        // Tengo ambas respuestas //
+//        if(this.resultados[this.indice].jugador1 && this.resultados[this.indice].jugador2) {
+//            // Respuestas iguales //
+//            if(this.resultados[this.indice].jugador1.respuesta == this.resultados[this.indice].jugador2.respuesta) {
+//                logger.write('Respuestas iguales.', 'respuestaJugadores');
+//                // Empate = Guerra //
+//                if(this.resultados[this.indice].jugador1.respuesta == 'empate') {
+//                    logger.write('Empate = Guerra.', 'respuestaJugadores');
+//                    jugadores.addContadorGuerra();
+//                } else {
+//                    logger.write('Respuestas iguales.', 'respuestaJugadores');
+//
+//                    jugadores.addContadorJugador(JUGAs);
+//                }
+//                
+//                
+//                if (opcion_respuestas[0] == 'empate') {
+//                    console.log('Aca hay guerra');
+//                    cartas_guerra++;
+//                    obj_cartas_jugador['empate']++;
+//                } else {
+//                    console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
+//                    if (cartas_guerra) {
+//                        logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
+//                        obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
+//                        cartas_guerra = 0;
+//                    }
+//                    obj_cartas_jugador[opcion_respuestas[0]]++;
+//                }
+//
+//        historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
+//    } else {
+//        console.log('Las respuestas difieren\nRepregunto');
+//        i--; //Decremento para que vuelva a enviar la misma mano al emitir
+//    }
         }
         
 //        socket.on('respuesta', function (opcion) {
@@ -199,7 +200,7 @@ var Juego = function (io, socket, jugadores) {
 //    });
 
 
-    }
+//    }
 };
 
 var Mazo = function () {
