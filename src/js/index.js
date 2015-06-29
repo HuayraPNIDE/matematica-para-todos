@@ -39,32 +39,45 @@ function registrar_espera(socket) {
         socket.on('fin', function (resultados) {
             socket.disconnect();
         });
-
+                            
+var btn_mano = document.getElementById('btn_mano');
         socket.on('mano', function(o) {
             console.log('Desde el server me llegan cartas:');
             console.log(JSON.stringify(o, null, 2));
-            // Contador
-            if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-            }
-            $(".jugador1 .contador figcaption").html(o.jugador1.contador);
-
-            if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
-                $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
-            }
-            $(".jugador2 .contador figcaption").html(o.jugador2.contador);
-
-            // Cartas
-            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
-            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
-            // Cuando hay Guerra
-            if(o.contador_guerra) {
-                $("#mano .guerra .contador figcaption").html(o.contador_guerra);
-            }
+//            // Contador
+//            if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+//                $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+//            }
+//            $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+//
+//            if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+//                $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+//            }
+//            $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+//
+//            // Cartas
+//            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+//            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+//            // Cuando hay Guerra
+//            if(o.contador_guerra) {
+//                $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+//            }
             $("#mano").show();
         });
         
-                            
+                            btn_mano.onclick = function() {
+                                    console.log('Respondo'); 
+                                    var eleccion = document.getElementsByName("opcion");
+                                    var val="";
+                                    for(var j=0; j < eleccion.length; j++) {
+                                            if(eleccion[j].checked) {
+                                                    val = eleccion[j].value;
+                                            }
+                                    }
+                                    socket.emit('respuesta', val);
+                                    btn_mano.disabled = true;
+                            };
+
         /*
          var btn_mano = document.getElementById('btn_mano');
          socket.on('mano', function(o) {
@@ -89,16 +102,16 @@ function registrar_espera(socket) {
 //        console.log(JSON.stringify({jugador: nombreJugador, respuesta: 'jugador1'}, null, 2));
 //        socket.emit('respuesta', {jugador: nombreJugador, respuesta: 'jugador1'});
 //    }, 1000);
-    $("#mano .respuesta").on('click', function () {
-        // Deshabilita cartas
-//        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-//        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-console.log("#mano .respuesta");
-console.log($(this).find('img').prop('class'));
-        socket.emit('respuesta', {jugador: nombreJugador, respuesta: $(this).find('img').prop('class')});
-//console.log(JSON.stringify(socket, null, 2));
-        $("#mano .respuesta").off('click');
-    });
+//    $("#mano .respuesta").on('click', function () {
+//        // Deshabilita cartas
+////        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+////        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//console.log("#mano .respuesta");
+//console.log($(this).find('img').prop('class'));
+//        socket.emit('respuesta', {jugador: nombreJugador, respuesta: $(this).find('img').prop('class')});
+////console.log(JSON.stringify(socket, null, 2));
+//        $("#mano .respuesta").off('click');
+//    });
 
     });
 //    btn_mano.onclick = function() {
