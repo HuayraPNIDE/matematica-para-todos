@@ -15,12 +15,12 @@
                 <h1>La Guerra de los Lados</h1>
                 <h2 id="titulo"></h2>
             </header>
-               
+
             <div id="msg" class="alert alert-danger alert-dismissible" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <strong>ERROR!</strong> No se suministro nombre de jugador.
             </div>
-            
+
             <article id="avatar">
                 <section class="row">
                     <div class="col-xs-6 col-sm-4"></div>
@@ -43,7 +43,7 @@
                 <p><a href="#" id="actualizar" class="btn btn-primary" role="button">Actualizar</a></p>
                 <div id="listado"></div>
             </article>
-            
+
             <article class="juego">
                 <article id="jugadores">
                     <section class="jugador1 fizq">
@@ -78,76 +78,80 @@
                 </article>
             </article>
         </main>
-    <script>
-    $(document).ready(function() {
-	/*
-        console.log("Inicio");
-        var amigos = new Amigos();
-        $("#entrar").on("click", function(event) {
-            event.stopPropagation();
-            nombre = $("#nombre").val();
-            if(!nombre) {
-                $("#msg").show();
-                return;
-            }
-            new Servidor(nombre);
-            // Espera un segundo para ejecutar la conexión desde el cliente //
-            setTimeout(function(){
-                cliente = new Cliente(nombre);
-                cliente.init();
-                amigos.buscar();
-                amigos.actualizarVista();
-            }, 1001);
-        });
+        <script>
+            $(document).ready(function () {
+                /*
+                 console.log("Inicio");
+                 var amigos = new Amigos();
+                 $("#entrar").on("click", function(event) {
+                 event.stopPropagation();
+                 nombre = $("#nombre").val();
+                 if(!nombre) {
+                 $("#msg").show();
+                 return;
+                 }
+                 new Servidor(nombre);
+                 // Espera un segundo para ejecutar la conexión desde el cliente //
+                 setTimeout(function(){
+                 cliente = new Cliente(nombre);
+                 cliente.init();
+                 amigos.buscar();
+                 amigos.actualizarVista();
+                 }, 1001);
+                 });
+             
+                 $("#actualizar").on("click", function(event) {
+                 event.stopPropagation();
+                 amigos.actualizarVista(cliente);
+                 console.log("Evento actualizar amigos");
+                 });
+                 });
+                 */
 
-        $("#actualizar").on("click", function(event) {
-            event.stopPropagation();
-            amigos.actualizarVista(cliente);
-            console.log("Evento actualizar amigos");
-        });
-    });
-	*/
+                var gui = require('nw.gui');
+                var win = gui.Window.get();
 
-	var gui = require('nw.gui');
-	var win = gui.Window.get();
+                win.on('close', function () {
+                    console.log('Saliendo del cliente');
 
-	win.on('close', function() {
-		console.log('Saliendo del cliente');
+                    var exec = require('child_process').exec;
+                    exec("killall nodejs", function (error, stdout, stderr) {
+                    });
 
-		var exec = require('child_process').exec;
-		exec("killall nodejs", function (error, stdout, stderr) {});
+                    win.close(true);
+                    this.close(true);
+                });
 
-		win.close(true);
-		this.close(true);
-	});
+                $("#entrar").on("click", function (event) {
+                    event.stopPropagation();
+                    nombre = $("#nombre").val();
 
-	$("#entrar").on("click", function(event) {
-		event.stopPropagation();
-		nombre = $("#nombre").val();
+                    if (!nombre) {
+                        $("#msg").show();
+                        return;
+                    }
 
-		if(!nombre) {
-			$("#msg").show();
-			return;
-            	}
+                    init_server(nombre); //Iniciar servidor
+                    setTimeout(function () {
 
-		init_server(nombre); //Iniciar servidor
-		setTimeout(function() {
+                        var socket = connect_own_server('jugador1', nombre);
+                        registrar_espera(socket);
+                        
+                        $("#avatar").hide();
+                        $("#actualizar, #amigos").show();
+                        
+                        buscar_amigos();
+                        actualizar_amigos();
 
-			var socket = connect_own_server('jugador1', nombre);
-			registrar_espera(socket);
+                    }, 1000);
+                });
 
-
-
-		}, 1000);
-	});
-
-	$("#actualizar").on("click", function(event) {
-		event.stopPropagation();
-		//amigos.actualizarVista(cliente);
-	});
-
-    });
-    </script>
+                $("#actualizar").on("click", function (event) {
+                    event.stopPropagation();
+                    //amigos.actualizarVista(cliente);
+                });
+            });
+        </script>
     </body>
 </html>
 
