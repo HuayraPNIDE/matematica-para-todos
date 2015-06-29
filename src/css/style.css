@@ -1,25 +1,21 @@
 body {
     background-image: url("../img/background_verde.png");
 }
-#btn_actualizar_amigos,
-#mazos,
-#opciones,
-#lista_amigos,
-#cartas {
+
+.juego,
+#mano,
+#amigos,
+.guerra {
     display: none;
 }
-#cont_jugador1,
-#cont_jugador2 {
-    text-align: center;
-}
-
-#mazo1,
-#carta1 {
+.fizq {
     float: left;
 }
-#mazo2,
-#carta2 {
+.fder {
     float: right;
+}
+#cartas div {
+    display: inline-block;
 }
 .thumbnail {
     background-color: rgba(255,255,255,0.5);

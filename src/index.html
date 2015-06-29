@@ -13,14 +13,14 @@
             var usuario_info = {};
             function init() {
                 var local_ip = require('my-local-ip')()
-                var socket = io("http://" + local_ip + ":3000/", {query: "nombre_jugador=jugador1"});
+                var socket = io("http://" + local_ip + ":3000/", {query: 'nro_jugador=jugador1&nombre_jugador=' + usuario_info.nombre});
                 registrar_espera(socket);
                 buscar_amigos();
             }
 
             function elegir_amigo(amigo_ip) {
                 //var amigo = document.getElementById('amigo').value;
-                var socket = io("http://" + amigo_ip + ":3000", {query: "nombre_jugador=" + usuario_info.nombre});
+                var socket = io("http://" + amigo_ip + ":3000/", {query: 'nro_jugador=jugador2&nombre_jugador=' + usuario_info.nombre});
                 registrar_espera(socket);
             }
 
@@ -30,15 +30,20 @@
                     console.log('Registro eventos:\nlisto\nretiro\nmano');
 
                     socket.on('listo', function (o) {
-                        document.getElementById("mazos").style.display = "block";
-                        document.getElementById("lista_amigos").style.visibility = "hidden";
-                        document.getElementById('btn_actualizar_amigos').style.visibility = "hidden";
-
-                        document.getElementById("opcion_jugador1").value = "jugador1";
-                        document.getElementById("opcion_jugador2").value = "jugador2";
-
-                        document.getElementById('titulo').innerHTML = 'Arranca el juego';
-                        //document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+//                        document.getElementById("mazos").style.display = "block";
+//                        document.getElementById("listado").style.visibility = "hidden";
+//                        document.getElementById('actualizar').style.visibility = "hidden";
+//
+//                        document.getElementById("opcion_jugador1").value = "jugador1";
+//                        document.getElementById("opcion_jugador2").value = "jugador2";
+//
+//                        document.getElementById('titulo').innerHTML = 'Arranca el juego';
+//                        //document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
+                        $("#amigos").hide();
+                        $("#titulo").html('A Jugar!!!');
+                        $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
+                        $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+                        $(".juego").show();
                     });
 
                     socket.on('retiro', function (msg) {
@@ -60,33 +65,64 @@
                         socket.disconnect();
                     });
 
-                    var btn_mano = document.getElementById('btn_mano');
+//                    var btn_mano = document.getElementById('btn_mano');
                     socket.on('mano', function (o) {
+//                        console.log('Desde el server me llegan cartas:');
+//                        console.log(JSON.stringify(o, null, 2));
+//                        document.getElementById('cont_jugador1').innerHTML = o.contador_jugador1;
+//                        document.getElementById('cont_jugador2').innerHTML = o.contador_jugador2;
+//                        document.getElementById('cont_guerra').innerHTML = o.contador_guerra;
+//                        document.getElementById('carta1_img').src = o.carta1.img;
+//                        document.getElementById('carta2_img').src = o.carta2.img;
+//                        document.getElementById("cartas").style.display = "block";
+//                        document.getElementById("opciones").style.display = "block";
+//                        btn_mano.disabled = false;
                         console.log('Desde el server me llegan cartas:');
                         console.log(JSON.stringify(o, null, 2));
-                        document.getElementById('cont_jugador1').innerHTML = o.contador_jugador1;
-                        document.getElementById('cont_jugador2').innerHTML = o.contador_jugador2;
-                        document.getElementById('cont_guerra').innerHTML = o.contador_guerra;
-                        document.getElementById('carta1_img').src = o.carta1.img;
-                        document.getElementById('carta2_img').src = o.carta2.img;
-                        document.getElementById("cartas").style.display = "block";
-                        document.getElementById("opciones").style.display = "block";
-                        btn_mano.disabled = false;
+
+                        // Contador
+                        if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                            $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                        }
+                        $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+
+                        if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                            $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+                        }
+                        $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+
+                        // Cartas
+                        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+                        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+                        // Cuando hay Guerra
+                        if(o.contador_guerra) {
+                            $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+                        }
+                        $("#mano").show();
 
                     });
 
-                    btn_mano.onclick = function () {
-                        console.log('Respondo');
-                        var eleccion = document.getElementsByName("opcion");
-                        var val = "";
-                        for (var j = 0; j < eleccion.length; j++) {
-                            if (eleccion[j].checked) {
-                                val = eleccion[j].value;
-                            }
-                        }
-                        socket.emit('respuesta', val);
-                        btn_mano.disabled = true;
-                    };
+//                    btn_mano.onclick = function () {
+//                        console.log('Respondo');
+//                        var eleccion = document.getElementsByName("opcion");
+//                        var val = "";
+//                        for (var j = 0; j < eleccion.length; j++) {
+//                            if (eleccion[j].checked) {
+//                                val = eleccion[j].value;
+//                            }
+//                        }
+//                        socket.emit('respuesta', val);
+//                        btn_mano.disabled = true;
+//                    };
+                    $("#mano .respuesta").on('click', function() {
+                        console.log({ jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+                        // Deshabilita cartas
+//                        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//                        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+                        self.socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
+                        $("#mano .respuesta").off('click');
+                    });
+                    
                 });
             }
 
@@ -130,15 +166,15 @@
                         elegir_amigo($(this).data('ip'));
                     }));
                 }
-                $('#lista_amigos').html(e);
-                $('#lista_amigos').show();
+                $('#listado').html(e);
+                $('#listado').show();
             }
             
             function set_usuario_info() {
-                usuario_info['nombre'] = document.getElementById('nombre').value;
+                usuario_info['nombre'] = $('#nombre').val();
                 //Hago aparecer listado de amigos
                 $("#avatar").hide();
-                $("#btn_actualizar_amigos, #lista_amigos").show();
+                $("#amigos").show();
             }
         </script>
         <link href="css/style.css" media='screen' rel="stylesheet" />
@@ -151,7 +187,7 @@
                 <h2 id="titulo"></h2>
             </header>
 
-            <div id="avatar">
+            <article id="avatar">
                 <section class="row">
                     <div class="col-xs-6 col-sm-4"></div>
                     <div class="col-xs-6 col-sm-4 centro">
@@ -167,8 +203,48 @@
                     </div>
                     <div class="col-xs-6 col-sm-4"></div>
                 </section>
-            </div>
+            </article>
             
+            <article id="amigos">
+                <p><a href="#" id="actualizar" class="btn btn-primary" role="button">Actualizar</a></p>
+                <div id="listado"></div>
+            </article>
+            
+            
+            <article class="juego">
+                <article id="jugadores">
+                    <section class="jugador1 fizq">
+                        <div class="avatar"><img src="img/avatar-neutro.png" width="40" height="40"/>NOMBRE</div>
+                        <div class="cartas"><img src="img/lomos.png" /></div>
+                        <figure class="contador">
+                            <img src="img/caja.png" />
+                            <figcaption></figcaption>
+                        </figure>
+                    </section>
+                    <section class="jugador2 fder">
+                        <div class="avatar">NOMBRE<img src="img/avatar-neutro.png" width="40" height="40" /></div>
+                        <div class="cartas"><img src="img/lomos.png" /></div>
+                        <figure class="contador">
+                            <img src="img/caja.png" />
+                            <figcaption></figcaption>
+                        </figure>
+                    </section>
+                </article>
+
+                <article id="mano">
+                    <section class="guerra">
+                        <figure class="contador">
+                            <img src="img/caja_cartas.png" />
+                            <figcaption></figcaption>
+                        </figure></section>
+                    <section>
+                        <div class="respuesta fizq"><img src="img/lomo.png" class="jugador1" /></div>
+                        <div class="respuesta fder"><img src="img/lomo.png" class="jugador2" /></div>
+                    </section>
+                    <section class="respuesta"><img src="img/empate.png" class="empate" /></section>
+                </article>
+            </article>
+<!--            
 
             <div id="mazos">
                 <div id="mazo1"><div id="cont_jugador1">0</div><img src="res/imgs/lomo.png" /></div>
@@ -189,10 +265,8 @@
             <div id="cartas">
                 <div id="carta1"><img id="carta1_img"/></div>
                 <div id="carta2"><img id="carta2_img"/></div>
-            </div>
+            </div>-->
             
-            <p><a href="#" class="btn btn-primary" id="btn_actualizar_amigos" role="button">Actualizar</a></p>
-            <div id="lista_amigos"></div>
         </div>
         <script>
             $(document).ready(function() {
@@ -201,7 +275,7 @@
                     set_usuario_info();
                 });
                 
-                $("#btn_actualizar_amigos").on("click", function(event) {
+                $("#actualizar").on("click", function(event) {
                     event.stopPropagation();
                     actualizar_amigos()
                 });
