@@ -208,13 +208,7 @@ function repartir_cartas(jugadores) {
 
 function publicar_servidor()
 {
-    cliente = spawn('avahi-publish-service',
-            [
-                '-s',
-                'huayra_mxt-' + local_ip + '-' + usuario,
-                '_http._tcp', PUERTO
-            ]
-            );
+    cliente = spawn('avahi-publish-service', [ '-s', 'huayra_mxt-' + local_ip + '-' + usuario, '_http._tcp', PUERTO ]);
 
     cliente.stdout.on('data', function (data) {
         //console.log("stderr", data);

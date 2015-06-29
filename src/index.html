@@ -12,9 +12,12 @@
         <script>
             var usuario_info = {};
             function init() {
-                var local_ip = require('my-local-ip')()
+                var local_ip = require('my-local-ip')();
+                console.log('INIT');
                 var socket = io("http://" + local_ip + ":3000/", {query: 'nro_jugador=jugador1&nombre_jugador=' + usuario_info.nombre});
+                console.log('registrar_espera');
                 registrar_espera(socket);
+                console.log('buscar_amigos');
                 buscar_amigos();
             }
 
@@ -25,6 +28,7 @@
             }
 
             function registrar_espera(socket) {
+                console.log('FUNCTION: registrar_espera');
                 socket.on('connect', function () {
                     console.log('Me conecte al servidor');
                     console.log('Registro eventos:\nlisto\nretiro\nmano');
@@ -180,7 +184,7 @@
         <link href="css/style.css" media='screen' rel="stylesheet" />
 
     </head>
-    <body onload="init()">
+    <body>
         <div id="container">
             <header>
                 <h1>La Guerra de los Lados</h1>
@@ -273,6 +277,7 @@
                 $("#entrar").on("click", function(event) {
                     event.stopPropagation();
                     set_usuario_info();
+                    init();
                 });
                 
                 $("#actualizar").on("click", function(event) {
