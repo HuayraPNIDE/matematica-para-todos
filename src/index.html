@@ -15,7 +15,11 @@
 	    function init_server(server_name) {
 		var spawn = require('child_process').spawn;
 		spawn = require('child_process').spawn;
-		spawn('nodejs', ['../bin/server.js', "--usuario="+server_name]);
+		server_output = spawn('nodejs', ['../bin/server.js', "--usuario="+server_name]);
+
+		server_output.stdout.on('data', function (data) {
+        		console.log("[SERVER] " + data);
+    		});
 	    }
 
             function init() {

@@ -50,7 +50,7 @@ function iniciar_servidor(PUERTO)
             opcion_respuestas.push(opcion);
 
             //console.log('Tengo '+respuestas.length+' respuestas');
-            console.log(jugador_ip + ' = ' + opcion);
+            console.log(jugador_ip + ' = ' + JSON.stringify(opcion, null, 2));
             if (respuestas.length == 2) {
                 console.log('Tengo ambas respuestas');
 
