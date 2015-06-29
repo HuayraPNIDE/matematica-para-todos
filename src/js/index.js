@@ -1,4 +1,8 @@
 var amigos = {};
+var IMG_CARPETA = 'img/';
+var IMG_NOMBRE = 'carta_';
+var IMG_EXTENSION = '.png';
+
 
 function init_server(server_name) {
 
@@ -36,6 +40,31 @@ function registrar_espera(socket) {
             socket.disconnect();
         });
 
+        socket.on('mano', function(o) {
+            console.log('Desde el server me llegan cartas:');
+            console.log(JSON.stringify(o, null, 2));
+            // Contador
+            if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+            }
+            $(".jugador1 .contador figcaption").html(o.jugador1.contador);
+
+            if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
+            }
+            $(".jugador2 .contador figcaption").html(o.jugador2.contador);
+
+            // Cartas
+            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
+            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
+            // Cuando hay Guerra
+            if(o.contador_guerra) {
+                $("#mano .guerra .contador figcaption").html(o.contador_guerra);
+            }
+            $("#mano").show();
+        });
+        
+                            
         /*
          var btn_mano = document.getElementById('btn_mano');
          socket.on('mano', function(o) {
@@ -58,6 +87,29 @@ function registrar_espera(socket) {
          */
 
     });
+    $("#mano .respuesta").on('click', function () {
+        // Deshabilita cartas
+//        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+console.log("#mano .respuesta");
+console.log($(this).find('img').prop('class'));
+        socket.emit('respuesta', {jugador: nombreJugador, respuesta: $(this).find('img').prop('class')});
+console.log(JSON.stringify(socket, null, 2));
+        $("#mano .respuesta").off('click');
+    });
+    
+//    btn_mano.onclick = function() {
+//            console.log('Respondo'); 
+//            var eleccion = document.getElementsByName("opcion");
+//            var val="";
+//            for(var j=0; j < eleccion.length; j++) {
+//                    if(eleccion[j].checked) {
+//                            val = eleccion[j].value;
+//                    }
+//            }
+//            socket.emit('respuesta', val);
+//            btn_mano.disabled = true;
+//    };
 
 }
 
@@ -110,6 +162,5 @@ function actualizar_amigos() {
 function elegir_amigo(amigo_ip, nombre_jugador) {
     console.log('elegir_amigo');
     var socket = io("http://" + amigo_ip + ":3000/", {query: 'nro_jugador=jugador2&nombre_jugador=' + nombre_jugador});
-//    return socket;
     registrar_espera(socket);
 }
