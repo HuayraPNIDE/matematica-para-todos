@@ -79,6 +79,7 @@
             </article>
         </main>
         <script>
+            var nombreJugador;
             $(document).ready(function () {
                 /*
                  console.log("Inicio");
@@ -124,17 +125,17 @@
 
                 $("#entrar").on("click", function (event) {
                     event.stopPropagation();
-                    nombre = $("#nombre").val();
+                    nombreJugador = $("#nombre").val();
 
-                    if (!nombre) {
+                    if (!nombreJugador) {
                         $("#msg").show();
                         return;
                     }
 
-                    init_server(nombre); //Iniciar servidor
+                    init_server(nombreJugador); //Iniciar servidor
                     setTimeout(function () {
 
-                        var socket = connect_own_server('jugador1', nombre);
+                        var socket = connect_own_server('jugador1', nombreJugador);
                         registrar_espera(socket);
                         
                         $("#avatar").hide();

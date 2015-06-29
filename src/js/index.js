@@ -89,19 +89,18 @@ function buscar_amigos() {
 }
 
 function actualizar_amigos() {
-    
     console.log('actualizar_amigos');
     e = $("<div></div>");
     for (var k in amigos) {
         amigo = amigos[k];
-        tmp = '<div class="media thumbnail" data-ip="' + k + '" data-nombre="' + amigos[k] + '" > \
+        tmp = '<div class="media thumbnail" data-ip="' + k + '" > \
               <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png" width="81" height="86"></a></div> \
               <div class="media-body"><h4 class="media-heading">' + amigos[k] + '</h4></div> \
             </div>';
 
         $(e).append($(tmp).on('click', function () {
             console.log('actualizar_amigos CLICK');
-            elegir_amigo($(this).data('ip'), $(this).data('nombre'));
+            elegir_amigo($(this).data('ip'), nombreJugador);
         }));
     }
     $('#listado').html(e);
