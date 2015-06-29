@@ -123,35 +123,29 @@
             }
 
             function actualizar_amigos() {
-                var div_lista_amigos = document.getElementById('lista_amigos');
-                div_lista_amigos.innerHTML = "";
+                e = $("<div></div>");
+                for (var k in this.amigos) {
+                    amigo = this.amigos[k];
+                    tmp = '<div class="media thumbnail" data-ip="' + k + '"> \
+                      <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png" width="81" height="86"></a></div> \
+                      <div class="media-body"><h4 class="media-heading">' + this.amigos[k] + '</h4></div> \
+                    </div>';
 
-                for (var k in amigos) {
-                    var amigo = amigos[k];
-                    var nd = document.createElement('div');
-                    var ni = document.createElement('img');
-
-                    nd.innerHTML = amigo + '<br>' + k;
-                    nd.ip = k;
-                    nd.onclick = function () {
+                    $(e).append($(tmp).on('click', function() {
+//                        self.elegir($(this).data('ip'), cliente.nombre);
                         elegir_amigo(this.ip);
-                    };
-                    div_lista_amigos.appendChild(nd);
-                    div_lista_amigos.appendChild(document.createElement('br'));
+                    }));
                 }
-                document.getElementById("lista_amigos").style.display = "block";
+                $('#lista_amigos').html(e);
+                $('#lista_amigos').show();
             }
 
             function set_usuario_info() {
                 usuario_info['nombre'] = document.getElementById('nombre').value;
 
                 //Hago aparecer listado de amigos
-
-                document.getElementById('avatar').style.visibility = "hidden";
-
-                document.getElementById('btn_actualizar_amigos').style.display = "block";
-                document.getElementById('lista_amigos').style.display = "block";
-
+                $("#avatar").hide();
+                $("#btn_actualizar_amigos, #lista_amigos").show();
             }
 
         </script>
@@ -206,16 +200,20 @@
                 <div id="carta1"><img id="carta1_img"/></div>
                 <div id="carta2"><img id="carta2_img"/></div>
             </div>
-
-            <input type="button" value="Actualizar lista de amigos" id="btn_actualizar_amigos" onclick="actualizar_amigos()">
-            <div id="lista_amigos">
-            </div>
+            
+            <p><a href="#" class="btn btn-primary" id="btn_actualizar_amigos" role="button">Actualizar</a></p>
+            <div id="lista_amigos"></div>
         </div>
         <script>
             $(document).ready(function() {
                 $("#entrar").on("click", function(event) {
                     event.stopPropagation();
                     set_usuario_info();
+                });
+                
+                $("#btn_actualizar_amigos").on("click", function(event) {
+                    event.stopPropagation();
+                    actualizar_amigos()
                 });
             });
         </script>
