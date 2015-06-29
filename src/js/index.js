@@ -85,22 +85,22 @@ function registrar_espera(socket) {
          btn_mano.disabled = true;
          };
          */
-    setInterval(function(){
-        console.log(JSON.stringify({jugador: nombreJugador, respuesta: 'jugador1'}, null, 2));
-        socket.emit('respuesta', {jugador: nombreJugador, respuesta: 'jugador1'});
-    }, 1000);
+//    setInterval(function(){
+//        console.log(JSON.stringify({jugador: nombreJugador, respuesta: 'jugador1'}, null, 2));
+//        socket.emit('respuesta', {jugador: nombreJugador, respuesta: 'jugador1'});
+//    }, 1000);
+    $("#mano .respuesta").on('click', function () {
+        // Deshabilita cartas
+//        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+//        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+console.log("#mano .respuesta");
+console.log($(this).find('img').prop('class'));
+        socket.emit('respuesta', {jugador: nombreJugador, respuesta: $(this).find('img').prop('class')});
+//console.log(JSON.stringify(socket, null, 2));
+        $("#mano .respuesta").off('click');
+    });
 
     });
-//    $("#mano .respuesta").on('click', function () {
-//        // Deshabilita cartas
-////        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
-////        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-//console.log("#mano .respuesta");
-//console.log($(this).find('img').prop('class'));
-//        socket.emit('respuesta', {jugador: nombreJugador, respuesta: $(this).find('img').prop('class')});
-////console.log(JSON.stringify(socket, null, 2));
-//        $("#mano .respuesta").off('click');
-//    });
 //    btn_mano.onclick = function() {
 //            console.log('Respondo'); 
 //            var eleccion = document.getElementsByName("opcion");
