@@ -46,7 +46,7 @@ function iniciar_servidor(PUERTO)
     io.on('connection', function (socket) {
         console.log('connection');
         socket.on('respuesta', function (opcion) {
-            respuestas.push(jugador_ip);
+            //respuestas.push(jugador_ip);
             opcion_respuestas.push(opcion);
 
             //console.log('Tengo '+respuestas.length+' respuestas');
@@ -54,6 +54,7 @@ function iniciar_servidor(PUERTO)
             if (respuestas.length == 2) {
                 console.log('Tengo ambas respuestas');
 
+		/*
                 var lados_j1 = 0;
                 var lados_j2 = 0;
 
@@ -118,6 +119,7 @@ function iniciar_servidor(PUERTO)
                 io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": obj_cartas_jugador.jugador1, "contador_jugador2": obj_cartas_jugador.jugador2, "contador_guerra": cartas_guerra});
                 respuestas = [];
                 opcion_respuestas = [];
+	*/
             }
         });
 
@@ -167,16 +169,18 @@ function iniciar_servidor(PUERTO)
             io.emit('listo', get_jugadores(jugadores));
 //            io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
             console.log('Se juega ahora la mano ' + i);
-            io.emit('mano', get_jugadores(jugadores));
+            io.emit('mano', get_mano(jugadores, i));
 //            io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
         }
 
         socket.on('disconnect', function () {
+	/*
             var index = jugadores.indexOf(jugador_ip);
             jugadores.splice(index, 1);
             io.emit('retiro', jugador_ip);
             desconectado(socket);
             console.log('Hay conectados ' + get_jugadores_count(jugadores) + ' jugadores');
+	*/
         });
 
     });
@@ -196,6 +200,16 @@ function get_jugadores(jugadores) {
 
 function get_jugadores_count(jugadores) {
     return Object.keys(jugadores).length;
+}
+
+function get_mano(jugadores, i) {
+
+	return {
+		jugador1: { carta: jugadores.jugador1.mazo[i], contador: jugadores.jugador1.contador },
+		jugador2: { carta: jugadores.jugador2.mazo[i], contador: jugadores.jugador2.contador }
+		//contadorGuerra: this.contadorGuerra
+	}
+
 }
 
 function repartir_cartas(jugadores) {
