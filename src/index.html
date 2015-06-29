@@ -7,7 +7,7 @@
         <script src="./js/socket.io/socket.io-1.2.0.js"></script>
         <script src="js/jquery-1.11.3.min.js"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="js/main.js"></script>
+        <script src="js/index.js"></script>
     </head>
     <body class="centro">
         <main id="container">
@@ -80,6 +80,7 @@
         </main>
     <script>
     $(document).ready(function() {
+	/*
         console.log("Inicio");
         var amigos = new Amigos();
         $("#entrar").on("click", function(event) {
@@ -105,6 +106,48 @@
             console.log("Evento actualizar amigos");
         });
     });
+	*/
+
+	var gui = require('nw.gui');
+	var win = gui.Window.get();
+
+	win.on('close', function() {
+		console.log('Saliendo del cliente');
+
+		var exec = require('child_process').exec;
+		exec("killall nodejs", function (error, stdout, stderr) {});
+
+		win.close(true);
+		this.close(true);
+	});
+
+	$("#entrar").on("click", function(event) {
+		event.stopPropagation();
+		nombre = $("#nombre").val();
+
+		if(!nombre) {
+			$("#msg").show();
+			return;
+            	}
+
+		init_server(nombre); //Iniciar servidor
+		setTimeout(function() {
+
+			var socket = connect_own_server('jugador1', nombre);
+			registrar_espera(socket);
+
+
+
+		}, 1000);
+	});
+
+	$("#actualizar").on("click", function(event) {
+		event.stopPropagation();
+		//amigos.actualizarVista(cliente);
+	});
+
+    });
     </script>
     </body>
 </html>
+

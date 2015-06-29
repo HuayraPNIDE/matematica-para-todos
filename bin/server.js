@@ -248,13 +248,11 @@ var Servidor = function () {
     this.registrarEspera = function () {
         var self = this;
         this.io.on('connection', function (socket) {
-            logger.write('connection', 'registrarEspera');
             if (self.jugadores.getJugadoresCount() > MAX_JUGADORES) {
                 logger.write('Se alcanzaron el máximo de jugadores.', 'registrarEspera');
                 return;
             }
             logger.write('Se conecto un nuevo jugador.', 'registrarEspera');
-            logger.write('nuevoJugador.', 'registrarEspera');
             nuevoJugador = self.queryString(socket);
             self.jugadores.nuevoJugador(nuevoJugador);
             logger.write('Hay conectados ' + self.jugadores.getJugadoresCount() + ' jugadores', 'registrarEspera');
@@ -553,7 +551,7 @@ var LoggerFile = function () {
         if(ref) {
             ref = ref;
         }
-        fs.appendFileSync(FILE_LOGGER, ref + data + "\n");
+        fs.appendFileSync(FILE_LOGGER, '[' + ref + '] ' + data + "\n");
         console.log('', 'LoggerFile' + data);
     }
 }
