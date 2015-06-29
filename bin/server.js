@@ -38,10 +38,8 @@ function iniciar_servidor(puerto)
 	var cartas_guerra = 0;
 
 	io.on('connection', function(socket) {
-
 		socket.on('respuesta', function(opcion) {
 			respuestas.push(jugador_ip);
-			
 			opcion_respuestas.push(opcion);
 
 			//console.log('Tengo '+respuestas.length+' respuestas');
@@ -116,12 +114,10 @@ function iniciar_servidor(puerto)
 			}
 		});
 
-
 		if(jugadores.length >= MAX_JUGADORES) {
 			console.log('Se conecto el maximo de jugadores: '+jugadores);
 			return;
 		}
-
 
 		var jugador_ip = socket.handshake.address;
 		var nombre_jugador = socket.handshake.query.nombre_jugador;
