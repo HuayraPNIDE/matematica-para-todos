@@ -62,6 +62,7 @@ function registrar_espera(socket) {
 }
 
 function buscar_amigos() {
+    console.log('buscar_amigos');
     var spawn = require('child_process').spawn;
     var proceso = spawn("avahi-browse", ['-a', '-r', '-p', '--ignore-local']);
     var lineas;
@@ -88,6 +89,8 @@ function buscar_amigos() {
 }
 
 function actualizar_amigos() {
+    
+    console.log('actualizar_amigos');
     e = $("<div></div>");
     for (var k in amigos) {
         amigo = amigos[k];
@@ -97,6 +100,7 @@ function actualizar_amigos() {
             </div>';
 
         $(e).append($(tmp).on('click', function () {
+            console.log('actualizar_amigos CLICK');
             elegir_amigo($(this).data('ip'), $(this).data('nombre'));
         }));
     }
@@ -105,6 +109,7 @@ function actualizar_amigos() {
 }
 
 function elegir_amigo(amigo_ip, nombre_jugador) {
+    console.log('elegir_amigo');
     var socket = io("http://" + amigo_ip + ":3000/", {query: 'nro_jugador=jugador2&nombre_jugador=' + nombre_jugador});
 //    return socket;
     registrar_espera(socket);

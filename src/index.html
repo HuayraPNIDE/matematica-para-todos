@@ -141,13 +141,13 @@
                         $("#actualizar, #amigos").show();
                         
                         buscar_amigos();
-                        actualizar_amigos();
 
                     }, 1000);
                 });
 
                 $("#actualizar").on("click", function (event) {
                     event.stopPropagation();
+                    actualizar_amigos();
                     //amigos.actualizarVista(cliente);
                 });
             });
