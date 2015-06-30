@@ -45,6 +45,20 @@
                     console.log('Me conecte al servidor');
                     console.log('Registro eventos:\nlisto\nretiro\nmano');
 
+		    socket.on('disconnect', function() {
+			console.log('Se perdio conexion con el server');
+			$("#juego").hide();
+                        $("#titulo").html('Se perdio conexi&oacute;n con el servidor<br>Volviendo a la sala de amigos');
+
+			setTimeout(function() {
+				$("#titulo").html('');
+				actualizar_amigos();
+				$("#amigos").show();
+			}, 3000);
+
+			
+		    });
+
                     socket.on('listo', function (o) {
                         $("#amigos").hide();
                         $("#titulo").html('A Jugar!!!');
