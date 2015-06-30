@@ -24,35 +24,102 @@ function desconectado(socket)
 
 function iniciar_servidor(PUERTO)
 {
-    var jugadores = [];
-    var MAX_JUGADORES = 2;
+//    var jugadores = [];
+//    var mazo_jugador1 = [];
+//    var mazo_jugador2 = [];
+//    var respuestas = [];
 
-    var mazo_jugador1 = [];
-    var mazo_jugador2 = [];
-
-    var respuestas = [];
-    var i = 0;
-    var max_respuestas_diferentes = 0;
-
-    var historico_respuestas = [];
-    var opcion_respuestas = [];
-    var obj_ip_jugador = {};
-    var obj_cartas_jugador = {};
-    obj_cartas_jugador['empate'] = 0;
-    obj_cartas_jugador['eliminadas'] = 0;
-
-    var cartas_guerra = 0;
+    var resultados = [];
+    var indice = 0;
+    var respuestaCorrecta;
+    
+//    var max_respuestas_diferentes = 0;
+//
+//    var historico_respuestas = [];
+//    var opcion_respuestas = [];
+//    var obj_ip_jugador = {};
+//    var obj_cartas_jugador = {};
+//    obj_cartas_jugador['empate'] = 0;
+//    obj_cartas_jugador['eliminadas'] = 0;
+//    var cartas_guerra = 0;
 
     io.on('connection', function (socket) {
         console.log('connection');
         socket.on('respuesta', function (opcion) {
-            //respuestas.push(jugador_ip);
-            opcion_respuestas.push(opcion);
-
-            //console.log('Tengo '+respuestas.length+' respuestas');
-            console.log(jugador_ip + ' = ' + JSON.stringify(opcion, null, 2));
-            if (respuestas.length == 2) {
-                console.log('Tengo ambas respuestas');
+            console.log(JSON.stringify(opcion, null, 2));
+            
+            
+//        this.respuestaCorrecta = "";
+//        if (jugadores.jugador1.mazo[this.indice].lados > jugadores.jugador2.mazo[this.indice].lados) {
+//            this.respuestaCorrecta = "jugador1";
+//        } else if (jugadores.jugador1.mazo[this.indice].lados < jugadores.jugador2.mazo[this.indice].lados) {
+//            this.respuestaCorrecta = "jugador2";
+//        } else {
+//            this.respuestaCorrecta = "empate";
+//        }
+//        
+//        this.resultados[this.indice] = { respuestaCorrecta: this.respuestaCorrecta };
+//        this.resultados[this.indice][opcion.jugador] = opcion.respuesta;
+//        
+//        // Tengo ambas respuestas //
+//        if(this.resultados[this.indice].jugador1 && this.resultados[this.indice].jugador2) {
+//            // Respuestas iguales //
+//            if(this.resultados[this.indice].jugador1.respuesta == this.resultados[this.indice].jugador2.respuesta) {
+//                logger.write('Respuestas iguales.', 'respuestaJugadores');
+//                // Empate = Guerra //
+//                if(this.resultados[this.indice].jugador1.respuesta == 'empate') {
+//                    logger.write('Empate = Guerra.', 'respuestaJugadores');
+//                    jugadores.addContadorGuerra();
+//                } else {
+//                    logger.write('Respuestas iguales.', 'respuestaJugadores');
+//
+//                    jugadores.addContadorJugador(JUGAs);
+//                }
+//                
+//                
+//                if (opcion_respuestas[0] == 'empate') {
+//                    console.log('Aca hay guerra');
+//                    cartas_guerra++;
+//                    obj_cartas_jugador['empate']++;
+//                } else {
+//                    console.log('Las respuestas son iguales, la cartas es para ' + opcion_respuestas[0]);
+//                    if (cartas_guerra) {
+//                        logger.write('Hay ' + cartas_guerra + ' retenidas por guerra\nSe las queda ' + opcion_respuestas[0]);
+//                        obj_cartas_jugador[opcion_respuestas[0]] += cartas_guerra;
+//                        cartas_guerra = 0;
+//                    }
+//                    obj_cartas_jugador[opcion_respuestas[0]]++;
+//                }
+//
+//        historico_respuestas.push({"respuesta_real": respuesta_real, "respuesta_jugadores": opcion_respuestas[0], "lados_jugador1": lados_j1, "lados_jugador2": lados_j2, "img_j1": img_j1, "img_j2": img_j2});
+//    } else {
+//        console.log('Las respuestas difieren\nRepregunto');
+//        i--; //Decremento para que vuelva a enviar la misma mano al emitir
+//    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+//            //respuestas.push(jugador_ip);
+//            opcion_respuestas.push(opcion);
+//            //console.log('Tengo '+respuestas.length+' respuestas');
+//            console.log(jugador_ip + ' = ' + JSON.stringify(opcion, null, 2));
+//            if (respuestas.length == 2) {
+//                console.log('Tengo ambas respuestas');
 
 		/*
                 var lados_j1 = 0;
@@ -120,7 +187,7 @@ function iniciar_servidor(PUERTO)
                 respuestas = [];
                 opcion_respuestas = [];
 	*/
-            }
+//            }
         });
 
         if (get_jugadores_count(jugadores) >= MAX_JUGADORES) {
@@ -145,29 +212,8 @@ function iniciar_servidor(PUERTO)
         if (get_jugadores_count(jugadores) == MAX_JUGADORES) {
             console.log("Ya tenemos a todos los jugadores");
             console.log("Arrancamos el juego");
-            
             repartir_cartas(jugadores);
-
-//            console.log(JSON.stringify(obj_cartas_jugador, null, 2));
-//            var mazo = require('../src/mazo.json');
-//            var mazo_completo = mazo.mazo;
-//            mazo_completo = mazo_completo.concat(mazo.mazo);
-//
-//            for (var k = 0; k < 24; k++) {
-//                var id_carta_jugador1 = Math.floor(Math.random() * mazo_completo.length);
-//                var carta_jugador1 = mazo_completo[id_carta_jugador1];
-//                mazo_jugador1.push(carta_jugador1);
-//                mazo_completo.splice(id_carta_jugador1, 1);
-//
-//                var id_carta_jugador2 = Math.floor(Math.random() * mazo_completo.length);
-//                var carta_jugador2 = mazo_completo[id_carta_jugador2];
-//                mazo_jugador2.push(carta_jugador2);
-//                mazo_completo.splice(id_carta_jugador2, 1);
-//            }
-
-
             io.emit('listo', get_jugadores(jugadores));
-//            io.emit('listo', obj_ip_jugador); //Evento para armar interfaz de los clientes
             console.log('Se juega ahora la mano ' + i);
             io.emit('mano', get_mano(jugadores, i));
 //            io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
@@ -182,7 +228,6 @@ function iniciar_servidor(PUERTO)
             console.log('Hay conectados ' + get_jugadores_count(jugadores) + ' jugadores');
 	*/
         });
-
     });
 
     http.listen(PUERTO, function () {
@@ -192,8 +237,8 @@ function iniciar_servidor(PUERTO)
 
 function get_jugadores(jugadores) {
     return {
-        jugador1: { nombre: jugadores.jugador1.nombre, ip: jugadores.jugador1.ip, contador: 0 },
-        jugador2: { nombre: jugadores.jugador2.nombre, ip: jugadores.jugador2.ip, contador: 0 },
+        jugador1: { nro_jugador: 'jugador1', nombre: jugadores.jugador1.nombre, ip: jugadores.jugador1.ip, contador: 0 },
+        jugador2: { nro_jugador: 'jugador2', nombre: jugadores.jugador2.nombre, ip: jugadores.jugador2.ip, contador: 0 },
     };
 }
 
@@ -203,8 +248,8 @@ function get_jugadores_count(jugadores) {
 
 function get_mano(jugadores, i) {
     return {
-        jugador1: { carta: jugadores.jugador1.mazo[i], contador: jugadores.jugador1.contador },
-        jugador2: { carta: jugadores.jugador2.mazo[i], contador: jugadores.jugador2.contador },
+        jugador1: { nro_jugador: 'jugador1', carta: jugadores.jugador1.mazo[i], contador: jugadores.jugador1.contador },
+        jugador2: { nro_jugador: 'jugador2', carta: jugadores.jugador2.mazo[i], contador: jugadores.jugador2.contador },
         contadorGuerra: 0
     }
 }

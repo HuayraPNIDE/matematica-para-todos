@@ -27,12 +27,14 @@
             function init() {
                 var local_ip = require('my-local-ip')();
                 var socket = io("http://" + local_ip + ":3000/", {query: 'nro_jugador=jugador1&nombre_jugador=' + usuario_info.nombre});
+                usuario_info.nro_jugador='jugador1';
                 registrar_espera(socket);
                 buscar_amigos();
             }
 
             function elegir_amigo(amigo_ip) {
                 var socket = io("http://" + amigo_ip + ":3000/", {query: 'nro_jugador=jugador2&nombre_jugador=' + usuario_info.nombre});
+                usuario_info.nro_jugador='jugador2';
                 registrar_espera(socket);
             }
 
@@ -94,16 +96,13 @@
                             console.log('Se clickea carta');
                             console.log(JSON.stringify({jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')}, null, 2));
                             // Deshabilita cartas
-
                             $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
                             $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-
                             $("#mano .respuesta").off('click');
-                            socket.emit('respuesta', {jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')});
+                            socket.emit('respuesta', {nro_jugador: usuario_info.nro_jugador, nombre: usuario_info.nombre, respuesta: $(this).find('img').prop('class')});
                         });
                         $("#mano").show();
                     });
-//
 //                    $("#mano .respuesta").on('click', function () {
 //                        console.log('Se clickea carta');
 //                        console.log(JSON.stringify({jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')}, null, 2));
