@@ -35,6 +35,7 @@ function iniciar_servidor(PUERTO) {
             if(indice >= Mazo.mazo.length) {
                 console.log("Mostrar la tabla de resultados.");
                 io.emit('tabla', resultados);
+                return;
             }
             respuestaAuxiliar[opcion.nro_jugador] = opcion.respuesta;
             // Tengo ambas respuestas //
@@ -60,13 +61,13 @@ function iniciar_servidor(PUERTO) {
                         console.log('Empate = Guerra.');
                         add_contador_guerra();
                     } else {
-                        console.log('Respuestas iguales.');
+                        console.log('Respuestas iguales. Ganó jugador: ' + resultados[indice].jugador1);
                         add_contador_jugador(resultados[indice].jugador1); // Envia jugador1 porque es inditinto ya que eligieron la misma respuesta //
                     }
                     indice++;
                 } else {
-                    console.log('Las respuestas difieren\nRepregunto');
-                    indice--; // Decremento para que vuelva a enviar la misma mano al emitir
+                    console.log('Las respuestas difieren Repregunto');
+//                    indice--; // Decremento para que vuelva a enviar la misma mano al emitir
                 }
                 respuestaAuxiliar = {};
                 console.log('Se juega ahora la mano: ' + indice);
