@@ -7,10 +7,11 @@ body {
 .izq {
     text-align: left;
 }
-.juego,
+#juego,
 #mano,
 #amigos,
-.guerra {
+.guerra,
+#resultados {
     display: none;
 }
 .fizq {
