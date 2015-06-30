@@ -3,7 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var local_ip = require('my-local-ip')()
 var spawn = require('child_process').spawn;
-var jugadores;
+var jugadores = {};
 var MAX_JUGADORES = 2;
 var FILE_MAZO = '../src/mazo.json';
 var FILE_LOGGER = '/tmp/log-servidor.txt';
