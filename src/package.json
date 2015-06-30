@@ -5,9 +5,7 @@
     "window": {
         "toolbar": true,
         "position": "center",
-	"width": 1000,
-	"height": 550,
-	"resizable": false
-
+	"resizable": false,
+        "fullscreen": true
     }
 }

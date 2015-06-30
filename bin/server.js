@@ -3,8 +3,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var local_ip = require('my-local-ip')()
 var spawn = require('child_process').spawn;
-var contadorGuerra = 0;
 var jugadores = {};
+var resultados = [];
 var MAX_JUGADORES = 2;
 var FILE_MAZO = '../src/mazo.json';
 var Mazo = require(FILE_MAZO);
@@ -24,19 +24,14 @@ function desconectado(socket) {
 
 function iniciar_servidor(PUERTO) {
 //    var respuestas = [];
-    var resultados = [];
     var indice = 0;
-    var respuestaCorrecta;
+    var respuestaCorrecta = "";
     var respuestaAuxiliar = {};
+    var ultimoGanador = ""; // Guarda este dato para cuando la última jugada es empate.
     
     io.on('connection', function (socket) {
         console.log('connection');
         socket.on('respuesta', function (opcion) {
-            if(indice >= Mazo.mazo.length) {
-                console.log("Mostrar la tabla de resultados.");
-                io.emit('tabla', resultados);
-                return;
-            }
             respuestaAuxiliar[opcion.nro_jugador] = opcion.respuesta;
             // Tengo ambas respuestas //
             if(respuestaAuxiliar.jugador1 && respuestaAuxiliar.jugador2) {
@@ -49,7 +44,6 @@ function iniciar_servidor(PUERTO) {
                 } else {
                     respuestaCorrecta = "empate";
                 }
-                
                 respuestaAuxiliar.respuestaCorrecta = respuestaCorrecta;
                 resultados[indice] = respuestaAuxiliar;
             
@@ -63,6 +57,7 @@ function iniciar_servidor(PUERTO) {
                     } else {
                         console.log('Respuestas iguales. Ganó jugador: ' + resultados[indice].jugador1);
                         add_contador_jugador(resultados[indice].jugador1); // Envia jugador1 porque es inditinto ya que eligieron la misma respuesta //
+                        ultimoGanador = resultados[indice].jugador1;
                     }
                     indice++;
                 } else {
@@ -71,6 +66,16 @@ function iniciar_servidor(PUERTO) {
                 }
                 respuestaAuxiliar = {};
                 console.log('Se juega ahora la mano: ' + indice);
+                
+                if(indice >= Mazo.mazo.length) {
+                    console.log("Mostrar la tabla de resultados.");
+                    if(exist_guerra()) {
+                        jugadores[ultimoGanador].contador += jugadores.contadorGuerra;
+                        jugadores.contadorGuerra = 0;
+                    }
+                    io.emit('tabla', resultados);
+                    return;
+                }
                 io.emit('mano', get_mano(jugadores, indice));
             }
         });
@@ -90,8 +95,9 @@ function iniciar_servidor(PUERTO) {
         if (get_jugadores_count(jugadores) == MAX_JUGADORES) {
             console.log("Ya tenemos a todos los jugadores");
             console.log("Arrancamos el juego");
-            jugadores.contadorGuerra = contadorGuerra;
+            jugadores.contadorGuerra = 0;
             repartir_cartas(jugadores);
+            
             io.emit('listo', get_jugadores(jugadores));
             console.log('Se juega ahora la mano: ' + indice);
             io.emit('mano', get_mano(jugadores, indice));
@@ -133,18 +139,18 @@ function get_mano(jugadores, indice) {
 }
 
 function add_contador_guerra() {
-    contadorGuerra++;
+    jugadores.contadorGuerra++;
 }
 
 function exist_guerra() {
-    return contadorGuerra ? true : false;
+    return jugadores.contadorGuerra ? true : false;
 }
 
 function add_contador_jugador(jugador) {
     if(exist_guerra()) {
-        console.log('Habia ' + contadorGuerra + ' retenidas por guerra.');
-        jugadores[jugador].contador += contadorGuerra;
-        contadorGuerra = 0;
+        console.log('Habia ' + jugadores.contadorGuerra + ' retenidas por guerra.');
+        jugadores[jugador].contador += jugadores.contadorGuerra;
+        jugadores.contadorGuerra = 0;
     }
     jugadores[jugador].contador++;
 }

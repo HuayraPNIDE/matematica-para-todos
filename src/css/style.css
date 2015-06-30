@@ -11,7 +11,10 @@ body {
 #mano,
 #amigos,
 .guerra,
-#resultados {
+#resultados,
+#msg .alert-danger,
+#msg .alert-warning, 
+#msg .alert-success {
     display: none;
 }
 .fizq {

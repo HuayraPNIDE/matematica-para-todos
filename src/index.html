@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
         <script src="./js/socket.io/socket.io-1.2.0.js"></script>
         <title>Matem&aacute;tica para todos - MXT</title>
         <link href="css/bootstrap.min.css" media='screen' rel="stylesheet" />
@@ -55,9 +56,15 @@
                     });
 
                     socket.on('tabla', function (resultados) {
+                        e = $("<table></table>");
+                        resultados.forEach(function(element, index, array){
+                            fila = $("<tr></tr>");
+                            $(fila).append("<td>" + element.jugador1 + "</td><td>" + element.jugador2 + "</td><td>" + element.respuestaCorrecta + "</td>");
+                            $(e).append($(fila));
+                        });
+                        $('#resultados').html(e);
                         $("#juego").hide();
-                        $('#resultados').html(resultados);
-                        $("#resultados").hide();
+                        $("#resultados").show();
                     });
                     
                     socket.on('retiro', function (msg) {
@@ -172,11 +179,23 @@
         <link href="css/style.css" media='screen' rel="stylesheet" />
     </head>
     <body>
+        <button id="cerrar" type="button" class="fder btn btn-danger btn-lg"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>
         <div id="container" class="centro">
             <header>
-                <h1>La Guerra de los Lados</h1>
+                <h1>La Guerra de lados</h1>
                 <h2 id="titulo"></h2>
             </header>
+            <article id="msg">
+                <section class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>ERROR!</strong> MSG Error.
+                </section>
+                <section class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Warning!</strong> MSG Warning.
+                </section>
+                <section class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Warning!</strong> MSG Warning.
+                </section>
+            </article>
             <article id="avatar">
                 <section class="row">
                     <div class="col-xs-6 col-sm-4"></div>
@@ -235,6 +254,9 @@
         <script>
             var gui = require('nw.gui');
             var win = gui.Window.get();
+            
+            $("#cerrar").on("click", function(){ win.close(); });
+            
             win.on('close', function () {
                 console.log('Saliendo del cliente');
                 var exec = require('child_process').exec;
@@ -247,11 +269,17 @@
                 $("#entrar").on("click", function (event) {
                     event.stopPropagation();
                     nombre = $("#nombre").val();
-                    set_usuario_info(nombre);
-                    init_server(nombre); //Iniciar servidor
-                    setTimeout(function () {
-                        init(); //Me conecto a mi propio server
-                    }, 1000);
+                    //valida nombre usuario
+                    if(!nombre) {
+                        $("#msg .alert-danger").show("slow");
+                    } else {
+                        $("#msg .alert-danger").hide();
+                        set_usuario_info(nombre);
+                        init_server(nombre); //Iniciar servidor
+                        setTimeout(function () {
+                            init(); //Me conecto a mi propio server
+                        }, 1000);
+                    }
                 });
 
                 $("#actualizar").on("click", function (event) {
