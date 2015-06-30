@@ -195,7 +195,6 @@ function get_jugadores(jugadores) {
         jugador1: { nombre: jugadores.jugador1.nombre, ip: jugadores.jugador1.ip, contador: 0 },
         jugador2: { nombre: jugadores.jugador2.nombre, ip: jugadores.jugador2.ip, contador: 0 },
     };
-//{ nombre: nombre_jugador, ip: jugador_ip, contador: 0, mazo: [] };
 }
 
 function get_jugadores_count(jugadores) {
@@ -203,13 +202,11 @@ function get_jugadores_count(jugadores) {
 }
 
 function get_mano(jugadores, i) {
-
-	return {
-		jugador1: { carta: jugadores.jugador1.mazo[i], contador: jugadores.jugador1.contador },
-		jugador2: { carta: jugadores.jugador2.mazo[i], contador: jugadores.jugador2.contador }
-		//contadorGuerra: this.contadorGuerra
-	}
-
+    return {
+        jugador1: { carta: jugadores.jugador1.mazo[i], contador: jugadores.jugador1.contador },
+        jugador2: { carta: jugadores.jugador2.mazo[i], contador: jugadores.jugador2.contador },
+        contadorGuerra: 0
+    }
 }
 
 function repartir_cartas(jugadores) {
@@ -236,7 +233,6 @@ function repartir_cartas(jugadores) {
 function publicar_servidor()
 {
     cliente = spawn('avahi-publish-service', [ '-s', 'huayra_mxt-' + local_ip + '-' + usuario, '_http._tcp', PUERTO ]);
-
     cliente.stdout.on('data', function (data) {
         //console.log("stderr", data);
     });
@@ -246,12 +242,12 @@ function publicar_servidor()
     });
 
     cliente.on('exit', function (codigo) {
-        if (codigo)
+        if (codigo) {
             console.log("Error, el comando retorno: " + codigo);
-        else
+        } else {
             console.log("ha finalizado el comando avahi-publish-service");
+        }
     });
-
 }
 
 var usuario;

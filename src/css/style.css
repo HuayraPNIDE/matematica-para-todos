@@ -1,7 +1,12 @@
 body {
     background-image: url("../img/background_verde.png");
 }
-
+.centro {
+    text-align: center;
+}
+.izq {
+    text-align: left;
+}
 .juego,
 #mano,
 #amigos,

@@ -2,25 +2,27 @@
 <html>
     <head>
         <script src="./js/socket.io/socket.io-1.2.0.js"></script>
-        <title>Matematica para todos - MXT</title>
-
+        <title>Matem&aacute;tica para todos - MXT</title>
         <link href="css/bootstrap.min.css" media='screen' rel="stylesheet" />
         <link href="css/style.css" media='screen' rel="stylesheet" />
-        
         <script src="js/jquery-1.11.3.min.js"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
         <script>
             var usuario_info = {};
+            var IMG_CARPETA = 'img/';
+            var IMG_NOMBRE = 'carta_';
+            var IMG_EXTENSION = '.png';
+            var FILE_LOGGER = '/tmp/log-cliente.txt';
+            var fs = require('fs');
 
-	    function init_server(server_name) {
-		var spawn = require('child_process').spawn;
-		spawn = require('child_process').spawn;
-		server_output = spawn('nodejs', ['../bin/server.js', "--usuario="+server_name]);
-
-		server_output.stdout.on('data', function (data) {
-        		console.log("[SERVER] " + data);
-    		});
-	    }
+            function init_server(server_name) {
+                var spawn = require('child_process').spawn;
+                spawn = require('child_process').spawn;
+                server_output = spawn('nodejs', ['../bin/server.js', "--usuario=" + server_name]);
+                server_output.stdout.on('data', function (data) {
+                    fs.appendFileSync(FILE_LOGGER, data + "\n");
+                });
+            }
 
             function init() {
                 var local_ip = require('my-local-ip')();
@@ -30,7 +32,6 @@
             }
 
             function elegir_amigo(amigo_ip) {
-                //var amigo = document.getElementById('amigo').value;
                 var socket = io("http://" + amigo_ip + ":3000/", {query: 'nro_jugador=jugador2&nombre_jugador=' + usuario_info.nombre});
                 registrar_espera(socket);
             }
@@ -42,15 +43,6 @@
                     console.log('Registro eventos:\nlisto\nretiro\nmano');
 
                     socket.on('listo', function (o) {
-//                        document.getElementById("mazos").style.display = "block";
-//                        document.getElementById("listado").style.visibility = "hidden";
-//                        document.getElementById('actualizar').style.visibility = "hidden";
-//
-//                        document.getElementById("opcion_jugador1").value = "jugador1";
-//                        document.getElementById("opcion_jugador2").value = "jugador2";
-//
-//                        document.getElementById('titulo').innerHTML = 'Arranca el juego';
-//                        //document.getElementById('nombres').innerHTML = arr[0]+' VS. '+arr[1];
                         $("#amigos").hide();
                         $("#titulo").html('A Jugar!!!');
                         $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
@@ -72,37 +64,20 @@
 //                        document.getElementById("mazos").style.visibility = "hidden";
 //                        document.getElementById("opciones").style.visibility = "hidden";
 //                        document.getElementById("cartas").style.visibility = "hidden";
-
                         //document.getElementById('resultados').innerHTML = resultados;
                         socket.disconnect();
                     });
 
-//                    var btn_mano = document.getElementById('btn_mano');
                     socket.on('mano', function (o) {
-			var IMG_CARPETA = 'img/';
-			var IMG_NOMBRE = 'carta_';
-			var IMG_EXTENSION = '.png';
-
-//                        console.log('Desde el server me llegan cartas:');
-//                        console.log(JSON.stringify(o, null, 2));
-//                        document.getElementById('cont_jugador1').innerHTML = o.contador_jugador1;
-//                        document.getElementById('cont_jugador2').innerHTML = o.contador_jugador2;
-//                        document.getElementById('cont_guerra').innerHTML = o.contador_guerra;
-//                        document.getElementById('carta1_img').src = o.carta1.img;
-//                        document.getElementById('carta2_img').src = o.carta2.img;
-//                        document.getElementById("cartas").style.display = "block";
-//                        document.getElementById("opciones").style.display = "block";
-//                        btn_mano.disabled = false;
                         console.log('Desde el server me llegan cartas:');
                         console.log(JSON.stringify(o, null, 2));
 
                         // Contador
-                        if(o.jugador1.contador || $(".jugador1 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                        if (o.jugador1.contador || $(".jugador1 .contador img").prop('src') != IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
                             $(".jugador1 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
                         }
                         $(".jugador1 .contador figcaption").html(o.jugador1.contador);
-
-                        if(o.jugador2.contador || $(".jugador2 .contador img").prop('src') !=  IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
+                        if (o.jugador2.contador || $(".jugador2 .contador img").prop('src') != IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION) {
                             $(".jugador2 .contador img").prop('src', IMG_CARPETA + 'caja_cartas' + IMG_EXTENSION);
                         }
                         $(".jugador2 .contador figcaption").html(o.jugador2.contador);
@@ -111,37 +86,35 @@
                         $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + IMG_EXTENSION);
                         $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + IMG_EXTENSION);
                         // Cuando hay Guerra
-                        if(o.contador_guerra) {
+                        if (o.contador_guerra) {
                             $("#mano .guerra .contador figcaption").html(o.contador_guerra);
                         }
+
+                        $("#mano .respuesta").on('click', function () {
+                            console.log('Se clickea carta');
+                            console.log(JSON.stringify({jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')}, null, 2));
+                            // Deshabilita cartas
+
+                            $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
+                            $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
+
+                            $("#mano .respuesta").off('click');
+                            socket.emit('respuesta', {jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')});
+                        });
                         $("#mano").show();
-
                     });
-
-//                    btn_mano.onclick = function () {
-//                        console.log('Respondo');
-//                        var eleccion = document.getElementsByName("opcion");
-//                        var val = "";
-//                        for (var j = 0; j < eleccion.length; j++) {
-//                            if (eleccion[j].checked) {
-//                                val = eleccion[j].value;
-//                            }
-//                        }
-//                        socket.emit('respuesta', val);
-//                        btn_mano.disabled = true;
-//                    };
-                    $("#mano .respuesta").on('click', function() {
-			console.log('Se clickea carta');
-                        console.log(JSON.stringify({ jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')}, null, 2));
-                        // Deshabilita cartas
+//
+//                    $("#mano .respuesta").on('click', function () {
+//                        console.log('Se clickea carta');
+//                        console.log(JSON.stringify({jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')}, null, 2));
+//                        // Deshabilita cartas
+//                        
 //                        $("#mano .jugador1").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador1.carta.img + '_deshabilitado' + IMG_EXTENSION);
 //                        $("#mano .jugador2").prop("src", IMG_CARPETA + IMG_NOMBRE + o.jugador2.carta.img + '_deshabilitado' + IMG_EXTENSION);
-                        //self.socket.emit('respuesta', { jugador: nroJugador, respuesta: $(this).find('img').prop('class') });
-                        //$("#mano .respuesta").off('click');
-
-                        socket.emit('respuesta', { jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')});
-                    });
-                    
+//                        
+//                        $("#mano .respuesta").off('click');
+//                        socket.emit('respuesta', {jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')});
+//                    });
                 });
             }
 
@@ -157,7 +130,6 @@
                     for (i = 0; lineas.length > i; i++) {
                         if (/huayra_mxt/.test(lineas[i])) {
                             campos = lineas[i].split(";");
-
                             // tipo
                             if (campos[0] == '=') {
                                 ip = campos[3].split('-')[1].replace(/\\/gi, "");
@@ -177,20 +149,19 @@
                 e = $("<div></div>");
                 for (var k in amigos) {
                     amigo = amigos[k];
-                    tmp = '<div class="media thumbnail" data-ip="' + k + '"> \
+                    tmp = '<div class="izq media thumbnail" data-ip="' + k + '"> \
                       <div class="media-left"><a href="#"><img class="media-object" src="img/avatar-neutro.png" width="81" height="86"></a></div> \
                       <div class="media-body"><h4 class="media-heading">' + amigos[k] + '</h4></div> \
                     </div>';
-                    $(e).append($(tmp).on('click', function() {
+                    $(e).append($(tmp).on('click', function () {
                         elegir_amigo($(this).data('ip'));
                     }));
                 }
                 $('#listado').html(e);
                 $('#listado').show();
             }
-            
-            function set_usuario_info(nombre) {
 
+            function set_usuario_info(nombre) {
                 usuario_info['nombre'] = nombre;
                 //Hago aparecer listado de amigos
                 $("#avatar").hide();
@@ -198,15 +169,13 @@
             }
         </script>
         <link href="css/style.css" media='screen' rel="stylesheet" />
-
     </head>
     <body>
-        <div id="container">
+        <div id="container" class="centro">
             <header>
                 <h1>La Guerra de los Lados</h1>
                 <h2 id="titulo"></h2>
             </header>
-
             <article id="avatar">
                 <section class="row">
                     <div class="col-xs-6 col-sm-4"></div>
@@ -224,13 +193,10 @@
                     <div class="col-xs-6 col-sm-4"></div>
                 </section>
             </article>
-            
             <article id="amigos">
                 <p><a href="#" id="actualizar" class="btn btn-primary" role="button">Actualizar</a></p>
                 <div id="listado"></div>
             </article>
-            
-            
             <article class="juego">
                 <article id="jugadores">
                     <section class="jugador1 fizq">
@@ -250,7 +216,6 @@
                         </figure>
                     </section>
                 </article>
-
                 <article id="mano">
                     <section class="guerra">
                         <figure class="contador">
@@ -264,59 +229,30 @@
                     <section class="respuesta"><img src="img/empate.png" class="empate" /></section>
                 </article>
             </article>
-<!--            
-
-            <div id="mazos">
-                <div id="mazo1"><div id="cont_jugador1">0</div><img src="res/imgs/lomo.png" /></div>
-                <div id="cont_guerra"></div>
-                <div id="mazo2"><div id="cont_jugador2">0</div><img src="res/imgs/lomo.png" /></div>
-            </div>
-
-
-            <p id="nombres"></p>
-
-            <div id="opciones">
-                <input name="opcion" type="radio" value="0" id="opcion_jugador1">Jugador 1<br>
-                <input name="opcion" type="radio" value="1" id="opcion_jugador2">Jugador 2<br>
-                <input name="opcion" type="radio" value="empate">EMPATE<br>
-                <input type="button" value="Responder" id="btn_mano">
-            </div>
-
-            <div id="cartas">
-                <div id="carta1"><img id="carta1_img"/></div>
-                <div id="carta2"><img id="carta2_img"/></div>
-            </div>-->
-            
         </div>
         <script>
+            var gui = require('nw.gui');
+            var win = gui.Window.get();
+            win.on('close', function () {
+                console.log('Saliendo del cliente');
+                var exec = require('child_process').exec;
+                exec("killall nodejs", function (error, stdout, stderr) {});
+                win.close(true);
+                this.close(true);
+            });
 
-	     var gui = require('nw.gui');
-	     var win = gui.Window.get();
-	     win.on('close', function() {
-		console.log('Saliendo del cliente');
-		var exec = require('child_process').exec;
-		exec("killall nodejs", function (error, stdout, stderr) {});
-
-		win.close(true);
-		this.close(true);
-	    });
-
-            $(document).ready(function() {
-                $("#entrar").on("click", function(event) {
+            $(document).ready(function () {
+                $("#entrar").on("click", function (event) {
                     event.stopPropagation();
-		    nombre = $("#nombre").val();
+                    nombre = $("#nombre").val();
                     set_usuario_info(nombre);
-
-		    init_server(nombre); //Iniciar servidor
-
-		    setTimeout(function() {
-			    init(); //Me conecto a mi propio server
-		    }, 1000);
-
-
+                    init_server(nombre); //Iniciar servidor
+                    setTimeout(function () {
+                        init(); //Me conecto a mi propio server
+                    }, 1000);
                 });
-                
-                $("#actualizar").on("click", function(event) {
+
+                $("#actualizar").on("click", function (event) {
                     event.stopPropagation();
                     actualizar_amigos()
                 });
