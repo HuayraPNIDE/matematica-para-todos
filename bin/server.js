@@ -203,11 +203,14 @@ process.argv.forEach(function (val, index, array) {
     }
 });
 
+
 if (!usuario) {
     console.log("ERROR: No se especifico usuario");
     console.log("# node bin/server.js --usuario=Nombre");
     process.exit(-1);
 }
+
+
 
 iniciar_servidor(PUERTO);
 publicar_servidor();

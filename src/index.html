@@ -1,8 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
-        <script src="./js/socket.io/socket.io-1.2.0.js"></script>
+<!doctype html> <html>    <head> <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"> <script src="./js/socket.io/socket.io-1.2.0.js"></script>
         <title>Matem&aacute;tica para todos - MXT</title>
         <link href="css/bootstrap.min.css" media='screen' rel="stylesheet" />
         <link href="css/style.css" media='screen' rel="stylesheet" />
@@ -23,6 +19,8 @@
                 server_output.stdout.on('data', function (data) {
                     fs.appendFileSync(FILE_LOGGER, data + "\n");
                 });
+
+		return server_output;
             }
 
             function init() {
@@ -256,20 +254,29 @@
             <article id="resultados"></article>
         </div>
         <script>
-            var gui = require('nw.gui');
-            var win = gui.Window.get();
             
-            $("#cerrar").on("click", function(){ win.close(); });
             
-            win.on('close', function () {
-                console.log('Saliendo del cliente');
-                var exec = require('child_process').exec;
-                exec("killall nodejs", function (error, stdout, stderr) {});
-                win.close(true);
-                this.close(true);
-            });
-
+            
+            
             $(document).ready(function () {
+
+		var gui = require('nw.gui');
+		var win = gui.Window.get();
+
+		var util = require('util');
+
+		var server_child;
+
+		win.on('close', function () {
+                	console.log('Saliendo del cliente');
+			//console.log(util.inspect(server_child, { showHidden: true, depth: null }));
+			server_child.kill();
+                	win.close(true);
+                	this.close(true);
+            	});
+
+
+
                 $("#entrar").on("click", function (event) {
                     event.stopPropagation();
                     nombre = $("#nombre").val();
@@ -280,7 +287,7 @@
                     } else {
                         $("#msg .alert-danger").hide();
                         set_usuario_info(nombre);
-                        init_server(nombre); //Iniciar servidor
+                        server_child = init_server(nombre); //Iniciar servidor
                         $("#amigos .thumbnail .caption").find("h3").html(nombre);
                         setTimeout(function () {
                             init(); //Me conecto a mi propio server
@@ -292,6 +299,9 @@
                     event.stopPropagation();
                     actualizar_amigos()
                 });
+
+
+		$("#cerrar").on("click", function(){ win.close(); });
             });
         </script>
     </body>
