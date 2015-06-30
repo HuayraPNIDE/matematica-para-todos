@@ -187,13 +187,13 @@
             </header>
             <article id="msg">
                 <section class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <strong>ERROR!</strong> MSG Error.
+                    <div></div>
                 </section>
                 <section class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <strong>Warning!</strong> MSG Warning.
                 </section>
                 <section class="alert alert-success alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <strong>Warning!</strong> MSG Warning.
+                    <strong>Warning!</strong> MSG success.
                 </section>
             </article>
             <article id="avatar">
@@ -214,8 +214,12 @@
                 </section>
             </article>
             <article id="amigos">
+                <div class="thumbnail fizq col-xs-6">
+                    <img src="img/avatar-neutro.png" alt="Usuario" />
+                    <div class="caption"><h3></h3></div>
+                </div>
                 <p><a href="#" id="actualizar" class="btn btn-primary" role="button">Actualizar</a></p>
-                <div id="listado"></div>
+                <div id="listado" class="fder col-xs-6"></div>
             </article>
             <article id="juego">
                 <article id="jugadores">
@@ -271,11 +275,13 @@
                     nombre = $("#nombre").val();
                     //valida nombre usuario
                     if(!nombre) {
+                        $("#msg .alert-danger").find('div').html('<strong>Error: </strong> Falta el nombre de usuario.');
                         $("#msg .alert-danger").show("slow");
                     } else {
                         $("#msg .alert-danger").hide();
                         set_usuario_info(nombre);
                         init_server(nombre); //Iniciar servidor
+                        $("#amigos .thumbnail .caption").find("h3").html(nombre);
                         setTimeout(function () {
                             init(); //Me conecto a mi propio server
                         }, 1000);
