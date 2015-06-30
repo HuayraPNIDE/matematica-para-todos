@@ -214,8 +214,8 @@ function iniciar_servidor(PUERTO)
             console.log("Arrancamos el juego");
             repartir_cartas(jugadores);
             io.emit('listo', get_jugadores(jugadores));
-            console.log('Se juega ahora la mano ' + i);
-            io.emit('mano', get_mano(jugadores, i));
+            console.log('Se juega ahora la mano ' + indice);
+            io.emit('mano', get_mano(jugadores, indice));
 //            io.emit('mano', {"carta1": mazo_jugador1[i], "carta2": mazo_jugador2[i], "contador_jugador1": 0, "contador_jugador2": 0, "contador_guerra": 0});
         }
 
