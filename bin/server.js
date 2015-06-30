@@ -178,22 +178,24 @@ function repartir_cartas(jugadores) {
 
 function publicar_servidor()
 {
-    cliente = spawn('avahi-publish-service', [ '-s', 'huayra_mxt-' + local_ip + '-' + usuario, '_http._tcp', PUERTO ]);
-    cliente.stdout.on('data', function (data) {
+    aps = spawn('avahi-publish-service', [ '-s', 'huayra_mxt-' + local_ip + '-' + usuario, '_http._tcp', PUERTO ]);
+    aps.stdout.on('data', function (data) {
         //console.log("stderr", data);
     });
 
-    cliente.on('error', function (codigo) {
+    aps.on('error', function (codigo) {
         console.error("ERROR: no se puede ejecutar avahi-publish-service", codigo);
     });
 
-    cliente.on('exit', function (codigo) {
+    aps.on('exit', function (codigo) {
         if (codigo) {
             console.log("Error, el comando retorno: " + codigo);
         } else {
             console.log("ha finalizado el comando avahi-publish-service");
         }
     });
+
+    return aps;
 }
 
 var usuario;
@@ -201,6 +203,12 @@ process.argv.forEach(function (val, index, array) {
     if (/--usuario=/.test(val)) {
         usuario = val.split('=')[1];
     }
+});
+
+process.on('SIGTERM', function() {
+	aps.kill();
+
+	process.exit(0);
 });
 
 
@@ -211,6 +219,5 @@ if (!usuario) {
 }
 
 
-
 iniciar_servidor(PUERTO);
-publicar_servidor();
+var aps = publicar_servidor();

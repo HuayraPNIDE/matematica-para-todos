@@ -270,7 +270,9 @@
 		win.on('close', function () {
                 	console.log('Saliendo del cliente');
 			//console.log(util.inspect(server_child, { showHidden: true, depth: null }));
-			server_child.kill();
+			if(server_child) { //Chequeo que se haya iniciado el server
+				server_child.kill('SIGTERM');
+			}
                 	win.close(true);
                 	this.close(true);
             	});
