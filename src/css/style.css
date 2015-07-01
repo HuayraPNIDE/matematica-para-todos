@@ -1,5 +1,6 @@
 body {
     background-image: url("../img/background_verde.png");
+    padding-top: 40px;
 }
 .centro {
     text-align: center;
@@ -31,4 +32,10 @@ body {
 }
 .media-heading {
     margin-left: 90px;
+}
+#cajamodal {
+    margin-top: 4em;
+}
+.menu {
+    text-align: right;
 }

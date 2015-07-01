@@ -1,9 +1,12 @@
-<!doctype html> <html>    <head> <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"> <script src="./js/socket.io/socket.io-1.2.0.js"></script>
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1"> <script src="./js/socket.io/socket.io-1.2.0.js"></script>
         <title>Matem&aacute;tica para todos - MXT</title>
         <link href="css/bootstrap.min.css" media='screen' rel="stylesheet" />
-        <link href="css/style.css" media='screen' rel="stylesheet" />
         <script src="js/jquery-1.11.3.min.js"></script>
         <script src="js/bootstrap.min.js" type="text/javascript"></script>
+        <link href="css/droidsans_regular.css" media='screen' rel="stylesheet" />
         <script>
             var usuario_info = {};
             var IMG_CARPETA = 'img/';
@@ -19,23 +22,22 @@
                 server_output.stdout.on('data', function (data) {
                     fs.appendFileSync(FILE_LOGGER, data + "\n");
                 });
-
-		return server_output;
+                return server_output;
             }
 
             function init() {
                 var local_ip = require('my-local-ip')();
                 var socket = io("http://" + local_ip + ":3000/", {query: 'nro_jugador=jugador1&nombre_jugador=' + usuario_info.nombre});
-                usuario_info.nro_jugador='jugador1';
-                usuario_info.ip=local_ip;
+                usuario_info.nro_jugador = 'jugador1';
+                usuario_info.ip = local_ip;
                 registrar_espera(socket);
                 buscar_amigos();
             }
 
             function elegir_amigo(amigo_ip) {
                 var socket = io("http://" + amigo_ip + ":3000/", {query: 'nro_jugador=jugador2&nombre_jugador=' + usuario_info.nombre});
-                usuario_info.nro_jugador='jugador2';
-                usuario_info.ip=amigo_ip;
+                usuario_info.nro_jugador = 'jugador2';
+                usuario_info.ip = amigo_ip;
                 registrar_espera(socket);
             }
 
@@ -45,19 +47,17 @@
                     console.log('Me conecte al servidor');
                     console.log('Registro eventos:\nlisto\nretiro\nmano');
 
-		    socket.on('disconnect', function() {
-			console.log('Se perdio conexion con el server');
-			$("#juego").hide();
+                    socket.on('disconnect', function () {
+                        console.log('Se perdio conexion con el server');
+                        $("#juego").hide();
                         $("#titulo").html('Se perdio conexi&oacute;n con el servidor<br>Volviendo a la sala de amigos');
 
-			setTimeout(function() {
-				$("#titulo").html('');
-				actualizar_amigos();
-				$("#amigos").show();
-			}, 3000);
-
-			
-		    });
+                        setTimeout(function () {
+                            $("#titulo").html('');
+                            actualizar_amigos();
+                            $("#amigos").show();
+                        }, 3000);
+                    });
 
                     socket.on('listo', function (o) {
                         $("#amigos").hide();
@@ -69,7 +69,7 @@
 
                     socket.on('tabla', function (resultados) {
                         e = $("<table></table>");
-                        resultados.forEach(function(element, index, array){
+                        resultados.forEach(function (element, index, array) {
                             fila = $("<tr></tr>");
                             $(fila).append("<td>" + element.jugador1 + "</td><td>" + element.jugador2 + "</td><td>" + element.respuestaCorrecta + "</td>");
                             $(e).append($(fila));
@@ -78,7 +78,7 @@
                         $("#juego").hide();
                         $("#resultados").show();
                     });
-                    
+
                     socket.on('retiro', function (msg) {
 //                        document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
 //                        document.getElementById("mazos").style.visibility = "hidden";
@@ -122,7 +122,7 @@
                         } else {
                             $("#mano .guerra").hide();
                         }
-                        
+
                         $("#mano .respuesta").on('click', function () {
                             console.log('Se clickea carta');
                             console.log(JSON.stringify({jugador: usuario_info.nombre, respuesta: $(this).find('img').prop('class')}, null, 2));
@@ -191,10 +191,30 @@
         <link href="css/style.css" media='screen' rel="stylesheet" />
     </head>
     <body>
-        <button id="cerrar" type="button" class="fder btn btn-danger btn-lg"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>
-        <button id="volver" type="button" class="fder btn btn-primary btn-lg"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
-        <div id="container" class="centro">
-            <header>
+        <div id="container" class="container">
+            <!-- Small modal -->
+            <div id="cajamodal" class="modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">Cerrar juego?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿¿¿Desea cerrar el juego???</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                            <button id="cerrar" type="button" class="btn btn-primary">Si</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <article id="menu" class="menu">
+                <button id="volver" type="button" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+                <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#cajamodal"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>
+            </article>
+            <header class="center-block centro">
                 <h1>La Guerra de lados</h1>
                 <h2 id="titulo"></h2>
             </header>
@@ -219,7 +239,7 @@
                                 <div class="form-group">
                                     <input name="nombre" id="nombre" type="text" class="form-control" placeholder="Ingrese un nombre de usuario.">
                                 </div>
-                                <p><a href="#" id="entrar" class="btn btn-primary" role="button">Entrar</a></p>
+                                <p><a href="#" id="entrar" class="btn btn-primary btn-block" role="button">Entrar</a></p>
                             </div>
                         </div>
                     </div>
@@ -236,21 +256,23 @@
             </article>
             <article id="juego">
                 <article id="jugadores">
-                    <section class="jugador1 fizq">
-                        <div class="avatar"><img src="img/avatar-neutro.png" width="40" height="40"/>NOMBRE</div>
-                        <div class="cartas"><img src="img/lomos.png" /></div>
-                        <figure class="contador">
-                            <img src="img/caja.png" />
-                            <figcaption></figcaption>
-                        </figure>
-                    </section>
-                    <section class="jugador2 fder">
-                        <div class="avatar">NOMBRE<img src="img/avatar-neutro.png" width="40" height="40" /></div>
-                        <div class="cartas"><img src="img/lomos.png" /></div>
-                        <figure class="contador">
-                            <img src="img/caja.png" />
-                            <figcaption></figcaption>
-                        </figure>
+                    <section class="row">
+                        <section class="jugador1 fizq">
+                            <div class="avatar"><img src="img/avatar-neutro.png" width="40" height="40"/>NOMBRE</div>
+                            <div class="cartas"><img src="img/lomos.png" /></div>
+                            <figure class="contador">
+                                <img src="img/caja.png" />
+                                <figcaption></figcaption>
+                            </figure>
+                        </section>
+                        <section class="jugador2 fder">
+                            <div class="avatar">NOMBRE<img src="img/avatar-neutro.png" width="40" height="40" /></div>
+                            <div class="cartas"><img src="img/lomos.png" /></div>
+                            <figure class="contador">
+                                <img src="img/caja.png" />
+                                <figcaption></figcaption>
+                            </figure>
+                        </section>
                     </section>
                 </article>
                 <article id="mano">
@@ -269,57 +291,49 @@
             <article id="resultados"></article>
         </div>
         <script>
-            
-            
-            
-            
-            $(document).ready(function () {
+       $(document).ready(function () {
+            var gui = require('nw.gui');
+            var win = gui.Window.get();
+            var util = require('util');
+            var server_child;
 
-		var gui = require('nw.gui');
-		var win = gui.Window.get();
-
-		var util = require('util');
-
-		var server_child;
-
-		win.on('close', function () {
-                	console.log('Saliendo del cliente');
-			//console.log(util.inspect(server_child, { showHidden: true, depth: null }));
-			if(server_child) { //Chequeo que se haya iniciado el server
-				server_child.kill('SIGTERM');
-			}
-                	win.close(true);
-                	this.close(true);
-            	});
-
-
-
-                $("#entrar").on("click", function (event) {
-                    event.stopPropagation();
-                    nombre = $("#nombre").val();
-                    //valida nombre usuario
-                    if(!nombre) {
-                        $("#msg .alert-danger").find('div').html('<strong>Error: </strong> Falta el nombre de usuario.');
-                        $("#msg .alert-danger").show("slow");
-                    } else {
-                        $("#msg .alert-danger").hide();
-                        set_usuario_info(nombre);
-                        server_child = init_server(nombre); //Iniciar servidor
-                        $("#amigos .thumbnail .caption").find("h3").html(nombre);
-                        setTimeout(function () {
-                            init(); //Me conecto a mi propio server
-                        }, 1000);
-                    }
-                });
-
-                $("#actualizar").on("click", function (event) {
-                    event.stopPropagation();
-                    actualizar_amigos()
-                });
-
-
-		$("#cerrar").on("click", function(){ win.close(); });
+            win.on('close', function () {
+                console.log('Saliendo del cliente');
+                //console.log(util.inspect(server_child, { showHidden: true, depth: null }));
+                if (server_child) { //Chequeo que se haya iniciado el server
+                    server_child.kill('SIGTERM');
+                }
+                win.close(true);
+                this.close(true);
             });
-        </script>
+
+            $("#entrar").on("click", function (event) {
+                event.stopPropagation();
+                nombre = $("#nombre").val();
+                //valida nombre usuario
+                if (!nombre) {
+                    $("#msg .alert-danger").find('div').html('<strong>Error: </strong> Falta el nombre de usuario.');
+                    $("#msg .alert-danger").show("slow");
+                } else {
+                    $("#msg .alert-danger").hide();
+                    set_usuario_info(nombre);
+                    server_child = init_server(nombre); //Iniciar servidor
+                    $("#amigos .thumbnail .caption").find("h3").html(nombre);
+                    setTimeout(function () {
+                        init(); //Me conecto a mi propio server
+                    }, 1000);
+                }
+            });
+
+            $("#actualizar").on("click", function (event) {
+                event.stopPropagation();
+                actualizar_amigos()
+            });
+
+            $("#cerrar").on("click", function () {
+                win.close();
+            });
+        });
+    </script>
     </body>
 </html>
