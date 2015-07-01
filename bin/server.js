@@ -32,7 +32,7 @@ function iniciar_servidor(PUERTO) {
     io.on('connection', function (socket) {
         console.log('connection');
         socket.on('respuesta', function (opcion) {
-            respuestaAuxiliar[opcion.nro_jugador] = opcion.respuesta;
+            respuestaAuxiliar[opcion.nro_jugador] = {respuesta: opcion.respuesta, carta: jugadores[opcion.nro_jugador].mazo[indice] };
             // Tengo ambas respuestas //
             if(respuestaAuxiliar.jugador1 && respuestaAuxiliar.jugador2) {
                 console.log("Tengo ambas respuestas");
@@ -45,21 +45,21 @@ function iniciar_servidor(PUERTO) {
                     respuestaCorrecta = "empate";
                 }
                 respuestaAuxiliar.respuestaCorrecta = respuestaCorrecta;
+//                respuestaAuxiliar.jugador1.mazo = jugadores.jugador1.mazo[indice];
+//                respuestaAuxiliar.jugador2.mazo = jugadores.jugador2.mazo[indice];
                 resultados[indice] = respuestaAuxiliar;
-                resultados[indice].jugador1.mazo = jugadores.jugador1.mazo[indice];
-                resultados[indice].jugador2.mazo = jugadores.jugador2.mazo[indice];
                 
                 // Respuestas iguales //
-                if(resultados[indice].jugador1 == resultados[indice].jugador2) {
+                if(resultados[indice].jugador1.respuesta == resultados[indice].jugador2.respuesta) {
                     console.log('Respuestas iguales.');
                     // Empate = Guerra //
-                    if(resultados[indice].jugador1 == 'empate') {
+                    if(resultados[indice].jugador1.respuesta == 'empate') {
                         console.log('Empate = Guerra.');
                         add_contador_guerra();
                     } else {
-                        console.log('Respuestas iguales. Ganó jugador: ' + resultados[indice].jugador1);
-                        add_contador_jugador(resultados[indice].jugador1); // Envia jugador1 porque es inditinto ya que eligieron la misma respuesta //
-                        ultimoGanador = resultados[indice].jugador1;
+                        console.log('Respuestas iguales. Ganó jugador: ' + resultados[indice].jugador1.respuesta);
+                        add_contador_jugador(resultados[indice].jugador1.respuesta); // Envia jugador1 porque es inditinto ya que eligieron la misma respuesta //
+                        ultimoGanador = resultados[indice].jugador1.respuesta;
                     }
                     indice++;
                 } else {
