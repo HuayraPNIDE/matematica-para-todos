@@ -191,7 +191,7 @@
         <link href="css/style.css" media='screen' rel="stylesheet" />
     </head>
     <body>
-        <div id="container" class="container">
+        <div id="container" class="container centro center-block">
             <!-- Small modal -->
             <div id="cajamodal" class="modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
                 <div class="modal-dialog modal-sm" role="document">
@@ -257,35 +257,43 @@
             <article id="juego">
                 <article id="jugadores">
                     <section class="row">
-                        <section class="jugador1 fizq">
-                            <div class="avatar"><img src="img/avatar-neutro.png" width="40" height="40"/>NOMBRE</div>
+                        <div class="jugador1 col-md-3">
+                            <div class="avatar"><img src="img/avatar-neutro.png" width="40" height="40" /></div>
                             <div class="cartas"><img src="img/lomos.png" /></div>
                             <figure class="contador">
                                 <img src="img/caja.png" />
                                 <figcaption></figcaption>
                             </figure>
-                        </section>
-                        <section class="jugador2 fder">
+                        </div>
+                        <div class="col-md-6"></div>
+                        <div class="jugador2 col-md-3">
                             <div class="avatar">NOMBRE<img src="img/avatar-neutro.png" width="40" height="40" /></div>
                             <div class="cartas"><img src="img/lomos.png" /></div>
                             <figure class="contador">
                                 <img src="img/caja.png" />
                                 <figcaption></figcaption>
                             </figure>
-                        </section>
+                        </div>
                     </section>
                 </article>
                 <article id="mano">
-                    <section class="guerra">
-                        <figure class="contador">
-                            <img src="img/caja_cartas.png" />
-                            <figcaption></figcaption>
-                        </figure></section>
-                    <section>
-                        <div class="respuesta fizq"><img src="img/lomo.png" class="jugador1" /></div>
-                        <div class="respuesta fder"><img src="img/lomo.png" class="jugador2" /></div>
+                    <section class="row">
+                        <div class="col-md-12 guerra">
+                            <figure class="contador">
+                                <img src="img/caja_cartas.png" />
+                                <figcaption></figcaption>
+                            </figure>
+                        </div>
                     </section>
-                    <section class="respuesta"><img src="img/empate.png" class="empate" /></section>
+                    <section class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-3 respuesta"><img src="img/lomo.png" class="jugador1" /></div>
+                        <div class="col-md-3 respuesta"><img src="img/lomo.png" class="jugador2" /></div>
+                        <div class="col-md-3"></div>
+                    </section>
+                    <section class="row">
+                        <div class="col-md-12 respuesta"><img src="img/empate.png" class="empate" /></div>
+                    </section>
                 </article>
             </article>
             <article id="resultados"></article>

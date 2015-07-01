@@ -39,3 +39,13 @@ body {
 .menu {
     text-align: right;
 }
+#juego {
+    position: relative;
+}
+#mano {
+    display: block;
+    position: absolute;
+    top: 0;
+    text-align: center;
+    width: 100%;
+}
