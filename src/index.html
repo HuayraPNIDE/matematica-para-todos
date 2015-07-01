@@ -73,32 +73,21 @@
                     });
 
                     socket.on('tabla', function (resultados) {
-//  {
-//    "jugador1": {
-//      "respuesta": "empate",
-//      "carta": {
-//        "id": 22,
-//        "lados": 4,
-//        "concavidad": "convexo",
-//        "img": "22"
-//      }
-//    },
-//    "jugador2": {
-//      "respuesta": "empate",
-//      "carta": {
-//        "id": 2,
-//        "lados": 5,
-//        "concavidad": "cóncavo",
-//        "img": "02"
-//      }
-//    },
-//    "respuestaCorrecta": "jugador2"
-//    
-console.log(JSON.stringify(resultados, null, 2));
                         e = $('<table class="table table-condensed"></table>');
+                        jugada=0;
+                        $(e).append($('<tr><td>#</td><td>' + $(".jugador1 .avatar h3").html() + '</td><td>' + $(".jugador2 .avatar h3").html() + '</td><td>Resultado</td></tr>'));
                         resultados.forEach(function (element, index, array) {
-                            fila = $("<tr></tr>");
-                            $(fila).append("<td>" + element.jugador1 + "</td><td>" + element.jugador2 + "</td><td>" + element.respuestaCorrecta + "</td>");
+                            if(element.respuestaCorrecta === element.jugador1.respuesta) {
+                                fila = $('<tr class="success"></tr>');
+                            } else {
+                                fila = $('<tr class="danger"></tr>');
+                            }
+                            jugada = index+1;
+                            if(element.respuestaCorrecta === "empate") {
+                                $(fila).append("<td>" + jugada + "</td><td><img src='" + IMG_CARPETA + IMG_NOMBRE + element.jugador1.carta.img + "_resultado" + IMG_EXTENSION + "' /></td><td><img src='" + IMG_CARPETA + IMG_NOMBRE + element.jugador2.carta.img + "_resultado" + IMG_EXTENSION + "' /></td><td>E</td>");
+                            } else {
+                                $(fila).append("<td>" + jugada + "</td><td><img src='" + IMG_CARPETA + IMG_NOMBRE + element.jugador1.carta.img + "_resultado" + IMG_EXTENSION + "' /></td><td><img src='" + IMG_CARPETA + IMG_NOMBRE + element.jugador2.carta.img + "_resultado" + IMG_EXTENSION + "' /></td><td><img src='" + IMG_CARPETA + IMG_NOMBRE + element[element.respuestaCorrecta].carta.img + "_resultado" + IMG_EXTENSION + "' /></td>");
+                            }
                             $(e).append($(fila));
                         });
                         $("#juego").hide();
