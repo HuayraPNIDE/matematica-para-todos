@@ -51,7 +51,8 @@
                         console.log('Se perdio conexion con el server');
                         socket.disconnect();
                         $("#juego").hide();
-                        $("#titulo").html('Se perdio conexi&oacute;n con el servidor<br>Volviendo a la sala de amigos');
+                        $("#msg .alert-warning").find('div').html('<strong>Cuidado: </strong> Se perdio conexi&oacute;n con el servidor volviendo a la sala de amigos.');
+                        $("#msg .alert-warning").show("slow");
 
                         setTimeout(function () {
                             $("#titulo").html('');
@@ -66,7 +67,7 @@
                         $("#titulo").html('A Jugar!!!');
                         $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
                         $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
-                        $("#juego").show();
+                        $("#juego, #volver").show();
                     });
 
                     socket.on('tabla', function (resultados) {
@@ -212,13 +213,13 @@
                     </div>
                 </div>
             </div>
-            <article id="menu" class="menu">
-                <button id="volver" type="button" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
-                <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#cajamodal"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>
-            </article>
             <header class="center-block centro">
                 <h1>La Guerra de lados</h1>
                 <h2 id="titulo"></h2>
+                <article id="menu" class="menu">
+                    <button id="volver" type="button" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+                    <button type="button" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#cajamodal"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></button>
+                </article>
             </header>
             <article id="msg">
                 <section class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>

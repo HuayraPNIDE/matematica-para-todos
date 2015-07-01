@@ -15,7 +15,8 @@ body {
 #resultados,
 #msg .alert-danger,
 #msg .alert-warning, 
-#msg .alert-success {
+#msg .alert-success,
+#volver {
     display: none;
 }
 .fizq {
@@ -37,8 +38,12 @@ body {
     margin-top: 4em;
 }
 .menu {
+    position: absolute;
     text-align: right;
+    top: 0;
+    right: 0;
 }
+header, 
 #juego {
     position: relative;
 }
