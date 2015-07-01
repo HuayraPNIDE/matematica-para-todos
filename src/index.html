@@ -53,7 +53,7 @@
                     socket.on('disconnect', function () {
                         console.log('Se perdio conexion con el server');
                         socket.disconnect();
-                        $("#juego, #volver, ##titulo").hide();
+                        $("#juego, #volver, #titulo").hide();
                         $("#msg .alert-warning").find('div').html('<strong>Cuidado: </strong> Se perdio conexi&oacute;n con el servidor volviendo a la sala de amigos.');
                         $("#msg .alert-warning").show("slow");
 

@@ -96,7 +96,10 @@ function iniciar_servidor(PUERTO) {
         conectado(socket);
         if (get_jugadores_count(jugadores) == MAX_JUGADORES) {
             console.log("Ya tenemos a todos los jugadores");
+	    console.log("Matamos publicacon con avahi");
             console.log("Arrancamos el juego");
+
+	    aps.kill();
             jugadores.contadorGuerra = 0;
             repartir_cartas(jugadores);
             
