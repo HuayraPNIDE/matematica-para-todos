@@ -67,20 +67,22 @@
                     socket.on('listo', function (o) {
                         $("#amigos").hide();
                         $("#titulo").html('A Jugar!!!');
-                        $(".jugador1 .avatar").html(o.jugador1.nombre + "(" + o.jugador1.ip + ")");
-                        $(".jugador2 .avatar").html(o.jugador2.nombre + "(" + o.jugador2.ip + ")");
+                        $(".jugador1 .avatar h3").html(o.jugador1.nombre);
+                        $(".jugador2 .avatar h3").html(o.jugador2.nombre);
                         $("#juego, #volver, #titulo").show();
                     });
 
                     socket.on('tabla', function (resultados) {
+                        
+console.log(JSON.stringify(resultados, null, 2));
                         e = $("<table></table>");
                         resultados.forEach(function (element, index, array) {
                             fila = $("<tr></tr>");
                             $(fila).append("<td>" + element.jugador1 + "</td><td>" + element.jugador2 + "</td><td>" + element.respuestaCorrecta + "</td>");
                             $(e).append($(fila));
                         });
-                        $('#resultados').html(e);
                         $("#juego").hide();
+                        $('#resultados').html(e);
                         $("#resultados").show();
                     });
 
@@ -263,7 +265,7 @@
                 <article id="jugadores">
                     <section class="row">
                         <div class="jugador1 col-md-3">
-                            <div class="avatar"><img src="img/avatar-neutro.png" width="40" height="40" /></div>
+                            <div class="avatar"><h3></h3><img src="img/avatar-neutro.png" width="40" height="40" /></div>
                             <div class="cartas"><img src="img/lomos.png" /></div>
                             <figure class="contador">
                                 <img src="img/caja.png" />
@@ -272,7 +274,7 @@
                         </div>
                         <div class="col-md-6"></div>
                         <div class="jugador2 col-md-3">
-                            <div class="avatar">NOMBRE<img src="img/avatar-neutro.png" width="40" height="40" /></div>
+                            <div class="avatar"><h3></h3><img src="img/avatar-neutro.png" width="40" height="40" /></div>
                             <div class="cartas"><img src="img/lomos.png" /></div>
                             <figure class="contador">
                                 <img src="img/caja.png" />

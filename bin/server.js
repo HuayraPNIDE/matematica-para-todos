@@ -46,7 +46,9 @@ function iniciar_servidor(PUERTO) {
                 }
                 respuestaAuxiliar.respuestaCorrecta = respuestaCorrecta;
                 resultados[indice] = respuestaAuxiliar;
-            
+                resultados[indice].jugador1.mazo = jugadores.jugador1.mazo[indice];
+                resultados[indice].jugador2.mazo = jugadores.jugador2.mazo[indice];
+                
                 // Respuestas iguales //
                 if(resultados[indice].jugador1 == resultados[indice].jugador2) {
                     console.log('Respuestas iguales.');
