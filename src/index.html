@@ -41,6 +41,11 @@
                 var socket = io("http://" + amigo_ip + ":3000/", {query: 'nro_jugador=jugador2&nombre_jugador=' + usuario_info.nombre});
                 usuario_info.nro_jugador = 'jugador2';
                 usuario_info.ip = amigo_ip;
+
+		//Hack rapido
+		var exec = require('child_process').exec;
+                exec('killall avahi-publish-service');
+
                 registrar_espera(socket);
             }
 
@@ -96,12 +101,23 @@
                     });
 
                     socket.on('retiro', function (msg) {
+
+			socket.disconnect();
+                        $("#juego, #volver, #titulo").hide();
+                        $("#msg .alert-warning").find('div').html('<strong>Cuidado: </strong> Se perdio conexi&oacute;n con el cliente volviendo a la sala de amigos.');
+                        $("#msg .alert-warning").show("slow");
+
+                        setTimeout(function () {
+                            $("#msg .alert-warning").hide();
+                            actualizar_amigos();
+                            $("#amigos").show();
+                        }, RETARDO_MAX);
+
 //                        document.getElementById('titulo').innerHTML = msg + ' Se retiro <br> Es el fin del juego';
 //                        document.getElementById("mazos").style.visibility = "hidden";
 //                        document.getElementById("opciones").style.visibility = "hidden";
 //                        document.getElementById("cartas").style.visibility = "hidden";
 //                        document.getElementById('nombres').innerHTML = "";
-                        socket.disconnect();
                     });
 
                     socket.on('fin', function (resultados) {

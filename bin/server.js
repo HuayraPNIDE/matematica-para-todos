@@ -109,6 +109,9 @@ function iniciar_servidor(PUERTO) {
         }
 
         socket.on('disconnect', function () {
+	    console.log('El cliente se desconecto');	
+	    io.emit('retiro');
+	    jugadores = {};
 	/*
             var index = jugadores.indexOf(jugador_ip);
             jugadores.splice(index, 1);
