@@ -1,7 +1,23 @@
 body {
     background-image: url("../img/background_verde.png");
     padding-top: 40px;
+    font-family: 'droid_sansregular';
 }
+h1 { color: #78579e }
+h1, h2, h3 {
+    font-family: 'droid_sansbold';
+}
+.btn-primary {
+  background-color: #78579e;
+  border-color: #614680;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary.focus:active, .btn-primary:active:focus, .btn-primary:active:hover, .open > .dropdown-toggle.btn-primary.focus, .open > .dropdown-toggle.btn-primary:focus, .open > .dropdown-toggle.btn-primary:hover {
+    background-color: #513b6b;
+    border-color: #402e54;
+}
+
 .centro {
     text-align: center;
 }
