@@ -3,9 +3,9 @@ body {
     padding-top: 40px;
     font-family: 'droid_sansregular';
 }
-h1 { color: #78579e }
 h1, h2, h3 {
     font-family: 'droid_sansbold';
+    color: #78579e;
 }
 .btn-primary {
   background-color: #78579e;
