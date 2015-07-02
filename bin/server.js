@@ -210,7 +210,7 @@ function publicar_servidor()
 	var http = require('http');
 	var fs = require('fs');
 
-	var return_info = {"local_ip": local_ip, "usuario_nombre": usuario};
+	var return_info = {"ip": local_ip, "usuario_nombre": usuario};
 		
 
 	http.createServer(function (req, res) {
