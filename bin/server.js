@@ -186,6 +186,7 @@ function repartir_cartas(jugadores) {
 
 function publicar_servidor()
 {
+/*
     aps = spawn('avahi-publish-service', [ '-s', 'huayra_mxt-' + local_ip + '-' + usuario, '_http._tcp', PUERTO ]);
     aps.stdout.on('data', function (data) {
         //console.log("stderr", data);
@@ -204,6 +205,18 @@ function publicar_servidor()
     });
 
     return aps;
+*/
+
+	var http = require('http');
+	var fs = require('fs');
+
+	var return_info = {"local_ip": local_ip, "usuario_nombre": usuario};
+		
+
+	http.createServer(function (req, res) {
+			res.writeHead(200, {'Content-Type': 'text/plain'});
+			res.end(JSON.stringify(return_info));
+	}).listen(3005);
 }
 
 var usuario;
